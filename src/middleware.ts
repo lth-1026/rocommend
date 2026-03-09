@@ -1,2 +1,9 @@
-// TODO: Step 10에서 NextAuth 설정 후 인증 미들웨어 추가
-export function middleware() {}
+import NextAuth from 'next-auth'
+import { authConfig } from '@/lib/auth.config'
+
+// Edge Runtime 호환 — authConfig만 사용 (Prisma adapter 없음)
+export default NextAuth(authConfig).auth
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|logo.svg).*)'],
+}
