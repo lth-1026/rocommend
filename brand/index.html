@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rocommend — Brand Guidelines</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+  <style>
+    :root {
+      --bg:           #FDFCFA;
+      --surface:      #FFFFFF;
+      --border:       #EAE6DF;
+      --text-1:       #111111;
+      --text-2:       #6B6560;
+      --text-3:       #B0AAA3;
+      --action:       #1A1917;
+      --action-text:  #FDFCFA;
+      --accent:       #C4A882;
+    }
+    [data-theme="dark"] {
+      --bg:           #1A1917;
+      --surface:      #252220;
+      --border:       #333028;
+      --text-1:       #F0EDE9;
+      --text-2:       #9E9890;
+      --text-3:       #5A5550;
+      --action:       #F0EDE9;
+      --action-text:  #1A1917;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 64px 32px 120px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 80px;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-title {
+      font-size: 13px;
+      color: var(--text-2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .theme-toggle {
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text-2);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .theme-toggle:hover { color: var(--text-1); border-color: var(--text-2); }
+
+    /* ── Section ── */
+    .section { margin-bottom: 72px; }
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 28px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 72px;
+    }
+
+    /* ── Personality ── */
+    .keyword-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .keyword-card {
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .keyword-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .keyword-desc {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.6;
+    }
+    .anti-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .anti-tag {
+      font-size: 12px;
+      color: var(--text-3);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+    .anti-tag::before { content: '✕  '; }
+
+    /* ── Logo ── */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .logo-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .logo-card.reversed { background: #1A1917; border-color: #1A1917; }
+    .logo-card-label {
+      font-size: 12px;
+      color: var(--text-2);
+      font-family: 'Menlo', 'Consolas', monospace;
+    }
+    .logo-card.reversed .logo-card-label { color: #5A5550; }
+
+    /* ── Colors ── */
+    .color-group-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin-top: 28px;
+      margin-bottom: 10px;
+    }
+    .color-group-title:first-of-type { margin-top: 0; }
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+    }
+    .color-swatch {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .color-swatch:hover { transform: translateY(-2px); }
+    .color-block { height: 60px; width: 100%; }
+    .color-info { padding: 10px 12px; background: var(--surface); }
+    .color-token {
+      font-size: 10px;
+      color: var(--text-2);
+      font-family: 'Menlo', 'Consolas', monospace;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .color-hex {
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'Menlo', 'Consolas', monospace;
+    }
+
+    /* ── Typography ── */
+    .type-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 140px;
+      align-items: baseline;
+      gap: 24px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .type-row:first-child { border-top: 1px solid var(--border); }
+    .type-token {
+      font-size: 11px;
+      color: var(--text-3);
+      font-family: 'Menlo', 'Consolas', monospace;
+    }
+    .type-spec {
+      font-size: 11px;
+      color: var(--text-3);
+      font-family: 'Menlo', 'Consolas', monospace;
+      text-align: right;
+    }
+
+    /* ── Shapes ── */
+    .shape-grid {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .shape-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .shape-block {
+      width: 72px;
+      height: 72px;
+      background: var(--action);
+    }
+    .shape-label {
+      font-size: 11px;
+      color: var(--text-2);
+      font-family: 'Menlo', 'Consolas', monospace;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── Components ── */
+    .comp-subtitle {
+      font-size: 12px;
+      color: var(--text-2);
+      margin-bottom: 14px;
+    }
+    .comp-subtitle + .comp-row { margin-bottom: 32px; }
+    .comp-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      line-height: 1;
+    }
+    .btn:hover { opacity: 0.8; }
+    .btn-primary { background: var(--action); color: var(--action-text); }
+    .btn-secondary { background: var(--surface); color: var(--text-1); border: 1px solid var(--border); }
+    .btn-ghost { background: transparent; color: var(--text-1); border: 1px solid var(--border); }
+    .btn-sm { font-size: 12px; padding: 7px 14px; border-radius: 6px; }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .badge {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      line-height: 1.6;
+    }
+    .badge-default { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+    .badge-accent { background: #C4A882; color: #1A1917; }
+
+    .card-example {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      width: 280px;
+    }
+    .card-region { font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+    .card-name { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+    .card-tags { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .card-rating-text { font-size: 13px; font-weight: 500; }
+    .card-rating-count { color: var(--text-2); font-weight: 400; }
+    .fav-btn {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .fav-btn:hover { color: var(--text-1); border-color: var(--text-2); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <svg width="28" height="28" viewBox="-40 -40 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="300" cy="100" r="94" fill="var(--text-1)"/>
+        <circle cx="300" cy="300" r="94" fill="var(--text-1)"/>
+        <path d="M0 194C0 86.85 86.85 0 194 0V194H0Z" fill="var(--text-1)"/>
+        <path d="M0 303C0 249.43 43.43 206 97 206H194V400H97C43.43 400 0 356.57 0 303Z" fill="var(--text-1)"/>
+      </svg>
+      <span class="header-title">Brand Guidelines — v1.0</span>
+    </div>
+    <button class="theme-toggle" id="themeToggle">다크 모드</button>
+  </header>
+
+  <!-- 01 Personality -->
+  <section class="section">
+    <p class="section-label">01 — Personality</p>
+    <div class="keyword-grid">
+      <div class="keyword-card">
+        <div class="keyword-name">Considered</div>
+        <div class="keyword-desc">신중하고 깊이 있다. 꼭 필요한 정보만 노출하고 충분한 여백을 확보한다.</div>
+      </div>
+      <div class="keyword-card">
+        <div class="keyword-name">Quiet Authority</div>
+        <div class="keyword-desc">전문성을 드러내지 않아도 신뢰가 간다. 간결하고 확신 있는 어조.</div>
+      </div>
+      <div class="keyword-card">
+        <div class="keyword-name">Warm Minimal</div>
+        <div class="keyword-desc">차갑지 않다. 라임스톤·원목 소재에서 오는 온기를 색과 여백으로 표현한다.</div>
+      </div>
+      <div class="keyword-card">
+        <div class="keyword-name">Honest</div>
+        <div class="keyword-desc">과장 없이 본질만. Good design is as little design as possible.</div>
+      </div>
+    </div>
+    <div class="anti-row">
+      <span class="anti-tag">Cute / Playful</span>
+      <span class="anti-tag">Corporate / Cold</span>
+      <span class="anti-tag">Loud / Flashy</span>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 02 Logo -->
+  <section class="section">
+    <p class="section-label">02 — Logo</p>
+    <div class="logo-grid">
+      <div class="logo-card">
+        <svg width="72" height="72" viewBox="-40 -40 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="300" cy="100" r="94" fill="#1A1917"/>
+          <circle cx="300" cy="300" r="94" fill="#1A1917"/>
+          <path d="M0 194C0 86.85 86.85 0 194 0V194H0Z" fill="#1A1917"/>
+          <path d="M0 303C0 249.43 43.43 206 97 206H194V400H97C43.43 400 0 356.57 0 303Z" fill="#1A1917"/>
+        </svg>
+        <span class="logo-card-label">Primary — #1A1917</span>
+      </div>
+      <div class="logo-card reversed">
+        <svg width="72" height="72" viewBox="-40 -40 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="300" cy="100" r="94" fill="#F0EDE9"/>
+          <circle cx="300" cy="300" r="94" fill="#F0EDE9"/>
+          <path d="M0 194C0 86.85 86.85 0 194 0V194H0Z" fill="#F0EDE9"/>
+          <path d="M0 303C0 249.43 43.43 206 97 206H194V400H97C43.43 400 0 356.57 0 303Z" fill="#F0EDE9"/>
+        </svg>
+        <span class="logo-card-label">Reversed — #F0EDE9</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 03 Color -->
+  <section class="section">
+    <p class="section-label">03 — Color</p>
+
+    <div class="color-group-title">Background / Surface / Border</div>
+    <div class="color-grid">
+      <div class="color-swatch" onclick="copyHex(this, '#FDFCFA')">
+        <div class="color-block" style="background:#FDFCFA; border-bottom:1px solid #EAE6DF;"></div>
+        <div class="color-info"><div class="color-token">--color-bg</div><div class="color-hex">#FDFCFA</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#FFFFFF')">
+        <div class="color-block" style="background:#FFFFFF; border-bottom:1px solid #EAE6DF;"></div>
+        <div class="color-info"><div class="color-token">--color-surface</div><div class="color-hex">#FFFFFF</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#EAE6DF')">
+        <div class="color-block" style="background:#EAE6DF;"></div>
+        <div class="color-info"><div class="color-token">--color-border</div><div class="color-hex">#EAE6DF</div></div>
+      </div>
+    </div>
+
+    <div class="color-group-title">Text</div>
+    <div class="color-grid">
+      <div class="color-swatch" onclick="copyHex(this, '#111111')">
+        <div class="color-block" style="background:#111111;"></div>
+        <div class="color-info"><div class="color-token">--text-primary</div><div class="color-hex">#111111</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#6B6560')">
+        <div class="color-block" style="background:#6B6560;"></div>
+        <div class="color-info"><div class="color-token">--text-secondary</div><div class="color-hex">#6B6560</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#B0AAA3')">
+        <div class="color-block" style="background:#B0AAA3;"></div>
+        <div class="color-info"><div class="color-token">--text-disabled</div><div class="color-hex">#B0AAA3</div></div>
+      </div>
+    </div>
+
+    <div class="color-group-title">Action / Accent</div>
+    <div class="color-grid">
+      <div class="color-swatch" onclick="copyHex(this, '#1A1917')">
+        <div class="color-block" style="background:#1A1917;"></div>
+        <div class="color-info"><div class="color-token">--color-action</div><div class="color-hex">#1A1917</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#C4A882')">
+        <div class="color-block" style="background:#C4A882;"></div>
+        <div class="color-info"><div class="color-token">--color-accent</div><div class="color-hex">#C4A882</div></div>
+      </div>
+    </div>
+
+    <div class="color-group-title">Semantic</div>
+    <div class="color-grid">
+      <div class="color-swatch" onclick="copyHex(this, '#2E7D32')">
+        <div class="color-block" style="background:#2E7D32;"></div>
+        <div class="color-info"><div class="color-token">--color-success</div><div class="color-hex">#2E7D32</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#7A4F00')">
+        <div class="color-block" style="background:#7A4F00;"></div>
+        <div class="color-info"><div class="color-token">--color-warning</div><div class="color-hex">#7A4F00</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#C62828')">
+        <div class="color-block" style="background:#C62828;"></div>
+        <div class="color-info"><div class="color-token">--color-danger</div><div class="color-hex">#C62828</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#1565C0')">
+        <div class="color-block" style="background:#1565C0;"></div>
+        <div class="color-info"><div class="color-token">--color-info</div><div class="color-hex">#1565C0</div></div>
+      </div>
+    </div>
+
+    <div class="color-group-title">Dark Mode</div>
+    <div class="color-grid">
+      <div class="color-swatch" onclick="copyHex(this, '#1A1917')">
+        <div class="color-block" style="background:#1A1917;"></div>
+        <div class="color-info"><div class="color-token">--color-bg</div><div class="color-hex">#1A1917</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#252220')">
+        <div class="color-block" style="background:#252220;"></div>
+        <div class="color-info"><div class="color-token">--color-surface</div><div class="color-hex">#252220</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#333028')">
+        <div class="color-block" style="background:#333028;"></div>
+        <div class="color-info"><div class="color-token">--color-border</div><div class="color-hex">#333028</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#F0EDE9')">
+        <div class="color-block" style="background:#F0EDE9;"></div>
+        <div class="color-info"><div class="color-token">--text-primary</div><div class="color-hex">#F0EDE9</div></div>
+      </div>
+      <div class="color-swatch" onclick="copyHex(this, '#9E9890')">
+        <div class="color-block" style="background:#9E9890;"></div>
+        <div class="color-info"><div class="color-token">--text-secondary</div><div class="color-hex">#9E9890</div></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 04 Typography -->
+  <section class="section">
+    <p class="section-label">04 — Typography · Pretendard</p>
+    <div>
+      <div class="type-row">
+        <span class="type-token">4xl</span>
+        <span style="font-size:49px; font-weight:700; line-height:1.15;">로스터리</span>
+        <span class="type-spec">49 / 700 / 1.15</span>
+      </div>
+      <div class="type-row">
+        <span class="type-token">3xl</span>
+        <span style="font-size:39px; font-weight:700; line-height:1.2;">취향의 발견</span>
+        <span class="type-spec">39 / 700 / 1.2</span>
+      </div>
+      <div class="type-row">
+        <span class="type-token">2xl</span>
+        <span style="font-size:31px; font-weight:600; line-height:1.25;">새로운 로스터리</span>
+        <span class="type-spec">31 / 600 / 1.25</span>
+      </div>
+      <div class="type-row">
+        <span class="type-token">xl</span>
+        <span style="font-size:25px; font-weight:600; line-height:1.3;">블루보틀 서울</span>
+        <span class="type-spec">25 / 600 / 1.3</span>
+      </div>
+      <div class="type-row">
+        <span class="type-token">lg</span>
+        <span style="font-size:20px; font-weight:500; line-height:1.4;">또 사고 싶은 로스터리</span>
+        <span class="type-spec">20 / 500 / 1.4</span>
+      </div>
+      <div class="type-row">
+        <span class="type-token">base</span>
+        <span style="font-size:16px; font-weight:400; line-height:1.55;">좋아하는 커피를 찾는 가장 좋은 방법</span>
+        <span class="type-spec">16 / 400 / 1.55</span>
+      </div>
+      <div class="type-row">
+        <span class="type-token">sm</span>
+        <span style="font-size:13px; font-weight:400; line-height:1.5; color:var(--text-2);">서울 · 성수동 — 평균 4.3점 (128개 평가)</span>
+        <span class="type-spec">13 / 400 / 1.5</span>
+      </div>
+      <div class="type-row">
+        <span class="type-token">xs</span>
+        <span style="font-size:10px; font-weight:400; line-height:1.4; color:var(--text-3); letter-spacing:0.06em;">DECAF AVAILABLE</span>
+        <span class="type-spec">10 / 400 / 1.4</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 05 Shape Language -->
+  <section class="section">
+    <p class="section-label">05 — Shape Language</p>
+    <div class="shape-grid">
+      <div class="shape-item">
+        <div class="shape-block" style="border-radius:0;"></div>
+        <div class="shape-label">0px<br>—</div>
+      </div>
+      <div class="shape-item">
+        <div class="shape-block" style="border-radius:6px;"></div>
+        <div class="shape-label">6px<br>btn-sm</div>
+      </div>
+      <div class="shape-item">
+        <div class="shape-block" style="border-radius:8px;"></div>
+        <div class="shape-label">8px<br>btn / input</div>
+      </div>
+      <div class="shape-item">
+        <div class="shape-block" style="border-radius:12px;"></div>
+        <div class="shape-label">12px<br>card</div>
+      </div>
+      <div class="shape-item">
+        <div class="shape-block" style="border-radius:16px;"></div>
+        <div class="shape-label">16px<br>modal</div>
+      </div>
+      <div class="shape-item">
+        <div class="shape-block" style="border-radius:999px;"></div>
+        <div class="shape-label">999px<br>badge</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 06 Components -->
+  <section class="section">
+    <p class="section-label">06 — Components</p>
+
+    <p class="comp-subtitle">Buttons</p>
+    <div class="comp-row">
+      <button class="btn btn-primary">평가하기</button>
+      <button class="btn btn-secondary">즐겨찾기 추가</button>
+      <button class="btn btn-ghost">필터 초기화</button>
+      <button class="btn btn-primary btn-sm">제출</button>
+      <button class="btn btn-secondary btn-sm">취소</button>
+      <button class="btn btn-primary" disabled>비활성</button>
+    </div>
+
+    <p class="comp-subtitle" style="margin-top:32px;">Badges</p>
+    <div class="comp-row">
+      <span class="badge badge-default">서울</span>
+      <span class="badge badge-default">LOW</span>
+      <span class="badge badge-default">에티오피아</span>
+      <span class="badge badge-accent">DECAF</span>
+    </div>
+
+    <p class="comp-subtitle" style="margin-top:32px;">Roastery Card</p>
+    <div class="comp-row">
+      <div class="card-example">
+        <div class="card-region">서울 · 성수동</div>
+        <div class="card-name">블루보틀 서울</div>
+        <div class="card-tags">
+          <span class="badge badge-default">LOW–MID</span>
+          <span class="badge badge-default">에티오피아</span>
+          <span class="badge badge-accent">DECAF</span>
+        </div>
+        <div class="card-bottom">
+          <span class="card-rating-text">★ 4.3 <span class="card-rating-count">(128)</span></span>
+          <button class="fav-btn">+ 즐겨찾기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    toggle.textContent = isDark ? '다크 모드' : '라이트 모드';
+  });
+
+  function copyHex(el, hex) {
+    navigator.clipboard.writeText(hex).catch(() => {});
+    const hexEl = el.querySelector('.color-hex');
+    const orig = hexEl.textContent;
+    hexEl.textContent = 'copied';
+    setTimeout(() => { hexEl.textContent = orig; }, 1200);
+  }
+</script>
+</body>
+</html>
