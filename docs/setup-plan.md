@@ -1,8 +1,9 @@
 # Rocommend 프로젝트 세팅 플랜
 
-**버전**: 1.2
-**작성일**: 2026-03-09
+**버전**: 1.3
+**작성일**: 2026-03-10
 **패키지 매니저**: pnpm
+**상태**: Phase 1–6 완료 / Phase 7 (Vercel 배포) 대기 중
 
 ---
 
@@ -15,8 +16,8 @@
 | 스타일 | Tailwind CSS v4 + shadcn/ui | config 파일 불필요. CSS `@theme`으로 토큰 관리 |
 | 데이터 처리 | Server Actions | 뮤테이션/폼 전담. API Route는 인증 핸들러만 유지 |
 | DB | PostgreSQL (Oracle Cloud 자체 호스팅) | Always Free VM. MVP 전용 (1 OCPU, 1GB RAM) |
-| ORM | Prisma + Prisma Accelerate | Vercel 서버리스 연결 풀링 필수 |
-| 인증 | NextAuth.js v5 (Auth.js) | Google / Kakao / Naver (모두 공식 built-in provider) |
+| ORM | Prisma **7** + @prisma/adapter-pg | v7부터 adapter 필수. Accelerate는 프로덕션 배포 시 설정 |
+| 인증 | NextAuth.js v5 (next-auth@beta) | Google / Kakao / Naver (모두 공식 built-in provider) |
 | 패키지 매니저 | pnpm | 모노레포 전환 시 가장 수월 |
 | 호스팅 | Vercel | |
 
@@ -24,14 +25,23 @@
 
 ## Step 1 — Next.js 초기화
 
+> ⚠️ **기존 파일이 있는 디렉토리**에서는 직접 실행 불가. 임시 폴더에 생성 후 파일을 이동한다.
+
 ```bash
-pnpm dlx create-next-app@latest . \
+# 임시 폴더에 생성
+pnpm dlx create-next-app@latest /tmp/rocommend-init \
   --typescript \
   --tailwind \
   --app \
   --src-dir \
   --import-alias "@/*" \
-  --use-pnpm
+  --use-pnpm \
+  --yes
+
+# .git, node_modules 제외하고 프로젝트 루트로 복사
+rsync -av --exclude='.git' --exclude='node_modules' /tmp/rocommend-init/ .
+
+pnpm install
 ```
 
 > Tailwind v4부터 `tailwind.config.ts`는 필수가 아니다. 생성된 경우 삭제하고 `globals.css`에서 모든 토큰을 관리한다.
@@ -298,18 +308,26 @@ pnpm dlx shadcn@latest add button card input badge dialog alert dropdown-menu to
 ```bash
 brew install postgresql@16
 brew services start postgresql@16
+
+# PATH 추가 (brew가 자동으로 추가하지 않을 경우)
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+
 createdb rocommend
 createdb rocommend_test
 ```
 
 `.env.local`:
 ```
-DATABASE_URL=postgresql://localhost:5432/rocommend
+# [username]은 macOS 계정명 (whoami 로 확인)
+DATABASE_URL=postgresql://[username]@localhost:5432/rocommend
+AUTH_SECRET=<openssl rand -base64 32>
+AUTH_URL=http://localhost:3000
 ```
 
 `.env.test`:
 ```
-DATABASE_URL=postgresql://localhost:5432/rocommend_test
+DATABASE_URL=postgresql://[username]@localhost:5432/rocommend_test
+TEST_SESSION_TOKEN=<openssl rand -base64 32>
 ```
 
 개발 중에는 로컬 DB만 사용한다. Oracle Cloud는 건드리지 않는다.
@@ -341,19 +359,52 @@ DATABASE_URL=postgresql://rocommend_user:your_password@oracle-host:5432/rocommen
 > database 세션 전략은 모든 요청에서 Sessions 테이블을 조회하므로 연결 수 제한에 즉시 걸린다.
 > Prisma Accelerate가 연결 풀링을 처리하므로 프로덕션 배포 전 반드시 설정한다.
 
-### 5-3. Prisma 설치
+### 5-3. Prisma 7 설치
+
+> **Prisma 7 변경사항**: `schema.prisma`에서 `url` 제거. 연결 설정은 `prisma.config.ts`로 이동. PrismaClient는 반드시 드라이버 adapter와 함께 초기화해야 한다.
 
 ```bash
-pnpm add prisma @prisma/client
-pnpm dlx prisma init
+pnpm add prisma @prisma/client @prisma/adapter-pg pg
+pnpm add -D @types/pg dotenv
+
+# Prisma 엔진 빌드 (pnpm v10 보안 정책으로 기본 차단됨)
+pnpm rebuild prisma @prisma/engines
 ```
+
+`pnpm-workspace.yaml`에 빌드 허용 목록 추가:
+```yaml
+onlyBuiltDependencies:
+  - '@prisma/engines'
+  - prisma
+```
+
+`prisma.config.ts` (루트에 생성):
+```ts
+import dotenv from 'dotenv'
+import { defineConfig, env } from 'prisma/config'
+
+dotenv.config({ path: '.env.local' })
+
+export default defineConfig({
+  schema: 'prisma/schema.prisma',
+  migrations: {
+    path: 'prisma/migrations',
+    seed: 'tsx prisma/seed.ts',
+  },
+  datasource: {
+    url: env('DATABASE_URL'),
+  },
+})
+```
+
+> `dotenv.config({ path: '.env.local' })`: Prisma CLI는 Next.js의 `.env.local`을 자동으로 읽지 않으므로 명시적으로 로드한다.
 
 ### 5-4. schema.prisma (PRD 기반)
 
 ```prisma
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // url은 prisma.config.ts에서 관리 — 여기서는 선언하지 않음
 }
 
 generator client {
@@ -480,6 +531,9 @@ enum PriceRange {
 ### 5-5. 마이그레이션
 
 ```bash
+# Prisma client 생성 (최초 1회 또는 schema 변경 시)
+pnpm dlx prisma generate
+
 pnpm dlx prisma migrate dev --name init
 # 롤백 필요 시: pnpm dlx prisma migrate resolve --rolled-back init
 ```
@@ -492,18 +546,25 @@ pnpm add -D tsx
 
 `prisma/seed.ts`:
 ```ts
-import { PrismaClient, PriceRange } from '@prisma/client'
+import dotenv from 'dotenv'
+dotenv.config({ path: '.env.local' })
 
-const prisma = new PrismaClient()
+import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { Pool } from 'pg'
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   await prisma.roastery.createMany({
     data: [
-      { name: '블루보틀 서울', regions: ['서울'], priceRange: PriceRange.HIGH, decaf: false },
-      { name: '프릳츠', regions: ['서울'], priceRange: PriceRange.MID, decaf: true },
-      { name: '테라로사', regions: ['서울', '강릉'], priceRange: PriceRange.MID, decaf: false },
-      { name: '커피리브레', regions: ['서울'], priceRange: PriceRange.MID, decaf: false },
-      { name: '앤트러사이트', regions: ['서울', '제주'], priceRange: PriceRange.MID, decaf: false },
+      { name: '블루보틀 서울', regions: ['서울'], priceRange: 'HIGH', decaf: false },
+      { name: '프릳츠', regions: ['서울'], priceRange: 'MID', decaf: true },
+      { name: '테라로사', regions: ['서울', '강릉'], priceRange: 'MID', decaf: false },
+      { name: '커피리브레', regions: ['서울'], priceRange: 'MID', decaf: false },
+      { name: '앤트러사이트', regions: ['서울', '제주'], priceRange: 'MID', decaf: false },
     ],
     skipDuplicates: true,
   })
@@ -511,17 +572,10 @@ async function main() {
 
 main()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(async () => { await pool.end() })
 ```
 
-`package.json`에 추가:
-```json
-{
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  }
-}
-```
+> seed 커맨드는 `package.json`이 아닌 `prisma.config.ts`의 `migrations.seed`에 설정한다 (Prisma 7 변경사항).
 
 ```bash
 pnpm dlx prisma db seed
@@ -532,26 +586,51 @@ pnpm dlx prisma db seed
 ## Step 6 — NextAuth.js v5
 
 ```bash
-pnpm add next-auth @auth/prisma-adapter
+# v5는 npm에서 @beta 태그로 배포됨
+pnpm add next-auth@beta @auth/prisma-adapter
 ```
 
 > Kakao, Naver 모두 Auth.js 공식 built-in provider로 존재한다. 커스텀 구현 불필요.
 
-### src/lib/auth.ts
+### src/lib/auth.config.ts — Edge Runtime 호환 설정
+
+미들웨어는 Next.js Edge Runtime에서 실행된다. `pg` 라이브러리가 Node.js `crypto` 모듈을 사용하므로 Edge에서 import 불가. 미들웨어 전용으로 Prisma adapter 없는 경량 설정을 분리한다.
 
 ```ts
-import NextAuth from 'next-auth'
+import type { NextAuthConfig } from 'next-auth'
 import Google from 'next-auth/providers/google'
 import Kakao from 'next-auth/providers/kakao'
 import Naver from 'next-auth/providers/naver'
+
+// Edge Runtime 호환 설정 (Prisma adapter 없음)
+export const authConfig: NextAuthConfig = {
+  providers: [Google, Kakao, Naver],
+  pages: { signIn: '/login' },
+  callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user
+      const isAuthPage = nextUrl.pathname.startsWith('/login')
+      const isApiAuth = nextUrl.pathname.startsWith('/api/auth')
+      if (isApiAuth) return true
+      if (isAuthPage) return true
+      return isLoggedIn
+    },
+  },
+}
+```
+
+### src/lib/auth.ts — 전체 설정 (Node.js 전용)
+
+```ts
+import NextAuth from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
+import { authConfig } from '@/lib/auth.config'
 
-// Auth.js v5는 AUTH_GOOGLE_ID, AUTH_KAKAO_ID, AUTH_NAVER_ID 환경변수를 자동 인식
-// → clientId / clientSecret 명시 불필요
+// Node.js 전용 (Server Components, API Routes, Server Actions)
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
-  providers: [Google, Kakao, Naver],
   session: {
     strategy: 'database',
     maxAge: 60 * 60 * 24 * 90, // 90일
@@ -566,36 +645,37 @@ import { handlers } from '@/lib/auth'
 export const { GET, POST } = handlers
 ```
 
-### src/lib/prisma.ts
+### src/lib/prisma.ts — Prisma 7 adapter 싱글톤
 
 ```ts
+import '@/lib/env'
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { Pool } from 'pg'
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
 
-export const prisma = globalForPrisma.prisma || new PrismaClient()
+function createPrismaClient() {
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+  const adapter = new PrismaPg(pool)
+  return new PrismaClient({ adapter })
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ```
 
-### src/middleware.ts
-
-보호된 라우트에 비로그인 접근 시 로그인 페이지로 리다이렉트한다.
+### src/middleware.ts — Edge Runtime 호환
 
 ```ts
-import { auth } from '@/lib/auth'
-import { NextResponse } from 'next/server'
+import NextAuth from 'next-auth'
+import { authConfig } from '@/lib/auth.config'
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth
-  const isAuthPage = req.nextUrl.pathname.startsWith('/login')
-  const isApiAuth = req.nextUrl.pathname.startsWith('/api/auth')
-
-  if (isApiAuth) return NextResponse.next()
-  if (!isLoggedIn && !isAuthPage) {
-    return NextResponse.redirect(new URL('/login', req.url))
-  }
-})
+// Edge Runtime 호환 — authConfig만 사용 (Prisma adapter 없음)
+export default NextAuth(authConfig).auth
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|logo.svg).*)'],
@@ -669,15 +749,22 @@ import '@/lib/env'
 
 ## Step 8 — ESLint + Prettier
 
+> Next.js 16은 flat config(`eslint.config.mjs`)를 사용한다. `.eslintrc.json` 방식이 아님.
+
 ```bash
-pnpm add -D eslint eslint-config-next prettier eslint-config-prettier
+pnpm add -D prettier eslint-config-prettier
 ```
 
-`.eslintrc.json`:
-```json
-{
-  "extends": ["next/core-web-vitals", "prettier"]
-}
+`eslint.config.mjs`에 prettier 추가:
+```js
+import prettier from "eslint-config-prettier"
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  prettier,           // ← 추가
+  globalIgnores([...]),
+])
 ```
 
 `.prettierrc`:
@@ -691,21 +778,76 @@ pnpm add -D eslint eslint-config-next prettier eslint-config-prettier
 }
 ```
 
+`package.json` scripts:
+```json
+{
+  "lint": "eslint src/",
+  "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+  "format:check": "prettier --check \"src/**/*.{ts,tsx}\""
+}
+```
+
 ---
 
 ## Step 9 — Vercel 연결
+
+> ⚠️ **사전 준비 항목** — 아래가 모두 준비된 후 진행한다.
+
+### 사전 준비
+
+#### 1. OAuth 앱 등록
+
+| Provider | 등록 위치 | 콜백 URL |
+|----------|----------|---------|
+| Google | [Google Cloud Console](https://console.cloud.google.com) → API 및 서비스 → 사용자 인증 정보 → OAuth 2.0 클라이언트 ID | `https://[your-domain]/api/auth/callback/google` |
+| Kakao | [Kakao Developers](https://developers.kakao.com) → 내 애플리케이션 → 앱 설정 → 플랫폼 | `https://[your-domain]/api/auth/callback/kakao` |
+| Naver | [Naver Developers](https://developers.naver.com) → Application → 애플리케이션 등록 | `https://[your-domain]/api/auth/callback/naver` |
+
+> 개발 환경 콜백 URL (`http://localhost:3000/...`)도 각 콘솔에 추가해야 로컬 테스트가 가능하다.
+
+#### 2. Oracle Cloud 프로덕션 DB 세팅
+
+Oracle Cloud Free Tier Always Free VM (1 OCPU, 1GB RAM). **배포 시점에 진행**.
+
+```sql
+CREATE DATABASE rocommend;
+CREATE USER rocommend_user WITH ENCRYPTED PASSWORD 'your_password';
+GRANT CONNECT ON DATABASE rocommend TO rocommend_user;
+\c rocommend
+GRANT USAGE ON SCHEMA public TO rocommend_user;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO rocommend_user;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO rocommend_user;
+```
+
+#### 3. Prisma Accelerate 설정
+
+Vercel 서버리스는 요청마다 새 DB 연결을 생성한다. Prisma Accelerate가 연결 풀링을 처리한다.
+
+1. [Prisma Data Platform](https://console.prisma.io) → New project → Accelerate 활성화
+2. Oracle Cloud DB URL 입력 → connection string 발급
+3. 발급된 `prisma://` URL을 Vercel 환경변수 `DATABASE_URL`에 등록
+
+### Vercel 프로젝트 연결
 
 ```bash
 pnpm add -g vercel
 vercel link
 ```
 
-**Vercel 환경 변수 등록 시 주의사항:**
-- `DATABASE_URL`: Prisma Accelerate connection string 사용 (Oracle Cloud 직접 연결 X)
-- `NEXTAUTH_URL`: 실제 도메인 (`https://rocommend.vercel.app`)
-- `TEST_SESSION_TOKEN`: **절대 프로덕션 환경에 설정하지 않는다**
+**Vercel 환경 변수 등록:**
 
-> Oracle Cloud DB를 Vercel에서 직접 연결 시 Vercel 아웃바운드 IP 대역을 Oracle Cloud 방화벽에 허용해야 한다. Prisma Accelerate를 사용하면 이 과정이 불필요하다.
+| 변수 | 값 | 주의 |
+|------|-----|------|
+| `DATABASE_URL` | Prisma Accelerate connection string | Oracle Cloud 직접 연결 X |
+| `AUTH_SECRET` | `openssl rand -base64 32` 생성값 | |
+| `AUTH_URL` | `https://[your-domain]` | |
+| `AUTH_GOOGLE_ID` | Google OAuth Client ID | |
+| `AUTH_GOOGLE_SECRET` | Google OAuth Client Secret | |
+| `AUTH_KAKAO_ID` | Kakao REST API 키 | |
+| `AUTH_KAKAO_SECRET` | Kakao Client Secret | |
+| `AUTH_NAVER_ID` | Naver Client ID | |
+| `AUTH_NAVER_SECRET` | Naver Client Secret | |
+| `TEST_SESSION_TOKEN` | — | **절대 Production에 설정 금지** |
 
 ---
 
@@ -722,7 +864,8 @@ vercel link
 ```bash
 pnpm add -D vitest @vitejs/plugin-react @testing-library/react @testing-library/dom
 pnpm add -D @playwright/test
-pnpm dlx playwright install
+# Playwright 브라우저 설치 (네트워크 상태에 따라 재시도 필요)
+pnpm exec playwright install chromium
 ```
 
 ### vitest.config.ts — 환경 분리
@@ -730,17 +873,19 @@ pnpm dlx playwright install
 서버 코드(Server Actions, lib)는 `node` 환경, 컴포넌트는 `jsdom` 환경으로 분리한다.
 Vitest 공식 방법은 `projects` 배열로 각 환경을 독립 프로젝트로 선언하는 것이다.
 
+> ⚠️ **Vitest v4 변경사항**: `loadEnv`가 `vitest/config`에서 제거됨. `.env.test`는 Vitest가 자동 로드하므로 별도 설정 불필요.
+
 ```ts
-import { defineConfig, loadEnv } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   plugins: [react()],
   test: {
-    // .env.test 로드 (Vitest 공식 권장 방법)
-    env: loadEnv('test', process.cwd(), ''),
+    // Vitest는 기본적으로 .env.test를 자동 로드
     setupFiles: ['./src/tests/setup.ts'],
+    passWithNoTests: true,
     projects: [
       {
         // 서버 로직 — node 환경
@@ -1108,21 +1253,60 @@ app/api/test/session/route.ts        ← E2E 테스트 전용 (TEST_SESSION_TOKE
 ## 실행 순서 요약
 
 ```
-[1]  Next.js 16 초기화 (create-next-app)
-[2]  폴더 구조 정리 + middleware.ts 생성
-[3]  globals.css — :root 토큰 + @theme inline 등록
-[4]  shadcn/ui init + 기본 컴포넌트 설치
-[5]  로컬 PostgreSQL 설치 및 DB 생성 (brew)
-     - rocommend (개발용)
-     - rocommend_test (테스트용)
-[6]  Prisma 설치 + schema.prisma 작성 (인덱스 포함)
-[7]  .env.local / .env.test 세팅
-[8]  prisma migrate dev --name init
-[9]  prisma db seed
-[10] NextAuth 설치 + 기본 설정 (Google 먼저)
-[11] src/lib/env.ts 환경변수 검증 추가
-[12] Vitest + Playwright 설치 및 설정
-[13] .env.example 작성
-[14] ESLint + Prettier 설정
-[15] Vercel 연결 + 환경 변수 등록 (Prisma Accelerate 포함)
+── Phase 1: 프로젝트 초기화 ──────────────────────────
+[1]  Next.js 16 초기화 (임시 폴더 → rsync)
+[2]  폴더 구조 정리 + middleware.ts 플레이스홀더 생성
+     커밋: chore: initialize Next.js 16 with app router
+
+── Phase 2: 디자인 토큰 ──────────────────────────────
+[3]  globals.css — @custom-variant dark + :root + @theme inline
+     pretendard @import 방식 (next/font/local 불필요)
+[4]  shadcn/ui init (-d 플래그) + MVP 컴포넌트 설치
+     shadcn이 globals.css 수정 후 검토 필요:
+       - --font-sans: var(--font-sans) → 'Pretendard', ... 으로 수정
+       - .dark {} → [data-theme="dark"] {} 로 변경
+     커밋: chore: add design tokens and shadcn/ui
+
+── Phase 3: 데이터베이스 ─────────────────────────────
+[5]  로컬 PostgreSQL 설치 (brew) + DB 2개 생성
+[6]  Prisma 7 설치: prisma @prisma/client @prisma/adapter-pg pg
+     pnpm-workspace.yaml에 onlyBuiltDependencies 추가
+     pnpm rebuild prisma @prisma/engines
+     prisma.config.ts 생성 (dotenv .env.local 로드)
+     schema.prisma 작성 (datasource에 url 없음)
+[7]  .env.local / .env.test 세팅 (username@localhost 형식)
+     .env.example 작성 + .gitignore에 !.env.example 추가
+[8]  prisma generate + prisma migrate dev --name init
+[9]  prisma db seed (seed 커맨드는 prisma.config.ts에 설정)
+     커밋: chore: add PostgreSQL schema and seed data
+
+── Phase 4: 인증 ─────────────────────────────────────
+[10] next-auth@beta @auth/prisma-adapter 설치
+     auth.config.ts (Edge 호환, adapter 없음)
+     auth.ts (PrismaAdapter 포함)
+     middleware.ts: NextAuth(authConfig).auth export default
+     /api/auth/[...nextauth]/route.ts
+[11] src/lib/env.ts + prisma.ts에 import 추가
+     커밋: chore: add NextAuth.js v5 with Google/Kakao/Naver
+
+── Phase 5: 코드 품질 ────────────────────────────────
+[12] prettier eslint-config-prettier 설치
+     eslint.config.mjs에 prettier 추가
+     .prettierrc 생성
+     커밋: chore: add ESLint and Prettier config
+
+── Phase 6: 테스트 ───────────────────────────────────
+[13] vitest @vitejs/plugin-react @testing-library/* 설치
+     vitest.config.ts (projects 배열, passWithNoTests: true)
+     Vitest v4: loadEnv 제거, .env.test 자동 로드
+[14] @playwright/test 설치
+     playwright install chromium (네트워크 불안정 시 재시도)
+     playwright.config.ts + /api/test/session 엔드포인트
+     커밋: chore: add Vitest and Playwright test setup
+
+── Phase 7: 배포 (사전 준비 필요) ──────────────────
+[15] OAuth 앱 등록 (Google / Kakao / Naver)
+     Oracle Cloud DB + Prisma Accelerate 설정
+     Vercel 연결 + 환경 변수 등록
+     커밋: chore: connect Vercel and configure deployment
 ```
