@@ -1,0 +1,123 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         String      @id @default(cuid())
+  email      String?     @unique
+  name       String?
+  image      String?
+  createdAt  DateTime    @default(now())
+  accounts   Account[]
+  sessions   Session[]
+  onboarding Onboarding?
+  ratings    Rating[]
+  bookmarks  Bookmark[]
+}
+
+model Onboarding {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  q1          String[] // 구매 채널 (복수)
+  q2          String   // 가격대
+  q3          String[] // 선호 노트 (복수)
+  q4          String   // 경험 수준
+  q5          String[] // 좋아하는 로스터리 ID (최소 3개, 상한 없음)
+  completedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Roastery {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  regions     String[]   // 복수 지역 저장
+  priceRange  PriceRange
+  decaf       Boolean    @default(false)
+  imageUrl    String?
+  website     String?
+  createdAt   DateTime   @default(now())
+  ratings     Rating[]
+  bookmarks   Bookmark[]
+}
+
+model Rating {
+  id         String   @id @default(cuid())
+  userId     String
+  roasteryId String
+  score      Int      @db.SmallInt // 1–5. 애플리케이션 레이어에서도 검증 필요
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roastery   Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roasteryId])
+  @@index([userId])     // "내 평가 목록" 조회
+  @@index([roasteryId]) // "이 로스터리의 평가" 조회 + CF 계산
+}
+
+model Bookmark {
+  id         String   @id @default(cuid())
+  userId     String
+  roasteryId String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roastery   Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roasteryId])
+  @@index([userId])
+  @@index([roasteryId])
+}
+
+// ── NextAuth 필수 모델 ──────────────────────────────
+
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String  // "google" | "kakao" | "naver"
+  providerAccountId        String
+  refresh_token            String?
+  access_token             String?
+  expires_at               Int?
+  refresh_token_expires_at Int?    // Kakao/Naver refresh token 만료 추적용
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+// NextAuth database 세션 전략 필수 모델.
+// 세션 강제 만료(로그아웃, 계정 정지)가 필요해 database 전략 유지.
+// Vercel 서버리스에서 연결 수 초과 방지를 위해 Prisma Accelerate 필수.
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime // 90일 후 만료
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum PriceRange {
+  LOW  // 200g 기준 20,000원 미만
+  MID  // 20,000–35,000원
+  HIGH // 35,000원 초과
+}
