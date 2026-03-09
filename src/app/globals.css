@@ -85,8 +85,8 @@
   --color-info:           var(--color-info);
 
   /* 타이포그래피 */
-  /* Pretendard는 next/font/local로 로드 → layout.tsx에서 --font-pretendard 변수 주입 */
-  --font-sans:             var(--font-sans);
+  /* globals.css에서 @import로 Pretendard 로드 */
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* font-size / line-height / font-weight 세트 (brand-guidelines.md 기준) */
   --text-4xl: 49px;
@@ -183,7 +183,8 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.dark {
+/* shadcn 다크 토큰 — data-theme="dark" 방식으로 통일 */
+[data-theme="dark"] {
   --background:             oklch(0.145 0 0);
   --foreground:             oklch(0.985 0 0);
   --card:             oklch(0.205 0 0);
