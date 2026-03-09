@@ -4,7 +4,7 @@ import Kakao from 'next-auth/providers/kakao'
 import Naver from 'next-auth/providers/naver'
 
 // Edge Runtime 호환 설정 (Prisma adapter 없음)
-// middleware.ts에서 import — Node.js 모듈 사용 불가
+// proxy.ts에서 import — Node.js 모듈 사용 불가
 export const authConfig: NextAuthConfig = {
   providers: [Google, Kakao, Naver],
   pages: {
