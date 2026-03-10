@@ -4,8 +4,13 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { onboardingSchema } from '@/lib/schemas/onboarding'
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
+import { encode, decode } from 'next-auth/jwt'
 import type { OnboardingAnswers } from '@/types/onboarding'
 import type { ActionResult } from '@/types/action'
+
+const COOKIE_NAME = 'authjs.session-token'
+const JWT_SALT = 'authjs.session-token'
 
 export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionResult> {
   const session = await auth()
@@ -65,6 +70,32 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
     })
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다. 다시 시도해주세요.', code: 'DB_ERROR' }
+  }
+
+  // JWT 쿠키를 서버 액션에서 직접 갱신 — onboardingVersion=3 즉시 반영
+  // client의 useSession().update() + router.push 경로는 타이밍 문제 발생 가능
+  try {
+    const cookieStore = await cookies()
+    const raw = cookieStore.get(COOKIE_NAME)?.value
+    if (raw) {
+      const existing = await decode({ secret: process.env.AUTH_SECRET!, token: raw, salt: JWT_SALT })
+      if (existing) {
+        const newToken = await encode({
+          secret: process.env.AUTH_SECRET!,
+          token: { ...existing, onboardingVersion: 3 },
+          salt: JWT_SALT,
+        })
+        const maxAge = 60 * 60 * 24 * 90
+        cookieStore.set(COOKIE_NAME, newToken, {
+          httpOnly: true,
+          path: '/',
+          sameSite: 'lax',
+          maxAge,
+        })
+      }
+    }
+  } catch {
+    // JWT 갱신 실패 시 클라이언트의 update() 호출로 폴백
   }
 
   // 이벤트 로그는 non-critical — 실패해도 온보딩 결과에 영향 없음

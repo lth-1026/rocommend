@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { ProgressBar } from './ProgressBar'
 import { Q1BrewingMethod } from './steps/Q1BrewingMethod'
@@ -32,9 +30,6 @@ interface OnboardingWizardProps {
 }
 
 export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
-  const router = useRouter()
-  const { update } = useSession()
-
   const [step, setStep] = useState<Step>('Q1')
   const [q1, setQ1] = useState<BrewingMethod[]>([])
   const [q2, setQ2] = useState<PurchaseStyle | null>(null)
@@ -55,8 +50,9 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
       setIsLoading(false)
       return
     }
-    await update()
-    router.push('/home')
+    // 서버 액션이 JWT 쿠키를 직접 갱신했으므로 update() 불필요
+    // full navigation으로 미들웨어가 최신 JWT(onboardingVersion=3)를 확실히 읽도록 보장
+    window.location.href = '/home'
   }
 
   if (step === 'Q1') {
