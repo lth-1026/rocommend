@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 type Theme = 'light' | 'dark'
 
@@ -12,11 +12,19 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // SSR 안전: 서버에서는 'light', 클라이언트에서는 localStorage 값으로 초기화
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'light'
-    return (localStorage.getItem('theme') as Theme) ?? 'light'
-  })
+  // 항상 'light'로 초기화 — FOUC는 layout.tsx 인라인 스크립트가 처리
+  // hydration mismatch 방지 (서버/클라이언트 초기값 통일)
+  const [theme, setTheme] = useState<Theme>('light')
+
+  // 마운트 후 localStorage와 DOM 동기화 (toggle 없이 페이지 이동 시에도 테마 유지)
+  useEffect(() => {
+    const stored = localStorage.getItem('theme') as Theme | null
+    if (stored && stored !== theme) {
+      setTheme(stored)
+    }
+  // theme을 의존성에 포함하면 무한루프 — 마운트 시 1회만 실행
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const toggleTheme = () => {
     const next: Theme = theme === 'light' ? 'dark' : 'light'

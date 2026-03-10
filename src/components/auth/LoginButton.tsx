@@ -35,7 +35,7 @@ export function LoginButton({ provider }: { provider: Provider }) {
     <form
       action={async () => {
         'use server'
-        await signIn(provider, { redirectTo: '/home' })
+        await signIn(provider, { redirectTo: '/' })
       }}
     >
       <button
