@@ -37,6 +37,7 @@
 | 대표 지역 | `regions[]` 배열 첫 번째 요소 = 대표 지역 (flag 없음) |
 | 상태 관리 | 외부 라이브러리 없음 — `useState`, URL searchParams, `useOptimistic` |
 | 프로필 페이지 | V1 포함 (`feat/user-profile`) |
+| 네비게이션 | 모바일(`< lg`): 하단 고정 탭 바 / 데스크탑(`lg+`): 상단 Header |
 
 > **Suspense**: 모든 비동기 데이터 페칭에 `loading.tsx` 또는 `<Suspense fallback={<Skeleton />}>` 필수.
 
@@ -156,9 +157,11 @@ model EventLog {
 
 ### 공통 레이아웃
 - [ ] `src/components/layout/SessionProvider.tsx` — NextAuth SessionProvider 래퍼 (`'use client'`)
-- [ ] `src/components/layout/Header.tsx` — 로고, 목록, 즐겨찾기, 사용자 메뉴/로그아웃
-- [ ] `src/app/(auth)/layout.tsx` — 비로그인·온보딩미완료 전용 레이아웃 (Header 없음, 심플)
-- [ ] `src/app/(main)/layout.tsx` — AUTH-COMPLETE 전용. Header + 모바일 하단 탭 포함
+- [ ] `src/components/layout/Navigation.tsx` — breakpoint 분기 (lg 미만 → BottomTab, lg 이상 → Header)
+- [ ] `src/components/layout/Header.tsx` — 데스크탑 상단: 로고 + [홈, 로스터리, 즐겨찾기] + 아바타 드롭다운(프로필/로그아웃)
+- [ ] `src/components/layout/BottomTab.tsx` — 모바일 하단 고정: [홈, 로스터리, 즐겨찾기, 프로필] 탭
+- [ ] `src/app/(auth)/layout.tsx` — 비로그인·온보딩미완료 전용 (Navigation 없음, 심플)
+- [ ] `src/app/(main)/layout.tsx` — AUTH-COMPLETE 전용. `<Navigation />` 포함
 
 ### 페이지
 - [ ] `src/app/page.tsx` — 루트 → `/login` 리디렉션
