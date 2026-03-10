@@ -14,7 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 60 * 60 * 24 * 90, // 90일
   },
   callbacks: {
-    ...authConfig.callbacks,
+    session: authConfig.callbacks!.session,
     async jwt({ token, user, trigger }) {
       // 최초 로그인: user 객체 존재 — DB에서 onboardingVersion 조회
       if (user) {

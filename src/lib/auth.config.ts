@@ -31,12 +31,14 @@ export const authConfig: NextAuthConfig = {
 
       // 공개 경로는 항상 통과
       if (isPublicPath(pathname)) {
-        // AUTH-COMPLETE 유저가 /login 접근 시 /home으로 리디렉션
         if (pathname.startsWith('/login') && isLoggedIn) {
-              const onboardingVersion = auth.user.onboardingVersion ?? null
+          const onboardingVersion = auth.user.onboardingVersion ?? null
+          // AUTH-COMPLETE → /home
           if (onboardingVersion !== null) {
             return Response.redirect(new URL('/home', nextUrl))
           }
+          // AUTH-INCOMPLETE → /onboarding
+          return Response.redirect(new URL('/onboarding', nextUrl))
         }
         return true
       }
