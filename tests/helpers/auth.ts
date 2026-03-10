@@ -6,7 +6,7 @@ const TEST_TOKEN = process.env.TEST_SESSION_TOKEN ?? ''
 interface CreateSessionOptions {
   email?: string
   name?: string
-  onboardingVersion?: number | null
+  complete?: boolean
 }
 
 /**
@@ -19,7 +19,7 @@ export async function createTestSession(page: Page, options: CreateSessionOption
     data: {
       email: options.email ?? 'test@rocommend.dev',
       name: options.name ?? '테스트 유저',
-      onboardingVersion: options.onboardingVersion,
+      complete: options.complete ?? false,
     },
   })
 
@@ -30,12 +30,12 @@ export async function createTestSession(page: Page, options: CreateSessionOption
   return res.json() as Promise<{ ok: boolean; userId: string }>
 }
 
-/** AUTH-INCOMPLETE 상태로 로그인 */
+/** 온보딩 미완료 상태로 로그인 */
 export async function loginIncomplete(page: Page, email = 'incomplete@rocommend.dev') {
-  return createTestSession(page, { email, onboardingVersion: null })
+  return createTestSession(page, { email, complete: false })
 }
 
-/** AUTH-COMPLETE 상태로 로그인 */
+/** 온보딩 완료 상태로 로그인 */
 export async function loginComplete(page: Page, email = 'complete@rocommend.dev') {
-  return createTestSession(page, { email, onboardingVersion: 3 })
+  return createTestSession(page, { email, complete: true })
 }
