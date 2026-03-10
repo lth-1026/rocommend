@@ -26,6 +26,6 @@ pnpm prisma db seed        # 시드 재실행
 - `src/middleware.ts` 생성 금지 → Next.js 16은 `src/proxy.ts`
 
 ## 커밋
-- prefix: `feat` / `fix` / `chore` / `docs`
+- prefix: `feat` / `fix` / `chore` / `docs` / `style` / `refactor` / `test` / `perf` / `ci` / `build` / `revert`
 - 본문: 한국어, `-` 목록
 - Co-Authored-By 포함
