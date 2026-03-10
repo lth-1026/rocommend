@@ -27,10 +27,17 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
       await tx.onboarding.upsert({
         where: { userId },
         create: { userId, version: 3, q1, q2, q3: storedQ3, q4, q5: q5 ?? [] },
-        update: { version: 3, q1, q2, q3: storedQ3, q4, q5: q5 ?? [], updatedAt: new Date() },
+        update: { version: 3, q1, q2, q3: storedQ3, q4, q5: q5 ?? [] },
       })
 
       if (q4 !== 'FIRST_TIME' && q5 && q5.length > 0) {
+        const validCount = await tx.roastery.count({
+          where: { id: { in: q5 }, isOnboardingCandidate: true },
+        })
+        if (validCount !== q5.length) {
+          throw new Error('invalid_roastery')
+        }
+
         await Promise.all(
           q5.map((roasteryId) =>
             tx.rating.upsert({
@@ -56,14 +63,19 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
         },
       })
     })
-
-    await prisma.eventLog.create({
-      data: { userId, event: 'onboarding_completed', payload: { q4, q5Count: q5?.length ?? 0 } },
-    })
-
-    revalidatePath('/home')
-    return { success: true }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다. 다시 시도해주세요.', code: 'DB_ERROR' }
   }
+
+  // 이벤트 로그는 non-critical — 실패해도 온보딩 결과에 영향 없음
+  try {
+    await prisma.eventLog.create({
+      data: { userId, event: 'onboarding_completed', payload: { q4, q5Count: q5?.length ?? 0 } },
+    })
+  } catch {
+    // 로깅 실패 무시
+  }
+
+  revalidatePath('/home')
+  return { success: true }
 }

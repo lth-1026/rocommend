@@ -109,6 +109,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
           onSubmitEarly={() => {
             handleSubmit({ q1, q2: q2!, q3, q4: 'FIRST_TIME' })
           }}
+          isLoading={isLoading}
         />
       </div>
     )
