@@ -25,6 +25,14 @@ pnpm prisma db seed        # 시드 재실행
 - Server Component에 불필요한 `'use client'` 추가 금지
 - `src/middleware.ts` 생성 금지 → Next.js 16은 `src/proxy.ts`
 
+## 브랜치 전략 (Git Flow)
+- `main` — 프로덕션. 직접 커밋 금지
+- `develop` — 통합 브랜치. 직접 커밋 금지
+- `feat/{kebab-case}` — 기능 개발 → develop으로 PR (Squash merge)
+- `fix/{kebab-case}` — 버그 수정 → develop으로 PR (Squash merge)
+- `release/{version}` — 배포 준비 → main + develop으로 PR (Merge commit)
+- `hotfix/{kebab-case}` — 프로덕션 긴급 수정 → main + develop으로 PR (Merge commit)
+
 ## 커밋
 - prefix: `feat` / `fix` / `chore` / `docs` / `style` / `refactor` / `test` / `perf` / `ci` / `build` / `revert`
 - 본문: 한국어, `-` 목록
