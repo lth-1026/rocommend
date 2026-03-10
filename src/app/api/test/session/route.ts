@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 // E2E 테스트 전용 OAuth 우회 세션 생성 API
 // NODE_ENV=test + TEST_SESSION_TOKEN 헤더 일치 시에만 활성화
 export async function POST(req: Request) {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV !== 'test') {
     return NextResponse.json({ error: 'Not Found' }, { status: 404 })
   }
 
