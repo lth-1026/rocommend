@@ -24,10 +24,15 @@ export default defineConfig({
       },
       {
         // 컴포넌트 — jsdom 환경
+        plugins: [react()],
         test: {
           name: 'components',
           include: ['src/components/**/*.test.tsx'],
           environment: 'jsdom',
+          setupFiles: ['./src/tests/setup.ts'],
+        },
+        resolve: {
+          alias: { '@': path.resolve(__dirname, './src') },
         },
       },
     ],

@@ -9,6 +9,7 @@ generator client {
 model User {
   id              String           @id @default(cuid())
   email           String?          @unique
+  emailVerified   DateTime?
   name            String?
   image           String?
   preferences     Json?            // { onboardingVersion: number, inferredProfile: object }
@@ -139,6 +140,10 @@ model Account {
   refresh_token            String?
   access_token             String?
   expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
   refresh_token_expires_at Int?    // Kakao/Naver refresh token 만료 추적용
   user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 

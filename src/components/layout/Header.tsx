@@ -1,0 +1,92 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
+import Image from 'next/image'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
+
+const navLinks = [
+  { href: '/home', label: '홈' },
+  { href: '/roasteries', label: '로스터리' },
+  { href: '/bookmarks', label: '즐겨찾기' },
+]
+
+export function Header({ className }: { className?: string }) {
+  const pathname = usePathname()
+  const { data: session } = useSession()
+
+  return (
+    <header
+      className={cn(
+        'sticky top-0 z-40 w-full border-b border-border bg-surface',
+        className
+      )}
+    >
+      <div className="page-wrapper flex h-14 items-center justify-between">
+        {/* 로고 */}
+        <Link href="/home" className="text-lg font-bold text-text-primary">
+          Rocommend
+        </Link>
+
+        {/* 네비게이션 링크 */}
+        <nav className="flex items-center gap-6">
+          {navLinks.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                'text-sm font-medium transition-colors hover:text-text-primary',
+                pathname.startsWith(href)
+                  ? 'text-text-primary'
+                  : 'text-text-secondary'
+              )}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* 아바타 드롭다운 */}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-border focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {session?.user?.image ? (
+              <Image
+                src={session.user.image}
+                alt="프로필"
+                width={32}
+                height={32}
+                className="size-full object-cover"
+              />
+            ) : (
+              <span className="text-xs font-medium text-text-secondary">
+                {session?.user?.name?.[0] ?? '?'}
+              </span>
+            )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem>
+              <Link href="/profile" className="w-full">프로필</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => signOut({ redirectTo: '/login' })}
+            >
+              로그아웃
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
+  )
+}
