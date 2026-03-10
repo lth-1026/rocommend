@@ -22,7 +22,6 @@
 ## 사전 작업
 
 - [ ] `Onboarding` 모델에 `version Int @default(3)` 추가 + 마이그레이션
-- [ ] `Recommendation` 모델 신규 추가 + 마이그레이션 (F-006 착수 전)
 - [ ] `auth.ts` session 콜백에 `onboardingVersion` 주입 로직 추가
 - [ ] `src/types/auth.ts` — Session 인터페이스 확장 (`onboardingVersion` 포함)
 
@@ -170,9 +169,37 @@
 
 ## F-006 CF 추천 홈 피드 `feat/home-feed-cf`
 
-### 사전 마이그레이션
-- [ ] `Recommendation` 모델 `schema.prisma` 추가
-- [ ] `pnpm prisma migrate dev` 실행
+### 추천 로직 설계
+
+**활성 조건**
+```
+평가 3개 이상 → Item-based CF (유사도 부족 시 인기 폴백으로 자동 보충)
+평가 3개 미만 → 인기 로스터리 (평균 평점 상위 5개)
+```
+
+**Item-based CF 계산 방식**
+1. 전체 Rating 데이터로 로스터리 간 코사인 유사도 행렬 계산
+2. 유저가 평가한 로스터리들의 유사 로스터리 탐색
+3. 아직 평가 안 한 로스터리에 예측 점수 부여 (가중 평균)
+4. 예측 점수 상위 N개 반환 — 부족하면 인기 로스터리로 채움
+
+**MF 이전 대비 추상화 구조** ← MF 전환 시 구현체만 교체
+```
+src/lib/recommender/
+├── index.ts          # 공개 인터페이스 — getRecommendations(userId) 단일 진입점
+├── types.ts          # RecommendationResult, RecommenderEngine 인터페이스 정의
+├── item-cf.ts        # Item-based CF 구현체 (현재 사용)
+├── popular.ts        # 인기 로스터리 폴백 구현체
+└── mf.ts             # (미래) Matrix Factorization 구현체
+```
+
+`index.ts`는 평가 수 확인 → 알고리즘 선택 → 결과 반환만 담당.
+MF 전환 시 `index.ts`의 알고리즘 선택 로직만 수정하면 됨.
+
+**Rating 데이터 형태 유지** (MF도 동일 입력 사용)
+```
+{ userId, roasteryId, score }[]  ← 현재 Rating 테이블 그대로 활용
+```
 
 ### 페이지
 - [ ] `src/app/(main)/home/page.tsx` — 홈 피드 Server Component
@@ -184,20 +211,21 @@
 - [ ] `src/components/home/PopularSection.tsx` — 인기 로스터리 폴백 섹션
 - [ ] `src/components/home/FeedSkeleton.tsx` — 로딩 스켈레톤 UI
 
-### CF 알고리즘
-- [ ] `src/lib/cf.ts`:
-  - [ ] `calculateCF(userId)` — 사용자 기반 CF (코사인 유사도, 상위 K=20명)
-  - [ ] `getPopularRoasteries()` — 폴백용 평균 평점 상위 5개
+### 추천 엔진
+- [ ] `src/lib/recommender/types.ts` — `RecommendationResult`, `RecommenderEngine` 인터페이스
+- [ ] `src/lib/recommender/popular.ts` — 인기 로스터리 폴백 (평균 평점 상위 5개)
+- [ ] `src/lib/recommender/item-cf.ts` — Item-based CF 구현체
+  - [ ] 로스터리 간 코사인 유사도 계산
+  - [ ] 유저 평가 기반 예측 점수 산출
+  - [ ] 결과 부족 시 popular로 자동 보충
+- [ ] `src/lib/recommender/index.ts` — 단일 진입점 (`getRecommendations(userId)`)
+  - [ ] 평가 수 확인 (3개 미만 → popular, 이상 → item-cf)
 
 ### 서버 액션
-- [ ] `src/actions/recommendation.ts` — `triggerCFCalculation(userId)` — 평가 제출/삭제 후 재계산
-- [ ] `src/actions/rating.ts` 수정 — `upsertRating`, `deleteRating`에 CF 트리거 연동
+- [ ] `src/actions/rating.ts` 수정 — `upsertRating`, `deleteRating` 후 `revalidatePath('/home')`
 
 ### 데이터 레이어
-- [ ] `src/lib/queries/recommendation.ts` — `getRecommendations(userId)`, `getPopularRoasteries()`
-
-### 배치 갱신
-- [ ] `src/app/api/cron/route.ts` — 전체 사용자 CF 재계산 (Vercel Cron)
+- [ ] `src/lib/queries/recommendation.ts` — `getAllRatings()`, `getUserRatingCount(userId)`, `getPopularRoasteries()`
 
 ---
 
