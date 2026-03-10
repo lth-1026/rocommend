@@ -14,7 +14,7 @@ export default async function ErrorPage({ searchParams }: Props) {
         <h1 className="text-xl font-semibold text-text-primary">로그인 오류</h1>
       </div>
 
-      {error && <ErrorAlert error={error} />}
+      <ErrorAlert error={error ?? 'default'} />
 
       <Link
         href="/login"
