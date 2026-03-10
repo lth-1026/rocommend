@@ -18,6 +18,12 @@ pnpm prisma db seed        # 시드 재실행
 - 공유 타입 → `src/types/`
 - shadcn 컴포넌트 → `src/components/ui/` (직접 수정 가능)
 
+## 반응형
+- 최대 너비: 1440px (`--container-max`)
+- 브레이크포인트: `md` = 768px (태블릿), `lg` = 1024px (데스크탑)
+- 모바일/데스크탑 동등 중요 — 모든 컴포넌트 반응형 필수
+- 페이지 최상위 래퍼: `<div className="page-wrapper">` (padding + max-width 자동 적용)
+
 ## 하지 말 것
 - `.env.local` 커밋 금지
 - 다크모드에 `.dark` 클래스 사용 금지 → `[data-theme="dark"]` 사용
