@@ -20,6 +20,11 @@ export const authConfig: NextAuthConfig = {
     error: '/error',
   },
   callbacks: {
+    session({ session, token }) {
+      session.user.id = token.sub!
+      session.user.onboardingVersion = (token.onboardingVersion as number | null | undefined) ?? null
+      return session
+    },
     authorized({ auth, request: { nextUrl } }) {
       const { pathname } = nextUrl
       const isLoggedIn = !!auth?.user

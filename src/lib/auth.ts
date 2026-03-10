@@ -10,22 +10,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: 'database',
+    strategy: 'jwt',
     maxAge: 60 * 60 * 24 * 90, // 90일
   },
   callbacks: {
-    async session({ session, user }) {
-      const dbUser = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { preferences: true },
-      })
+    ...authConfig.callbacks,
+    async jwt({ token, user, trigger }) {
+      // 최초 로그인: user 객체 존재 — DB에서 onboardingVersion 조회
+      if (user) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { preferences: true },
+        })
+        token.onboardingVersion =
+          (dbUser?.preferences as { onboardingVersion?: number } | null)
+            ?.onboardingVersion ?? null
+      }
 
-      session.user.id = user.id
-      session.user.onboardingVersion =
-        (dbUser?.preferences as { onboardingVersion?: number } | null)
-          ?.onboardingVersion ?? null
+      // 온보딩 완료 후 session.update() 호출 시 재조회
+      if (trigger === 'update') {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub! },
+          select: { preferences: true },
+        })
+        token.onboardingVersion =
+          (dbUser?.preferences as { onboardingVersion?: number } | null)
+            ?.onboardingVersion ?? null
+      }
 
-      return session
+      return token
     },
   },
 })
