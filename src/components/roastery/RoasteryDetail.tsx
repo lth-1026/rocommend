@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { BeanList } from './BeanList'
+import { RatingDisplay } from './RatingDisplay'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
 import { PRICE_RANGE_LABELS } from '@/types/roastery'
 
@@ -47,14 +48,7 @@ export function RoasteryDetail({ roastery }: RoasteryDetailProps) {
             {roastery.decaf && <Badge variant="secondary">디카페인</Badge>}
           </div>
           <div className="flex items-center gap-1 text-sm">
-            {roastery.ratingCount > 0 ? (
-              <>
-                <span className="text-accent font-medium text-lg">★ {roastery.avgRating?.toFixed(1)}</span>
-                <span className="text-muted-foreground text-xs">({roastery.ratingCount}개 평가)</span>
-              </>
-            ) : (
-              <span className="text-muted-foreground text-sm">아직 평가 없음</span>
-            )}
+            <RatingDisplay avgRating={roastery.avgRating} ratingCount={roastery.ratingCount} size="lg" />
           </div>
           {roastery.website && (
             <Link

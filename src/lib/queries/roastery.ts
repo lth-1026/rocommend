@@ -15,7 +15,7 @@ export async function getRoasteries(sort: SortOption = 'popular'): Promise<Roast
         website: true,
         _count: { select: { ratings: true } },
       },
-      orderBy: sort === 'name' ? { name: 'asc' } : { createdAt: 'desc' },
+      ...(sort === 'name' && { orderBy: { name: 'asc' } }),
     }),
     prisma.rating.groupBy({
       by: ['roasteryId'],
