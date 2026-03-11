@@ -58,7 +58,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
   if (step === 'Q1') {
     return (
       <div className="space-y-6">
-        <ProgressBar current={1} total={totalSteps} />
+        <ProgressBar current={currentStep} total={totalSteps} />
         <Q1BrewingMethod
           selected={q1}
           onChange={setQ1}
@@ -71,7 +71,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
   if (step === 'Q2') {
     return (
       <div className="space-y-6">
-        <ProgressBar current={2} total={totalSteps} />
+        <ProgressBar current={currentStep} total={totalSteps} />
         <Q2PurchaseStyle
           selected={q2}
           onChange={setQ2}
@@ -84,7 +84,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
   if (step === 'Q3') {
     return (
       <div className="space-y-6">
-        <ProgressBar current={3} total={totalSteps} />
+        <ProgressBar current={currentStep} total={totalSteps} />
         <Q3PriceRange
           selected={q3}
           onChange={setQ3}
@@ -97,7 +97,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
   if (step === 'Q4') {
     return (
       <div className="space-y-6">
-        <ProgressBar current={4} total={totalSteps} />
+        <ProgressBar current={currentStep} total={totalSteps} />
         <Q4Frequency
           selected={q4}
           onChange={setQ4}
