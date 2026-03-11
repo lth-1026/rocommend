@@ -36,7 +36,8 @@ export async function getRoasteries(sort: SortOption = 'popular'): Promise<Roast
       if (a.avgRating === null && b.avgRating === null) return 0
       if (a.avgRating === null) return 1
       if (b.avgRating === null) return -1
-      return b.avgRating - a.avgRating
+      if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating
+      return b.ratingCount - a.ratingCount // 동점 시 평가 수 많은 순
     })
   }
 
