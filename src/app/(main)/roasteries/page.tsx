@@ -3,18 +3,13 @@ import { getRoasteries } from '@/lib/queries/roastery'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
 import { SortSelector } from '@/components/roastery/SortSelector'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
+import { toArray } from '@/lib/utils'
+import { PRICE_OPTIONS } from '@/types/roastery'
 import type { SortOption, FilterParams, PriceRange } from '@/types/roastery'
 
 interface RoasteriesPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
-
-function toArray(val: string | string[] | undefined): string[] {
-  if (!val) return []
-  return Array.isArray(val) ? val : [val]
-}
-
-const VALID_PRICE: PriceRange[] = ['LOW', 'MID', 'HIGH']
 
 export default async function RoasteriesPage({ searchParams }: RoasteriesPageProps) {
   const params = await searchParams
@@ -23,7 +18,7 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
 
   const filter: FilterParams = {
     q: typeof params.q === 'string' ? params.q.trim() : '',
-    price: toArray(params.price).filter((v): v is PriceRange => VALID_PRICE.includes(v as PriceRange)),
+    price: toArray(params.price).filter((v): v is PriceRange => PRICE_OPTIONS.includes(v as PriceRange)),
     decaf: params.decaf === '1',
     regions: toArray(params.region),
   }

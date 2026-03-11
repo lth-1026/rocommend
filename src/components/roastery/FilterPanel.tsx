@@ -12,14 +12,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { PRICE_RANGE_LABELS, REGIONS } from '@/types/roastery'
+import { PRICE_RANGE_LABELS, PRICE_OPTIONS, REGIONS } from '@/types/roastery'
 import type { FilterParams, PriceRange } from '@/types/roastery'
 
 interface FilterPanelProps {
   filter: FilterParams
 }
-
-const PRICE_OPTIONS: PriceRange[] = ['LOW', 'MID', 'HIGH']
 
 export function FilterPanel({ filter }: FilterPanelProps) {
   const router = useRouter()
@@ -69,14 +67,7 @@ export function FilterPanel({ filter }: FilterPanelProps) {
   }
 
   function reset() {
-    const params = new URLSearchParams(searchParams.toString())
-    params.delete('q')
-    params.delete('price')
-    params.delete('decaf')
-    params.delete('region')
-    startTransition(() => {
-      router.replace(`${pathname}?${params.toString()}`)
-    })
+    navigate({ q: '', price: [], decaf: false, regions: [] })
   }
 
   const isFiltered =
@@ -87,6 +78,7 @@ export function FilterPanel({ filter }: FilterPanelProps) {
       {/* 검색 input — 모바일/데스크탑 공통 */}
       <div className="flex items-center gap-2">
         <input
+          key={filter.q}
           id={searchId}
           type="search"
           placeholder="로스터리 이름 검색..."

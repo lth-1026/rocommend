@@ -35,6 +35,8 @@ export const PRICE_RANGE_LABELS: Record<PriceRange, string> = {
   HIGH: '3.5만원 이상',
 }
 
+export const PRICE_OPTIONS = Object.keys(PRICE_RANGE_LABELS) as PriceRange[]
+
 export const ROASTING_LEVEL_LABELS: Record<string, string> = {
   LIGHT: '라이트',
   MEDIUM: '미디엄',
