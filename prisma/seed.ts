@@ -36,7 +36,7 @@ const roasteries = [
   },
   {
     name: '테라로사',
-    regions: ['서울', '강릉'],
+    regions: ['서울', '강원'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -204,7 +204,7 @@ const roasteries = [
   },
   {
     name: '소울커피',
-    regions: ['전주'],
+    regions: ['전북'],
     priceRange: 'LOW' as const,
     decaf: false,
     isOnboardingCandidate: true,

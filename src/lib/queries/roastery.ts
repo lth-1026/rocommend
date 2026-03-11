@@ -1,7 +1,19 @@
 import { prisma } from '@/lib/prisma'
-import type { SortOption, RoasteryWithStats, RoasteryDetail } from '@/types/roastery'
+import type { SortOption, RoasteryWithStats, RoasteryDetail, FilterParams } from '@/types/roastery'
 
-export async function getRoasteries(sort: SortOption = 'popular'): Promise<RoasteryWithStats[]> {
+const DEFAULT_FILTER: FilterParams = { q: '', price: [], decaf: false, regions: [] }
+
+export async function getRoasteries(
+  sort: SortOption = 'popular',
+  filter: FilterParams = DEFAULT_FILTER,
+): Promise<RoasteryWithStats[]> {
+  const where = {
+    ...(filter.price.length > 0 && { priceRange: { in: filter.price } }),
+    ...(filter.decaf && { decaf: true }),
+    ...(filter.regions.length > 0 && { regions: { hasSome: filter.regions } }),
+    ...(filter.q && { name: { contains: filter.q, mode: 'insensitive' as const } }),
+  }
+
   const [roasteries, avgRatings] = await Promise.all([
     prisma.roastery.findMany({
       select: {
@@ -15,6 +27,7 @@ export async function getRoasteries(sort: SortOption = 'popular'): Promise<Roast
         website: true,
         _count: { select: { ratings: true } },
       },
+      where,
       ...(sort === 'name' && { orderBy: { name: 'asc' } }),
     }),
     prisma.rating.groupBy({
