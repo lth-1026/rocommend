@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { getRoasteries } from '@/lib/queries/roastery'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
-import { SortSelector } from '@/components/roastery/SortSelector'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
 import { toArray } from '@/lib/utils'
 import { PRICE_OPTIONS } from '@/types/roastery'
@@ -27,15 +26,10 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
 
   return (
     <div className="page-wrapper py-8 flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">로스터리</h1>
-        <Suspense fallback={null}>
-          <SortSelector sort={sort} />
-        </Suspense>
-      </div>
+      <h1 className="text-xl font-semibold">로스터리</h1>
 
       <Suspense fallback={null}>
-        <FilterPanel filter={filter} />
+        <FilterPanel filter={filter} sort={sort} />
       </Suspense>
 
       {roasteries.length === 0 ? (

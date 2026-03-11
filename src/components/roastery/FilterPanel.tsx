@@ -1,8 +1,8 @@
 'use client'
 
-import { useTransition, useId } from 'react'
+import { useTransition, useId, useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { SlidersHorizontal, RotateCcw } from 'lucide-react'
+import { SlidersHorizontal, RotateCcw, ChevronDown } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import {
@@ -13,22 +13,26 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { PRICE_RANGE_LABELS, PRICE_OPTIONS, REGIONS } from '@/types/roastery'
-import type { FilterParams, PriceRange } from '@/types/roastery'
+import type { FilterParams, PriceRange, SortOption } from '@/types/roastery'
+import { SortSelector } from './SortSelector'
 
 interface FilterPanelProps {
   filter: FilterParams
+  sort: SortOption
 }
 
-export function FilterPanel({ filter }: FilterPanelProps) {
+type PillId = 'price' | 'region'
+
+export function FilterPanel({ filter, sort }: FilterPanelProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
+  const [openPill, setOpenPill] = useState<PillId | null>(null)
   const searchId = useId()
 
   function buildParams(updates: Partial<FilterParams>): string {
     const params = new URLSearchParams(searchParams.toString())
-
     const next = { ...filter, ...updates }
 
     if (next.q) params.set('q', next.q)
@@ -75,8 +79,8 @@ export function FilterPanel({ filter }: FilterPanelProps) {
 
   return (
     <div className={isPending ? 'opacity-60 pointer-events-none' : ''}>
-      {/* 검색 input — 모바일/데스크탑 공통 */}
-      <div className="flex items-center gap-2">
+      {/* 모바일 */}
+      <div className="flex items-center gap-2 lg:hidden" role="toolbar">
         <input
           key={filter.q}
           id={searchId}
@@ -93,54 +97,163 @@ export function FilterPanel({ filter }: FilterPanelProps) {
           className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           aria-label="로스터리 이름 검색"
         />
-
-        {/* 모바일: Sheet 버튼 */}
         <Sheet>
-          <SheetTrigger className="lg:hidden inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent/10 transition-colors">
+          <SheetTrigger className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent/10 transition-colors">
             <SlidersHorizontal className="h-4 w-4" />
             필터
             {isFiltered && (
-              <span className="ml-1 h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
+              <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
             )}
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
             <SheetHeader>
               <SheetTitle>필터</SheetTitle>
             </SheetHeader>
-            <FilterGroups
-              filter={filter}
-              onTogglePrice={togglePrice}
-              onToggleDecaf={() => navigate({ decaf: !filter.decaf })}
-              onToggleRegion={toggleRegion}
-              onReset={reset}
-              isFiltered={!!isFiltered}
-            />
+            <div className="flex flex-col gap-6 px-4 pb-6">
+              <PriceGroup selected={filter.price} onToggle={togglePrice} />
+              <DecafGroup checked={filter.decaf} onToggle={() => navigate({ decaf: !filter.decaf })} />
+              <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+              {isFiltered && (
+                <button
+                  onClick={reset}
+                  className="self-start inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-accent/10 transition-colors"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  필터 초기화
+                </button>
+              )}
+            </div>
           </SheetContent>
         </Sheet>
+        <SortSelector sort={sort} />
+      </div>
 
-        {/* 데스크탑: 초기화 버튼 */}
+      {/* 데스크탑 — pill 필터 toolbar */}
+      <div className="hidden lg:flex items-center gap-2 flex-wrap">
+        <input
+          key={filter.q}
+          type="search"
+          placeholder="로스터리 이름 검색..."
+          defaultValue={filter.q}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') navigate({ q: (e.target as HTMLInputElement).value.trim() })
+          }}
+          onBlur={(e) => {
+            const val = e.target.value.trim()
+            if (val !== filter.q) navigate({ q: val })
+          }}
+          className="w-56 rounded-full border border-border bg-background px-4 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-label="로스터리 이름 검색"
+        />
+
+        <FilterPill
+          id="price"
+          label="가격대"
+          count={filter.price.length}
+          open={openPill === 'price'}
+          onToggle={() => setOpenPill(openPill === 'price' ? null : 'price')}
+          onClose={() => setOpenPill(null)}
+        >
+          <PriceGroup selected={filter.price} onToggle={togglePrice} />
+        </FilterPill>
+
+        <button
+          onClick={() => navigate({ decaf: !filter.decaf })}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+            filter.decaf
+              ? 'border-foreground bg-foreground text-background'
+              : 'border-border hover:border-foreground/40'
+          }`}
+        >
+          디카페인
+        </button>
+
+        <FilterPill
+          id="region"
+          label="지역"
+          count={filter.regions.length}
+          open={openPill === 'region'}
+          onToggle={() => setOpenPill(openPill === 'region' ? null : 'region')}
+          onClose={() => setOpenPill(null)}
+        >
+          <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+        </FilterPill>
+
         {isFiltered && (
           <button
             onClick={reset}
-            className="hidden lg:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             초기화
           </button>
         )}
-      </div>
 
-      {/* 데스크탑: inline 필터 그룹 */}
-      <div className="hidden lg:flex flex-wrap items-start gap-6 pt-4">
-        <PriceGroup selected={filter.price} onToggle={togglePrice} />
-        <DecafGroup checked={filter.decaf} onToggle={() => navigate({ decaf: !filter.decaf })} />
-        <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+        <div className="ml-auto">
+          <SortSelector sort={sort} />
+        </div>
       </div>
     </div>
   )
 }
 
-// ── 재사용 필터 그룹 ──────────────────────────────────────────
+// ── Pill + Dropdown ───────────────────────────────────────────
+
+function FilterPill({
+  id: _id,
+  label,
+  count,
+  open,
+  onToggle,
+  onClose,
+  children,
+}: {
+  id: PillId
+  label: string
+  count: number
+  open: boolean
+  onToggle: () => void
+  onClose: () => void
+  children: React.ReactNode
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose()
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [open, onClose])
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={onToggle}
+        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+          count > 0
+            ? 'border-foreground bg-foreground text-background'
+            : 'border-border hover:border-foreground/40'
+        }`}
+      >
+        {label}
+        {count > 0 && <span className="font-medium">{count}</span>}
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 z-50 mt-1.5 min-w-[200px] rounded-xl border border-border bg-background p-3 shadow-lg">
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── 필터 그룹 ─────────────────────────────────────────────────
 
 function PriceGroup({
   selected,
@@ -152,9 +265,9 @@ function PriceGroup({
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-medium">가격대</legend>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col gap-2.5">
         {PRICE_OPTIONS.map((p) => (
-          <div key={p} className="flex items-center gap-1.5">
+          <div key={p} className="flex items-center gap-2">
             <Checkbox
               id={`price-${p}`}
               checked={selected.includes(p)}
@@ -174,7 +287,7 @@ function DecafGroup({ checked, onToggle }: { checked: boolean; onToggle: () => v
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-medium">디카페인</legend>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         <Checkbox id="decaf" checked={checked} onCheckedChange={onToggle} />
         <Label htmlFor="decaf" className="text-sm cursor-pointer">
           디카페인 가능
@@ -194,7 +307,7 @@ function RegionGroup({
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-medium">지역</legend>
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
         {REGIONS.map((r) => (
           <div key={r} className="flex items-center gap-1.5">
             <Checkbox
@@ -209,38 +322,5 @@ function RegionGroup({
         ))}
       </div>
     </fieldset>
-  )
-}
-
-function FilterGroups({
-  filter,
-  onTogglePrice,
-  onToggleDecaf,
-  onToggleRegion,
-  onReset,
-  isFiltered,
-}: {
-  filter: FilterParams
-  onTogglePrice: (p: PriceRange) => void
-  onToggleDecaf: () => void
-  onToggleRegion: (r: string) => void
-  onReset: () => void
-  isFiltered: boolean
-}) {
-  return (
-    <div className="flex flex-col gap-6 py-4">
-      <PriceGroup selected={filter.price} onToggle={onTogglePrice} />
-      <DecafGroup checked={filter.decaf} onToggle={onToggleDecaf} />
-      <RegionGroup selected={filter.regions} onToggle={onToggleRegion} />
-      {isFiltered && (
-        <button
-          onClick={onReset}
-          className="self-start inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-accent/10 transition-colors"
-        >
-          <RotateCcw className="h-3.5 w-3.5" />
-          필터 초기화
-        </button>
-      )}
-    </div>
   )
 }
