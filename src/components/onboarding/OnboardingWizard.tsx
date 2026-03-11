@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { ProgressBar } from './ProgressBar'
 import { Q1BrewingMethod } from './steps/Q1BrewingMethod'
@@ -31,7 +30,6 @@ interface OnboardingWizardProps {
 }
 
 export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
-  const router = useRouter()
   const [step, setStep] = useState<Step>('Q1')
   const [q1, setQ1] = useState<BrewingMethod[]>([])
   const [q2, setQ2] = useState<PurchaseStyle | null>(null)
@@ -47,12 +45,12 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
   async function handleSubmit(answers: OnboardingAnswers) {
     setIsLoading(true)
     const result = await submitOnboarding(answers)
-    if (!result.success) {
+    // 성공 시 서버가 redirect('/home')를 호출 → 이 코드에 도달하지 않음
+    // 실패 시 서버가 ActionResult를 반환 → 에러 토스트 표시
+    if (result && !result.success) {
       toast.error(result.error)
       setIsLoading(false)
-      return
     }
-    router.push('/home')
   }
 
   if (step === 'Q1') {
