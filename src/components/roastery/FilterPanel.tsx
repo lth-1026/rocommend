@@ -116,7 +116,7 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
               {isFiltered && (
                 <button
                   onClick={reset}
-                  className="self-start inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-accent/10 transition-colors"
+                  className="self-start inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-accent/10 transition-colors"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   필터 초기화
@@ -159,7 +159,7 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
 
         <button
           onClick={() => navigate({ decaf: !filter.decaf })}
-          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+          className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
             filter.decaf
               ? 'border-foreground bg-foreground text-background'
               : 'border-border hover:border-foreground/40'
@@ -182,7 +182,7 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
         {isFiltered && (
           <button
             onClick={reset}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             초기화
@@ -231,7 +231,7 @@ function FilterPill({
     <div ref={ref} className="relative">
       <button
         onClick={onToggle}
-        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
           count > 0
             ? 'border-foreground bg-foreground text-background'
             : 'border-border hover:border-foreground/40'
