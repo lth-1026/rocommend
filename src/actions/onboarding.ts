@@ -3,7 +3,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { onboardingSchema } from '@/lib/schemas/onboarding'
-import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import type { OnboardingAnswers } from '@/types/onboarding'
 import type { ActionResult } from '@/types/action'
 
@@ -76,6 +76,6 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
     // 로깅 실패 무시
   }
 
-  revalidatePath('/home')
-  return { success: true }
+  // 서버에서 직접 리다이렉트 → 클라이언트 Router Cache를 우회
+  redirect('/home')
 }
