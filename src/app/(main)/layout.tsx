@@ -5,12 +5,14 @@ import { Navigation } from '@/components/layout/Navigation'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
-  const onboarding = await prisma.onboarding.findUnique({
-    where: { userId: session!.user.id },
-    select: { id: true },
-  })
 
-  if (!onboarding) redirect('/onboarding')
+  if (session?.user?.id) {
+    const onboarding = await prisma.onboarding.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true },
+    })
+    if (!onboarding) redirect('/onboarding')
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">

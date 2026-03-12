@@ -54,38 +54,47 @@ export function Header({ className }: { className?: string }) {
           ))}
         </nav>
 
-        {/* 아바타 드롭다운 */}
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-border focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            {session?.user?.image ? (
-              <Image
-                src={session.user.image}
-                alt="프로필"
-                width={32}
-                height={32}
-                className="size-full object-cover"
-              />
-            ) : (
-              <span className="text-xs font-medium text-text-secondary">
-                {session?.user?.name?.[0] ?? '?'}
-              </span>
-            )}
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem>
-              <Link href="/profile" className="w-full">프로필</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={() => signOut({ redirectTo: '/login' })}
+        {/* 아바타 드롭다운 / 로그인 버튼 */}
+        {session?.user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className="flex size-8 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-border focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              로그아웃
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              {session.user.image ? (
+                <Image
+                  src={session.user.image}
+                  alt="프로필"
+                  width={32}
+                  height={32}
+                  className="size-full object-cover"
+                />
+              ) : (
+                <span className="text-xs font-medium text-text-secondary">
+                  {session.user.name?.[0] ?? '?'}
+                </span>
+              )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem>
+                <Link href="/profile" className="w-full">프로필</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => signOut({ redirectTo: '/login' })}
+              >
+                로그아웃
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Link
+            href="/login"
+            className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
+          >
+            로그인
+          </Link>
+        )}
       </div>
     </header>
   )

@@ -2,18 +2,27 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Coffee, Bookmark, User } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { Home, Coffee, Bookmark, User, LogIn } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const tabs = [
+const authTabs = [
   { href: '/home', label: '홈', Icon: Home },
   { href: '/roasteries', label: '로스터리', Icon: Coffee },
   { href: '/bookmarks', label: '즐겨찾기', Icon: Bookmark },
   { href: '/profile', label: '프로필', Icon: User },
 ]
 
+const guestTabs = [
+  { href: '/home', label: '홈', Icon: Home },
+  { href: '/roasteries', label: '로스터리', Icon: Coffee },
+  { href: '/login', label: '로그인', Icon: LogIn },
+]
+
 export function BottomTab({ className }: { className?: string }) {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const tabs = session?.user ? authTabs : guestTabs
 
   return (
     <nav
