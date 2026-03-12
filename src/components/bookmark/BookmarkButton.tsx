@@ -2,7 +2,7 @@
 
 import { useOptimistic, useTransition } from 'react'
 import { toast } from 'sonner'
-import { Heart } from 'lucide-react'
+import { Bookmark } from 'lucide-react'
 import { toggleBookmark } from '@/actions/bookmark'
 import { cn } from '@/lib/utils'
 
@@ -44,10 +44,10 @@ export function BookmarkButton({ roasteryId, initialIsBookmarked, className }: B
         className
       )}
     >
-      <Heart
+      <Bookmark
         className={cn(
           'size-5 transition-colors',
-          isBookmarked ? 'fill-destructive stroke-destructive' : 'stroke-muted-foreground'
+          isBookmarked ? 'fill-primary stroke-primary' : 'stroke-muted-foreground'
         )}
       />
     </button>
