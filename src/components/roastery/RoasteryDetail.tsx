@@ -5,14 +5,17 @@ import { Separator } from '@/components/ui/separator'
 import { BeanList } from './BeanList'
 import { RatingDisplay } from './RatingDisplay'
 import { BackButton } from './BackButton'
+import { RatingButton } from '@/components/rating/RatingButton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
 import { PRICE_RANGE_LABELS } from '@/types/roastery'
 
 interface RoasteryDetailProps {
   roastery: RoasteryDetailType
+  isLoggedIn: boolean
+  userRating?: { score: number; comment?: string }
 }
 
-export function RoasteryDetail({ roastery }: RoasteryDetailProps) {
+export function RoasteryDetail({ roastery, isLoggedIn, userRating }: RoasteryDetailProps) {
   return (
     <div className="flex flex-col gap-8">
       <BackButton />
@@ -53,6 +56,13 @@ export function RoasteryDetail({ roastery }: RoasteryDetailProps) {
           <div className="flex items-center gap-1 text-sm">
             <RatingDisplay avgRating={roastery.avgRating} ratingCount={roastery.ratingCount} size="lg" />
           </div>
+          <RatingButton
+            roasteryId={roastery.id}
+            roasteryName={roastery.name}
+            isLoggedIn={isLoggedIn}
+            existingScore={userRating?.score}
+            existingComment={userRating?.comment}
+          />
           {roastery.website && (
             <Link
               href={roastery.website}
