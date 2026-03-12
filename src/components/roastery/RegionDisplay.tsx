@@ -1,13 +1,12 @@
+import { formatRegions } from '@/lib/utils'
+
 interface RegionDisplayProps {
   regions: string[]
+  activeRegions?: string[]
 }
 
-export function RegionDisplay({ regions }: RegionDisplayProps) {
-  if (regions.length === 0) return null
-  if (regions.length === 1) return <span>{regions[0]}</span>
-  return (
-    <span>
-      {regions[0]} 외 {regions.length - 1}곳
-    </span>
-  )
+export function RegionDisplay({ regions, activeRegions }: RegionDisplayProps) {
+  const text = formatRegions(regions, activeRegions)
+  if (!text) return null
+  return <span>{text}</span>
 }

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { BeanList } from './BeanList'
 import { RatingDisplay } from './RatingDisplay'
+import { BackButton } from './BackButton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
 import { PRICE_RANGE_LABELS } from '@/types/roastery'
 
@@ -14,6 +15,8 @@ interface RoasteryDetailProps {
 export function RoasteryDetail({ roastery }: RoasteryDetailProps) {
   return (
     <div className="flex flex-col gap-8">
+      <BackButton />
+
       {/* 헤더 이미지 */}
       {roastery.imageUrl && (
         <div className="relative aspect-[16/7] w-full overflow-hidden rounded-2xl">

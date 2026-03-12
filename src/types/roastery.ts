@@ -35,6 +35,8 @@ export const PRICE_RANGE_LABELS: Record<PriceRange, string> = {
   HIGH: '3.5만원 이상',
 }
 
+export const PRICE_OPTIONS = Object.keys(PRICE_RANGE_LABELS) as PriceRange[]
+
 export const ROASTING_LEVEL_LABELS: Record<string, string> = {
   LIGHT: '라이트',
   MEDIUM: '미디엄',
@@ -43,3 +45,18 @@ export const ROASTING_LEVEL_LABELS: Record<string, string> = {
 }
 
 export type SortOption = 'name' | 'popular'
+
+// 대한민국 17개 광역자치단체 (2글자 약어)
+export const REGIONS = [
+  '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종',
+  '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주',
+] as const
+
+export type Region = (typeof REGIONS)[number]
+
+export interface FilterParams {
+  q: string
+  price: PriceRange[]
+  decaf: boolean
+  regions: string[]
+}
