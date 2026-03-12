@@ -248,7 +248,7 @@ function FilterPill({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 z-50 mt-1.5 min-w-[200px] rounded-xl border border-border bg-background p-3 shadow-lg">
+        <div className="absolute top-full left-0 z-50 mt-1.5 min-w-48 rounded-xl border border-border bg-background p-3 shadow-lg">
           {children}
         </div>
       )}
