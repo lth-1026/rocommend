@@ -1,17 +1,19 @@
 import { prisma } from '@/lib/prisma'
 import type { SortOption, RoasteryWithStats, RoasteryDetail, FilterParams } from '@/types/roastery'
 
-const DEFAULT_FILTER: FilterParams = { q: '', price: [], decaf: false, regions: [] }
+const DEFAULT_FILTER: FilterParams = { q: '', price: [], decaf: false, regions: [], rated: false }
 
 export async function getRoasteries(
   sort: SortOption = 'popular',
   filter: FilterParams = DEFAULT_FILTER,
+  userId?: string,
 ): Promise<RoasteryWithStats[]> {
   const where = {
     ...(filter.price.length > 0 && { priceRange: { in: filter.price } }),
     ...(filter.decaf && { decaf: true }),
     ...(filter.regions.length > 0 && { regions: { hasSome: filter.regions } }),
     ...(filter.q && { name: { contains: filter.q, mode: 'insensitive' as const } }),
+    ...(filter.rated && userId && { ratings: { some: { userId } } }),
   }
 
   const [roasteries, avgRatings] = await Promise.all([

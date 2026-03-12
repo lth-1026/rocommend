@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { auth } from '@/lib/auth'
 import { getRoasteries } from '@/lib/queries/roastery'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
@@ -11,7 +12,8 @@ interface RoasteriesPageProps {
 }
 
 export default async function RoasteriesPage({ searchParams }: RoasteriesPageProps) {
-  const params = await searchParams
+  const [params, session] = await Promise.all([searchParams, auth()])
+  const userId = session?.user?.id
 
   const sort: SortOption = params.sort === 'name' ? 'name' : 'popular'
 
@@ -20,16 +22,17 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
     price: toArray(params.price).filter((v): v is PriceRange => PRICE_OPTIONS.includes(v as PriceRange)),
     decaf: params.decaf === '1',
     regions: toArray(params.region),
+    rated: params.rated === '1',
   }
 
-  const roasteries = await getRoasteries(sort, filter)
+  const roasteries = await getRoasteries(sort, filter, userId)
 
   return (
     <div className="page-wrapper py-8 flex flex-col gap-6">
       <h1 className="text-xl font-semibold">로스터리</h1>
 
       <Suspense fallback={null}>
-        <FilterPanel filter={filter} sort={sort} />
+        <FilterPanel filter={filter} sort={sort} isLoggedIn={!!userId} />
       </Suspense>
 
       {roasteries.length === 0 ? (

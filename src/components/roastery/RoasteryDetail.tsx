@@ -6,6 +6,7 @@ import { BeanList } from './BeanList'
 import { RatingDisplay } from './RatingDisplay'
 import { BackButton } from './BackButton'
 import { RatingButton } from '@/components/rating/RatingButton'
+import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
 import { PRICE_RANGE_LABELS } from '@/types/roastery'
 
@@ -13,9 +14,10 @@ interface RoasteryDetailProps {
   roastery: RoasteryDetailType
   isLoggedIn: boolean
   userRating?: { score: number; comment?: string }
+  isBookmarked: boolean
 }
 
-export function RoasteryDetail({ roastery, isLoggedIn, userRating }: RoasteryDetailProps) {
+export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked }: RoasteryDetailProps) {
   return (
     <div className="flex flex-col gap-8">
       <BackButton />
@@ -56,13 +58,29 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating }: RoasteryDet
           <div className="flex items-center gap-1 text-sm">
             <RatingDisplay avgRating={roastery.avgRating} ratingCount={roastery.ratingCount} size="lg" />
           </div>
-          <RatingButton
-            roasteryId={roastery.id}
-            roasteryName={roastery.name}
-            isLoggedIn={isLoggedIn}
-            existingScore={userRating?.score}
-            existingComment={userRating?.comment}
-          />
+          {/* 주 CTA: 평가하기 + 보조: 즐겨찾기 */}
+          {isLoggedIn && (
+            <div className="flex items-center gap-2">
+              <RatingButton
+                roasteryId={roastery.id}
+                roasteryName={roastery.name}
+                isLoggedIn={isLoggedIn}
+                existingScore={userRating?.score}
+                existingComment={userRating?.comment}
+              />
+              <BookmarkButton
+                roasteryId={roastery.id}
+                initialIsBookmarked={isBookmarked}
+              />
+            </div>
+          )}
+          {!isLoggedIn && (
+            <RatingButton
+              roasteryId={roastery.id}
+              roasteryName={roastery.name}
+              isLoggedIn={false}
+            />
+          )}
           {roastery.website && (
             <Link
               href={roastery.website}
