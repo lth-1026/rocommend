@@ -39,15 +39,7 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked 
       {/* 기본 정보 */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold">{roastery.name}</h1>
-            {isLoggedIn && (
-              <BookmarkButton
-                roasteryId={roastery.id}
-                initialIsBookmarked={isBookmarked}
-              />
-            )}
-          </div>
+          <h1 className="text-2xl font-semibold">{roastery.name}</h1>
           {roastery.regions.length > 0 && (
             <p className="text-sm text-muted-foreground">{roastery.regions[0]}</p>
           )}
@@ -66,13 +58,29 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked 
           <div className="flex items-center gap-1 text-sm">
             <RatingDisplay avgRating={roastery.avgRating} ratingCount={roastery.ratingCount} size="lg" />
           </div>
-          <RatingButton
-            roasteryId={roastery.id}
-            roasteryName={roastery.name}
-            isLoggedIn={isLoggedIn}
-            existingScore={userRating?.score}
-            existingComment={userRating?.comment}
-          />
+          {/* 주 CTA: 평가하기 + 보조: 즐겨찾기 */}
+          {isLoggedIn && (
+            <div className="flex items-center gap-2">
+              <RatingButton
+                roasteryId={roastery.id}
+                roasteryName={roastery.name}
+                isLoggedIn={isLoggedIn}
+                existingScore={userRating?.score}
+                existingComment={userRating?.comment}
+              />
+              <BookmarkButton
+                roasteryId={roastery.id}
+                initialIsBookmarked={isBookmarked}
+              />
+            </div>
+          )}
+          {!isLoggedIn && (
+            <RatingButton
+              roasteryId={roastery.id}
+              roasteryName={roastery.name}
+              isLoggedIn={false}
+            />
+          )}
           {roastery.website && (
             <Link
               href={roastery.website}
