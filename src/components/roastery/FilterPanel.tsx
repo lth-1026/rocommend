@@ -29,7 +29,19 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [openPill, setOpenPill] = useState<PillId | null>(null)
+  const [inputValue, setInputValue] = useState(filter.q)
   const searchId = useId()
+
+  useEffect(() => {
+    setInputValue(filter.q)
+  }, [filter.q])
+
+  useEffect(() => {
+    if (inputValue.trim() === filter.q) return
+    const t = setTimeout(() => navigate({ q: inputValue.trim() }), 400)
+    return () => clearTimeout(t)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue])
 
   function buildParams(updates: Partial<FilterParams>): string {
     const params = new URLSearchParams(searchParams.toString())
@@ -82,17 +94,13 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
       {/* 모바일 */}
       <div className="flex items-center gap-2 lg:hidden" role="toolbar">
         <input
-          key={filter.q}
           id={searchId}
           type="search"
           placeholder="로스터리 이름 검색..."
-          defaultValue={filter.q}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') navigate({ q: (e.target as HTMLInputElement).value.trim() })
-          }}
-          onBlur={(e) => {
-            const val = e.target.value.trim()
-            if (val !== filter.q) navigate({ q: val })
+            if (e.key === 'Enter') navigate({ q: inputValue.trim() })
           }}
           className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           aria-label="로스터리 이름 검색"
@@ -131,16 +139,12 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
       {/* 데스크탑 — pill 필터 toolbar */}
       <div className="hidden lg:flex items-center gap-2 flex-wrap">
         <input
-          key={filter.q}
           type="search"
           placeholder="로스터리 이름 검색..."
-          defaultValue={filter.q}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') navigate({ q: (e.target as HTMLInputElement).value.trim() })
-          }}
-          onBlur={(e) => {
-            const val = e.target.value.trim()
-            if (val !== filter.q) navigate({ q: val })
+            if (e.key === 'Enter') navigate({ q: inputValue.trim() })
           }}
           className="w-56 rounded-full border border-border bg-background px-4 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           aria-label="로스터리 이름 검색"
@@ -200,7 +204,6 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
 // ── Pill + Dropdown ───────────────────────────────────────────
 
 function FilterPill({
-  id: _id,
   label,
   count,
   open,
@@ -208,7 +211,7 @@ function FilterPill({
   onClose,
   children,
 }: {
-  id: PillId
+  id?: PillId
   label: string
   count: number
   open: boolean

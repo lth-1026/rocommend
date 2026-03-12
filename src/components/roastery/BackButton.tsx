@@ -10,6 +10,7 @@ export function BackButton() {
   const [hasHistory, setHasHistory] = useState(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasHistory(window.history.length > 1)
   }, [])
 
