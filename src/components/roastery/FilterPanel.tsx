@@ -19,11 +19,12 @@ import { SortSelector } from './SortSelector'
 interface FilterPanelProps {
   filter: FilterParams
   sort: SortOption
+  isLoggedIn: boolean
 }
 
 type PillId = 'price' | 'region'
 
-export function FilterPanel({ filter, sort }: FilterPanelProps) {
+export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -59,6 +60,9 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
     params.delete('region')
     next.regions.forEach((r) => params.append('region', r))
 
+    if (next.rated) params.set('rated', '1')
+    else params.delete('rated')
+
     return params.toString()
   }
 
@@ -83,11 +87,11 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
   }
 
   function reset() {
-    navigate({ q: '', price: [], decaf: false, regions: [] })
+    navigate({ q: '', price: [], decaf: false, regions: [], rated: false })
   }
 
   const isFiltered =
-    filter.q || filter.price.length > 0 || filter.decaf || filter.regions.length > 0
+    filter.q || filter.price.length > 0 || filter.decaf || filter.regions.length > 0 || filter.rated
 
   return (
     <div className={isPending ? 'opacity-60 pointer-events-none' : ''}>
@@ -121,6 +125,9 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
               <PriceGroup selected={filter.price} onToggle={togglePrice} />
               <DecafGroup checked={filter.decaf} onToggle={() => navigate({ decaf: !filter.decaf })} />
               <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+              {isLoggedIn && (
+                <RatedGroup checked={filter.rated} onToggle={() => navigate({ rated: !filter.rated })} />
+              )}
               {isFiltered && (
                 <button
                   onClick={reset}
@@ -171,6 +178,19 @@ export function FilterPanel({ filter, sort }: FilterPanelProps) {
         >
           디카페인
         </button>
+
+        {isLoggedIn && (
+          <button
+            onClick={() => navigate({ rated: !filter.rated })}
+            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+              filter.rated
+                ? 'border-foreground bg-foreground text-background'
+                : 'border-border hover:border-foreground/40'
+            }`}
+          >
+            내가 평가한
+          </button>
+        )}
 
         <FilterPill
           id="region"
@@ -294,6 +314,20 @@ function DecafGroup({ checked, onToggle }: { checked: boolean; onToggle: () => v
         <Checkbox id="decaf" checked={checked} onCheckedChange={onToggle} />
         <Label htmlFor="decaf" className="text-sm cursor-pointer">
           디카페인 가능
+        </Label>
+      </div>
+    </fieldset>
+  )
+}
+
+function RatedGroup({ checked, onToggle }: { checked: boolean; onToggle: () => void }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 text-sm font-medium">내 평가</legend>
+      <div className="flex items-center gap-2">
+        <Checkbox id="rated" checked={checked} onCheckedChange={onToggle} />
+        <Label htmlFor="rated" className="text-sm cursor-pointer">
+          내가 평가한 로스터리만
         </Label>
       </div>
     </fieldset>

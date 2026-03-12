@@ -59,4 +59,5 @@ export interface FilterParams {
   price: PriceRange[]
   decaf: boolean
   regions: string[]
+  rated: boolean
 }
