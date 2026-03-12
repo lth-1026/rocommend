@@ -6,6 +6,7 @@ import { BeanList } from './BeanList'
 import { RatingDisplay } from './RatingDisplay'
 import { BackButton } from './BackButton'
 import { RatingButton } from '@/components/rating/RatingButton'
+import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
 import { PRICE_RANGE_LABELS } from '@/types/roastery'
 
@@ -13,9 +14,10 @@ interface RoasteryDetailProps {
   roastery: RoasteryDetailType
   isLoggedIn: boolean
   userRating?: { score: number; comment?: string }
+  isBookmarked: boolean
 }
 
-export function RoasteryDetail({ roastery, isLoggedIn, userRating }: RoasteryDetailProps) {
+export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked }: RoasteryDetailProps) {
   return (
     <div className="flex flex-col gap-8">
       <BackButton />
@@ -37,7 +39,15 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating }: RoasteryDet
       {/* 기본 정보 */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold">{roastery.name}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-semibold">{roastery.name}</h1>
+            {isLoggedIn && (
+              <BookmarkButton
+                roasteryId={roastery.id}
+                initialIsBookmarked={isBookmarked}
+              />
+            )}
+          </div>
           {roastery.regions.length > 0 && (
             <p className="text-sm text-muted-foreground">{roastery.regions[0]}</p>
           )}

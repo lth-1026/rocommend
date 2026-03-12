@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getRoasteryById } from '@/lib/queries/roastery'
 import { getUserRating } from '@/lib/queries/rating'
+import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 
 interface RoasteryDetailPageProps {
@@ -14,14 +15,18 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
 
   if (!roastery) notFound()
 
-  const userRating = session?.user?.id ? await getUserRating(session.user.id, id) : null
+  const userId = session?.user?.id
+  const [userRating, isBookmarked] = userId
+    ? await Promise.all([getUserRating(userId, id), getBookmarkStatus(userId, id)])
+    : [null, false]
 
   return (
     <div className="page-wrapper py-8">
       <RoasteryDetail
         roastery={roastery}
-        isLoggedIn={!!session?.user?.id}
+        isLoggedIn={!!userId}
         userRating={userRating ? { score: userRating.score, comment: userRating.comment ?? undefined } : undefined}
+        isBookmarked={isBookmarked}
       />
     </div>
   )
