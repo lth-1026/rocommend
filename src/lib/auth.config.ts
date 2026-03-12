@@ -7,7 +7,7 @@ import '@/types/auth'
 // Edge Runtime 호환 설정 (Prisma adapter 없음)
 // proxy.ts에서 import — Node.js 모듈 사용 불가
 
-const PUBLIC_PATHS = ['/login', '/error', '/api/auth', '/api/test']
+const PUBLIC_PATHS = ['/login', '/error', '/api/auth', '/api/test', '/roasteries']
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some((p) => pathname.startsWith(p))
