@@ -1,9 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { upsertRatingSchema, deleteRatingSchema } from '@/lib/schemas/rating'
+import { computeAndSaveCF } from '@/lib/recommender'
 import type { ActionResult } from '@/types/action'
 
 export async function upsertRating(input: {
@@ -47,6 +49,11 @@ export async function upsertRating(input: {
   revalidatePath('/home')
   revalidatePath('/bookmarks')
 
+  // 응답 후 비동기 CF 재계산 (userId는 after() 외부에서 캡처)
+  after(async () => {
+    await computeAndSaveCF(userId)
+  })
+
   return { success: true }
 }
 
@@ -75,6 +82,11 @@ export async function deleteRating(input: { roasteryId: string }): Promise<Actio
   revalidatePath(`/roasteries/${roasteryId}`)
   revalidatePath('/home')
   revalidatePath('/bookmarks')
+
+  // 응답 후 비동기 CF 재계산
+  after(async () => {
+    await computeAndSaveCF(userId)
+  })
 
   return { success: true }
 }

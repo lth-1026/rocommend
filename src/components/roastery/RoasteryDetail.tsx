@@ -1,10 +1,10 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { BeanList } from './BeanList'
 import { RatingDisplay } from './RatingDisplay'
 import { BackButton } from './BackButton'
+import { WebsiteLink } from './WebsiteLink'
 import { RatingButton } from '@/components/rating/RatingButton'
 import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
@@ -82,14 +82,7 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked 
             />
           )}
           {roastery.website && (
-            <Link
-              href={roastery.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-info underline-offset-4 hover:underline"
-            >
-              웹사이트 방문
-            </Link>
+            <WebsiteLink href={roastery.website} roasteryId={roastery.id} />
           )}
         </div>
       </div>
