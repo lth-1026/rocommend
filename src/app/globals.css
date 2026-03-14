@@ -193,22 +193,30 @@
   -webkit-font-smoothing: antialiased;
 }
 
+body {
+  overflow-x: clip; /* edge-to-edge 스크롤 섹션의 가로 스크롤바 방지 */
+}
+
 /* ── 페이지 컨테이너 ── */
 /* 사용법: <div className="page-wrapper"> */
+:root {
+  --page-padding: 1rem;
+
+  @media (min-width: 768px) {
+    --page-padding: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    --page-padding: 3rem;
+  }
+}
+
 @layer utilities {
   .page-wrapper {
     width: 100%;
     max-width: var(--container-max);
     margin-inline: auto;
-    padding-inline: 1rem;        /* mobile: 16px */
-
-    @media (min-width: 768px) {
-      padding-inline: 2rem;      /* tablet: 32px */
-    }
-
-    @media (min-width: 1024px) {
-      padding-inline: 3rem;      /* desktop: 48px */
-    }
+    padding-inline: var(--page-padding);
   }
 }
 
