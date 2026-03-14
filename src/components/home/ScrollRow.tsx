@@ -17,11 +17,14 @@ export function ScrollRow({ children }: ScrollRowProps) {
           <div
             ref={scrollRef}
             className="overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
-            style={{ scrollSnapType: 'x mandatory' }}
+            style={{
+              scrollSnapType: 'x mandatory',
+              scrollPaddingInline: 'var(--page-padding)',
+            }}
           >
             <div className="flex gap-4">
-              {/* 좌측 spacer: spacer+gap = page-padding, snap point으로 초기 위치 유지 */}
-              <div aria-hidden="true" style={{ minWidth: 'calc(var(--page-padding) - 1rem)', flexShrink: 0, scrollSnapAlign: 'start' }} />
+              {/* 좌측 spacer: spacer+gap = page-padding (snap 없음 — scroll-padding-left가 카드를 여백 위치에 스냅) */}
+              <div aria-hidden="true" style={{ minWidth: 'calc(var(--page-padding) - 1rem)', flexShrink: 0 }} />
               {children}
               {/* 우측 spacer */}
               <div aria-hidden="true" style={{ minWidth: 'calc(var(--page-padding) - 1rem)', flexShrink: 0 }} />
