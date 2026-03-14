@@ -66,7 +66,8 @@ export function ScrollRow({ children }: ScrollRowProps) {
         >
           <div className="flex gap-4">
             {/* 좌측 spacer: gap 한 칸 빼서 spacer+gap = page-padding 정확히 맞춤 */}
-            <div aria-hidden="true" style={{ minWidth: 'calc(var(--page-padding) - 1rem)', flexShrink: 0 }} />
+            {/* scroll-snap-align: start → scrollLeft=0이 유효한 snap point가 되어 초기 위치 유지 */}
+            <div aria-hidden="true" style={{ minWidth: 'calc(var(--page-padding) - 1rem)', flexShrink: 0, scrollSnapAlign: 'start' }} />
             {children}
             {/* 우측 spacer */}
             <div aria-hidden="true" style={{ minWidth: 'calc(var(--page-padding) - 1rem)', flexShrink: 0 }} />
