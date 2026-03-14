@@ -23,14 +23,14 @@ export async function getRecommendations(userId: string): Promise<Recommendation
   const newItems = stored
     .filter((r) => r.userRating === undefined)
     .sort((a, b) => b.cfScore - a.cfScore)
-    .slice(0, 5)
+    .slice(0, 8)
     .map(({ roastery, cfScore }) => ({ roastery, cfScore }))
 
-  // repeat: 유저가 평가한 로스터리 중 CF >= 4.0 AND 내 평점 >= 4, 상위 5개
+  // repeat: 유저가 평가한 로스터리 중 CF >= 4.0 AND 내 평점 >= 4, 상위 8개
   const repeatItems = stored
     .filter((r) => r.userRating !== undefined && r.cfScore >= 4.0 && r.userRating >= 4)
     .sort((a, b) => b.cfScore - a.cfScore)
-    .slice(0, 5)
+    .slice(0, 8)
     .map(({ roastery, cfScore, userRating }) => ({ roastery, cfScore, userRating }))
 
   if (newItems.length === 0 && repeatItems.length === 0) {

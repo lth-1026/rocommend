@@ -58,7 +58,7 @@ export async function getPopularRoasteries(
       if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating
       return b.ratingCount - a.ratingCount
     })
-    .slice(0, 5)
+    .slice(0, 8)
 }
 
 export interface StoredRecommendation {
