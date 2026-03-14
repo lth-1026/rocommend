@@ -1,4 +1,5 @@
 import { RoasteryCard } from '@/components/roastery/RoasteryCard'
+import { ScrollRow, ScrollItem } from './ScrollRow'
 import type { RecommendationItem } from '@/lib/recommender'
 
 interface RecommendSectionProps {
@@ -11,15 +12,17 @@ export function RecommendSection({ title, items, onCardClick }: RecommendSection
   if (items.length === 0) return null
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <section className="flex flex-col gap-3">
+      <h2 className="text-base font-semibold">{title}</h2>
+      <ScrollRow>
         {items.map((item, i) => (
-          <div key={item.roastery.id} onClick={() => onCardClick?.(item.roastery.id)}>
-            <RoasteryCard roastery={item.roastery} priority={i === 0} />
-          </div>
+          <ScrollItem key={item.roastery.id}>
+            <div onClick={() => onCardClick?.(item.roastery.id)}>
+              <RoasteryCard roastery={item.roastery} priority={i === 0} />
+            </div>
+          </ScrollItem>
         ))}
-      </div>
+      </ScrollRow>
     </section>
   )
 }

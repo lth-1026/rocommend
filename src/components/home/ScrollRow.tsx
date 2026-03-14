@@ -1,0 +1,93 @@
+'use client'
+
+import { useRef, useState, useEffect, useCallback } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+interface ScrollRowProps {
+  children: React.ReactNode
+}
+
+const CARD_WIDTH = 176 // w-44 = 176px
+const GAP = 16 // gap-4
+
+export function ScrollRow({ children }: ScrollRowProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  const updateArrows = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 0)
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+  }, [])
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    updateArrows()
+    el.addEventListener('scroll', updateArrows, { passive: true })
+    const ro = new ResizeObserver(updateArrows)
+    ro.observe(el)
+    return () => {
+      el.removeEventListener('scroll', updateArrows)
+      ro.disconnect()
+    }
+  }, [updateArrows])
+
+  const scroll = (dir: 'left' | 'right') => {
+    scrollRef.current?.scrollBy({
+      left: dir === 'left' ? -(CARD_WIDTH + GAP) * 2 : (CARD_WIDTH + GAP) * 2,
+      behavior: 'smooth',
+    })
+  }
+
+  return (
+    <div className="relative">
+      {/* 왼쪽 화살표 — 데스크탑 전용 */}
+      {canScrollLeft && (
+        <button
+          type="button"
+          onClick={() => scroll('left')}
+          className="absolute -left-4 top-1/3 z-10 hidden lg:flex items-center justify-center w-8 h-8 rounded-full bg-background border border-border shadow-sm hover:bg-muted transition-colors cursor-pointer"
+          aria-label="왼쪽으로 스크롤"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+      )}
+
+      {/* 스크롤 컨테이너 */}
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
+        style={{ scrollSnapType: 'x mandatory' }}
+      >
+        {children}
+      </div>
+
+      {/* 오른쪽 화살표 — 데스크탑 전용 */}
+      {canScrollRight && (
+        <button
+          type="button"
+          onClick={() => scroll('right')}
+          className="absolute -right-4 top-1/3 z-10 hidden lg:flex items-center justify-center w-8 h-8 rounded-full bg-background border border-border shadow-sm hover:bg-muted transition-colors cursor-pointer"
+          aria-label="오른쪽으로 스크롤"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+/** ScrollRow 내 개별 카드 래퍼 — 고정 너비 + snap */
+export function ScrollItem({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="w-40 sm:w-44 flex-shrink-0"
+      style={{ scrollSnapAlign: 'start' }}
+    >
+      {children}
+    </div>
+  )
+}
