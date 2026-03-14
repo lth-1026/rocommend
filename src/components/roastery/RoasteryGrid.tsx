@@ -15,6 +15,7 @@ export function RoasteryGrid({ roasteries, activeRegions }: RoasteryGridProps) {
           roastery={roastery}
           priority={i < 4}
           activeRegions={activeRegions}
+          variant="landscape"
         />
       ))}
     </div>
