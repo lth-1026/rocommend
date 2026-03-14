@@ -84,7 +84,7 @@ export function ScrollRow({ children }: ScrollRowProps) {
 export function ScrollItem({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="w-56 sm:w-64 flex-shrink-0"
+      className="w-36 sm:w-40 flex-shrink-0"
       style={{ scrollSnapAlign: 'start' }}
     >
       {children}

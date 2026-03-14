@@ -18,9 +18,9 @@ export function RoasteryCard({ roastery, priority = false, activeRegions }: Roas
       href={`/roasteries/${roastery.id}`}
       className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
     >
-      <div className="group flex flex-row items-start gap-3 rounded-xl p-2 hover:bg-muted/50 transition-colors">
-        {/* 정사각형 이미지 — 텍스트 블록과 동일 크기 */}
-        <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
+      <div className="group flex flex-col gap-2">
+        {/* 3:4 포트레이트 이미지 */}
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-muted">
           {roastery.imageUrl ? (
             <Image
               src={roastery.imageUrl}
@@ -28,14 +28,14 @@ export function RoasteryCard({ roastery, priority = false, activeRegions }: Roas
               fill
               priority={priority}
               className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes="64px"
+              sizes="(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 20vw"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
+                width="32"
+                height="32"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -53,9 +53,9 @@ export function RoasteryCard({ roastery, priority = false, activeRegions }: Roas
           )}
         </div>
 
-        {/* 텍스트 — 이미지와 같은 높이(h-16)에 맞춰 배치 */}
-        <div className="flex flex-col justify-between h-16 min-w-0">
-          <p className="font-medium text-sm leading-tight line-clamp-1">{roastery.name}</p>
+        {/* 텍스트 */}
+        <div className="flex flex-col gap-0.5 px-0.5">
+          <p className="text-sm font-medium leading-tight line-clamp-1">{roastery.name}</p>
           <p className="text-xs text-muted-foreground line-clamp-1">
             {roastery.regions.length > 0 && (
               <RegionDisplay regions={roastery.regions} activeRegions={activeRegions} />
@@ -63,7 +63,7 @@ export function RoasteryCard({ roastery, priority = false, activeRegions }: Roas
             {roastery.regions.length > 0 && ' · '}
             {PRICE_RANGE_LABELS[roastery.priceRange]}
           </p>
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5">
             <span className="text-xs">
               <RatingDisplay avgRating={roastery.avgRating} ratingCount={roastery.ratingCount} />
             </span>
