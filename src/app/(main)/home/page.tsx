@@ -1,8 +1,24 @@
-// F-006에서 구현 예정
-export default function HomePage() {
+import { Suspense } from 'react'
+import { auth } from '@/lib/auth'
+import { getRecommendations } from '@/lib/recommender'
+import { HomeFeedClient } from '@/components/home/HomeFeedClient'
+import { FeedSkeleton } from '@/components/home/FeedSkeleton'
+
+async function HomeFeed({ userId }: { userId: string }) {
+  const result = await getRecommendations(userId)
+  return <HomeFeedClient result={result} />
+}
+
+export default async function HomePage() {
+  const session = await auth()
+  const userId = session!.user!.id!
+
   return (
-    <div className="page-wrapper py-8">
-      <p className="text-text-secondary">홈 피드 준비 중</p>
+    <div className="page-wrapper py-8 flex flex-col gap-6">
+      <h1 className="text-xl font-semibold">추천</h1>
+      <Suspense fallback={<FeedSkeleton />}>
+        <HomeFeed userId={userId} />
+      </Suspense>
     </div>
   )
 }
