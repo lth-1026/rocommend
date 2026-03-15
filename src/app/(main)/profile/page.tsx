@@ -4,6 +4,7 @@ import { getProfileSummary } from '@/lib/queries/profile'
 import { ProfileCard } from '@/components/profile/ProfileCard'
 import { ActivitySummary } from '@/components/profile/ActivitySummary'
 import { LogoutButton } from '@/components/profile/LogoutButton'
+import { DeleteAccountDialog } from '@/components/profile/DeleteAccountDialog'
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -27,6 +28,7 @@ export default async function ProfilePage() {
       />
 
       <LogoutButton />
+      <DeleteAccountDialog />
     </div>
   )
 }
