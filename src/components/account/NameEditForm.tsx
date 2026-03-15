@@ -43,7 +43,7 @@ export function NameEditForm({ currentName }: NameEditFormProps) {
           onChange={(e) => { setName(e.target.value); setSaved(false) }}
           placeholder="이름을 입력하세요"
           maxLength={20}
-          className="h-10 flex-1"
+          className="flex-1"
         />
         <Button type="submit" disabled={isPending || !isDirty} className="shrink-0">
           {isPending ? '저장 중...' : '저장'}
