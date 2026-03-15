@@ -32,8 +32,10 @@ export function Header({ className }: { className?: string }) {
     >
       <div className="page-wrapper flex h-14 items-center justify-between">
         {/* 로고 */}
-        <Link href="/home" className="text-lg font-bold text-text-primary">
-          Rocommend
+        <Link href="/home" className="flex items-center gap-2">
+          <Image src="/brand/logo.svg" alt="roco" width={24} height={24} className="dark:hidden" />
+          <Image src="/brand/logo-reversed.svg" alt="roco" width={24} height={24} className="hidden dark:block" />
+          <span className="text-lg font-bold text-text-primary">roco</span>
         </Link>
 
         {/* 네비게이션 링크 */}
