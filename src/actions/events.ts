@@ -12,6 +12,7 @@ export async function logClientEvent(input: {
   const userId = session?.user?.id ?? undefined
 
   await logEvent(input.event, input.payload, userId)
+  console.log('[logClientEvent]', input.event, { userId: userId ?? 'anonymous' })
 
   return { success: true }
 }

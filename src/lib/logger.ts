@@ -14,7 +14,7 @@ export async function logEvent(
         userId: userId ?? null,
       },
     })
-  } catch {
-    // 로깅 실패는 무시 — non-critical
+  } catch (err) {
+    console.error('[logEvent] failed:', err)
   }
 }
