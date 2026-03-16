@@ -24,17 +24,21 @@ export function AvatarUpload({ currentImage, name }: AvatarUploadProps) {
     if (!file) return
 
     setError(null)
-    setPreview(URL.createObjectURL(file))
+    // blob: URL은 업로드 중 미리보기용 — next/image 미지원이므로 별도 처리
+    const objectUrl = URL.createObjectURL(file)
+    setPreview(objectUrl)
 
     const fd = new FormData()
     fd.append('file', file)
 
     startTransition(async () => {
       const result = await uploadAvatar(fd)
-      if (result.success) {
+      URL.revokeObjectURL(objectUrl)
+      if (result.success && result.data) {
+        setPreview(result.data.url)
         router.refresh()
-      } else {
-        setError(result.error)
+      } else if (!result.success) {
+        setError(result.error ?? '업로드 중 오류가 발생했습니다')
         setPreview(currentImage)
       }
       // input 초기화 (같은 파일 재업로드 허용)
@@ -52,7 +56,9 @@ export function AvatarUpload({ currentImage, name }: AvatarUploadProps) {
         className="relative w-16 h-16 rounded-full overflow-hidden bg-surface-alt shrink-0 focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
       >
         {preview ? (
-          <Image src={preview} alt="프로필 사진" fill className="object-cover" />
+          // blob: URL(업로드 중 미리보기)은 next/image 미지원 → img 태그 사용
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={preview} alt="프로필 사진" className="w-full h-full object-cover" />
         ) : (
           <span className="flex items-center justify-center w-full h-full text-xl font-semibold text-text-secondary">
             {initials}
