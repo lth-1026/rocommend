@@ -14,8 +14,8 @@ export default async function HomePage() {
   const userId = session!.user!.id!
 
   return (
-    <div className="page-wrapper py-8 flex flex-col gap-6">
-      <h1 className="text-xl font-semibold">추천</h1>
+    <div className="py-8 flex flex-col gap-6">
+      <h1 className="page-wrapper text-xl font-semibold">추천</h1>
       <Suspense fallback={<FeedSkeleton />}>
         <HomeFeed userId={userId} />
       </Suspense>

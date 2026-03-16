@@ -12,29 +12,18 @@ export function ScrollRow({ children }: ScrollRowProps) {
   return (
     <div>
       {/* 모바일/태블릿: edge-to-edge 가로 스크롤 */}
-      <div className="relative lg:hidden">
-        <div style={{ marginInline: 'calc(-1 * var(--page-padding))' }}>
-          <div
-            ref={scrollRef}
-            className="overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
-            style={{
-              scrollSnapType: 'x mandatory',
-              scrollPaddingInline: 'var(--page-padding)',
-            }}
-          >
-            <div className="flex gap-4">
-              {/* 좌측 spacer: spacer+gap = page-padding (snap 없음 — scroll-padding-left가 카드를 여백 위치에 스냅) */}
-              <div aria-hidden="true" style={{ minWidth: 'calc(var(--page-padding) - 1rem)', flexShrink: 0 }} />
-              {children}
-              {/* 우측 spacer */}
-              <div aria-hidden="true" style={{ minWidth: 'calc(var(--page-padding) - 1rem)', flexShrink: 0 }} />
-            </div>
-          </div>
+      <div
+        ref={scrollRef}
+        className="lg:hidden overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth [scroll-snap-type:x_mandatory] [scroll-padding-inline-start:1rem] md:[scroll-padding-inline-start:2rem]"
+      >
+        <div className="flex gap-4 pl-4 md:pl-8">
+          {children}
+          <div aria-hidden="true" className="-ml-4 min-w-4 md:min-w-8 shrink-0" />
         </div>
       </div>
 
       {/* 데스크탑: 스크롤 없이 전체 카드 표시 */}
-      <div className="hidden lg:flex gap-4">
+      <div className="hidden lg:flex gap-4 page-wrapper">
         {children}
       </div>
     </div>

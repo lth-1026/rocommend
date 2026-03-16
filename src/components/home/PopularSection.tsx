@@ -12,7 +12,7 @@ export function PopularSection({ items, onCardClick }: PopularSectionProps) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-base font-semibold">실시간 인기 로스터리</h2>
+      <h2 className="page-wrapper text-base font-semibold">실시간 인기 로스터리</h2>
       <ScrollRow>
         {items.map((roastery, i) => (
           <ScrollItem key={roastery.id}>

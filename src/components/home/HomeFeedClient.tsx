@@ -54,7 +54,7 @@ export function HomeFeedClient({ result }: HomeFeedClientProps) {
   return (
     <div className="flex flex-col gap-6">
       {showDecafToggle && (
-        <div className="flex items-center">
+        <div className="page-wrapper flex items-center">
           <DecafToggle decafOn={decafOn} onToggle={() => setDecafOn((v) => !v)} />
         </div>
       )}
