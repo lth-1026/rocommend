@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 import { uploadAvatar } from '@/actions/upload'
 
 interface AvatarUploadProps {
@@ -16,6 +16,7 @@ export function AvatarUpload({ currentImage, name }: AvatarUploadProps) {
   const [isPending, startTransition] = useTransition()
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+  const { update } = useSession()
 
   const initials = name?.charAt(0)?.toUpperCase() ?? '?'
 
@@ -36,6 +37,7 @@ export function AvatarUpload({ currentImage, name }: AvatarUploadProps) {
       URL.revokeObjectURL(objectUrl)
       if (result.success && result.data) {
         setPreview(result.data.url)
+        await update({ image: result.data.url })
         router.refresh()
       } else if (!result.success) {
         setError(result.error ?? '업로드 중 오류가 발생했습니다')
