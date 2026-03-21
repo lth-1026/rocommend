@@ -16,7 +16,8 @@ const isDev = process.env.NODE_ENV === 'development'
 /** 로컬 dev: public/uploads/avatars/ 에 저장, 프로덕션: Vercel Blob */
 async function putFile(userId: string, file: File): Promise<string> {
   const ext = file.type.split('/')[1]
-  const filename = `${userId}.${ext}`
+  // 업로드마다 고유 파일명 → 브라우저 캐시 자동 무효화
+  const filename = `${userId}_${Date.now()}.${ext}`
 
   if (isDev) {
     const { writeFile, mkdir } = await import('fs/promises')
@@ -82,10 +83,15 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<{ u
     await deleteFile(prevImage)
   }
 
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { image: url },
-  })
+  try {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { image: url },
+    })
+  } catch {
+    await deleteFile(url)
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
 
   revalidatePath('/account')
   revalidatePath('/profile')
