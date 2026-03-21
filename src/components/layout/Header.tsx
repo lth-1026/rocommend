@@ -69,6 +69,7 @@ export function Header({ className }: { className?: string }) {
                   width={32}
                   height={32}
                   className="size-full object-cover"
+                  unoptimized
                 />
               ) : (
                 <span className="text-xs font-medium text-text-secondary">

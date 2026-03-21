@@ -16,7 +16,7 @@ export default async function ProfilePage() {
     getProfileSummary(session.user.id),
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { name: true },
+      select: { name: true, image: true },
     }),
   ])
 
@@ -27,7 +27,7 @@ export default async function ProfilePage() {
       <ProfileCard
         name={user?.name ?? session.user.name ?? null}
         email={session.user.email ?? null}
-        image={session.user.image ?? null}
+        image={user?.image ?? session.user.image ?? null}
       />
 
       <ActivitySummary

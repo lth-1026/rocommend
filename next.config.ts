@@ -11,7 +11,14 @@ const nextConfig: NextConfig = {
       // Naver 프로필 이미지
       { protocol: 'https', hostname: 'phinf.pstatic.net', pathname: '/**' },
       { protocol: 'https', hostname: 'ssl.pstatic.net', pathname: '/**' },
+      // Vercel Blob 업로드 이미지
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com', pathname: '/**' },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4mb',
+    },
   },
 };
 

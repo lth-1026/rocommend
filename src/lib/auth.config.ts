@@ -20,6 +20,12 @@ export const authConfig: NextAuthConfig = {
     error: '/error',
   },
   callbacks: {
+    jwt({ token, trigger, session }) {
+      if (trigger === 'update' && session?.image) {
+        token.picture = session.image
+      }
+      return token
+    },
     session({ session, token }) {
       session.user.id = token.sub!
       return session
