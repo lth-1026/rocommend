@@ -1,7 +1,25 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      // Google 프로필 이미지
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com', pathname: '/**' },
+      // Kakao 프로필 이미지 (http/https 모두)
+      { protocol: 'https', hostname: 'k.kakaocdn.net', pathname: '/**' },
+      { protocol: 'http', hostname: 'k.kakaocdn.net', pathname: '/**' },
+      // Naver 프로필 이미지
+      { protocol: 'https', hostname: 'phinf.pstatic.net', pathname: '/**' },
+      { protocol: 'https', hostname: 'ssl.pstatic.net', pathname: '/**' },
+      // Vercel Blob 업로드 이미지
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com', pathname: '/**' },
+    ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4mb',
+    },
+  },
 };
 
 export default nextConfig;

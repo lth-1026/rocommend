@@ -10,19 +10,29 @@ export default defineConfig({
     passWithNoTests: true,
     projects: [
       {
-        // 서버 로직 — node 환경
+        // 서버 로직 — node 환경 (단위 + 통합)
         test: {
           name: 'server',
-          include: ['src/actions/**/*.test.ts', 'src/lib/**/*.test.ts'],
+          include: [
+            'src/actions/**/*.test.ts',
+            'src/lib/**/*.test.ts',
+            'src/actions/**/*.integration.test.ts',
+            'src/lib/**/*.integration.test.ts',
+          ],
           environment: 'node',
         },
       },
       {
         // 컴포넌트 — jsdom 환경
+        plugins: [react()],
         test: {
           name: 'components',
           include: ['src/components/**/*.test.tsx'],
           environment: 'jsdom',
+          setupFiles: ['./src/tests/setup.ts'],
+        },
+        resolve: {
+          alias: { '@': path.resolve(__dirname, './src') },
         },
       },
     ],
