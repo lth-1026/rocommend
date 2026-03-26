@@ -12,7 +12,11 @@ interface BookmarkButtonProps {
   className?: string
 }
 
-export function BookmarkButton({ roasteryId, initialIsBookmarked, className }: BookmarkButtonProps) {
+export function BookmarkButton({
+  roasteryId,
+  initialIsBookmarked,
+  className,
+}: BookmarkButtonProps) {
   const [isPending, startTransition] = useTransition()
   const [isBookmarked, addOptimistic] = useOptimistic(
     initialIsBookmarked,

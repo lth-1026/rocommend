@@ -9,7 +9,10 @@ export async function getBookmarkStatus(userId: string, roasteryId: string): Pro
   return !!bookmark
 }
 
-export async function getBookmarks(userId: string, sort: BookmarkSort = 'name'): Promise<BookmarkWithRoastery[]> {
+export async function getBookmarks(
+  userId: string,
+  sort: BookmarkSort = 'name'
+): Promise<BookmarkWithRoastery[]> {
   const [bookmarks, avgRatings, userRatings] = await Promise.all([
     prisma.bookmark.findMany({
       where: { userId },

@@ -17,7 +17,12 @@ interface RoasteryDetailProps {
   isBookmarked: boolean
 }
 
-export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked }: RoasteryDetailProps) {
+export function RoasteryDetail({
+  roastery,
+  isLoggedIn,
+  userRating,
+  isBookmarked,
+}: RoasteryDetailProps) {
   return (
     <div className="flex flex-col gap-8">
       <BackButton />
@@ -56,7 +61,11 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked 
             {roastery.decaf && <Badge variant="secondary">디카페인</Badge>}
           </div>
           <div className="flex items-center gap-1 text-sm">
-            <RatingDisplay avgRating={roastery.avgRating} ratingCount={roastery.ratingCount} size="lg" />
+            <RatingDisplay
+              avgRating={roastery.avgRating}
+              ratingCount={roastery.ratingCount}
+              size="lg"
+            />
           </div>
           {/* 주 CTA: 평가하기 + 보조: 즐겨찾기 */}
           {isLoggedIn && (
@@ -68,10 +77,7 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked 
                 existingScore={userRating?.score}
                 existingComment={userRating?.comment}
               />
-              <BookmarkButton
-                roasteryId={roastery.id}
-                initialIsBookmarked={isBookmarked}
-              />
+              <BookmarkButton roasteryId={roastery.id} initialIsBookmarked={isBookmarked} />
             </div>
           )}
           {!isLoggedIn && (
@@ -81,9 +87,7 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked 
               isLoggedIn={false}
             />
           )}
-          {roastery.website && (
-            <WebsiteLink href={roastery.website} roasteryId={roastery.id} />
-          )}
+          {roastery.website && <WebsiteLink href={roastery.website} roasteryId={roastery.id} />}
         </div>
       </div>
 

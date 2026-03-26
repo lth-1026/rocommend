@@ -25,7 +25,11 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
       <RoasteryDetail
         roastery={roastery}
         isLoggedIn={!!userId}
-        userRating={userRating ? { score: userRating.score, comment: userRating.comment ?? undefined } : undefined}
+        userRating={
+          userRating
+            ? { score: userRating.score, comment: userRating.comment ?? undefined }
+            : undefined
+        }
         isBookmarked={isBookmarked}
       />
     </div>

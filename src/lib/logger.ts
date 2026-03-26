@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client'
 export async function logEvent(
   event: string,
   payload?: Record<string, unknown>,
-  userId?: string,
+  userId?: string
 ): Promise<void> {
   try {
     await prisma.eventLog.create({

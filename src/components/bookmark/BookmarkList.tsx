@@ -65,7 +65,9 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
                   {PRICE_RANGE_LABELS[item.roastery.priceRange]}
                 </Badge>
                 {item.roastery.decaf && (
-                  <Badge variant="secondary" className="text-xs">디카페인</Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    디카페인
+                  </Badge>
                 )}
               </div>
             </Link>
@@ -95,7 +97,9 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
       {removeTarget && (
         <RemoveBookmarkDialog
           open={!!removeTarget}
-          onOpenChange={(open) => { if (!open) setRemoveTarget(null) }}
+          onOpenChange={(open) => {
+            if (!open) setRemoveTarget(null)
+          }}
           roasteryId={removeTarget.roasteryId}
           roasteryName={removeTarget.roastery.name}
           onSuccess={() => router.refresh()}

@@ -15,7 +15,7 @@ export async function getUserRatingCount(userId: string): Promise<number> {
 
 export async function getPopularRoasteries(
   userId?: string,
-  preferredPriceRanges?: PriceRange[],
+  preferredPriceRanges?: PriceRange[]
 ): Promise<RoasteryWithStats[]> {
   const where = {
     ...(userId && { ratings: { none: { userId } } }),

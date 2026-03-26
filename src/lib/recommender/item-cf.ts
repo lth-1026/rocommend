@@ -6,10 +6,7 @@ import type { RawRating } from './types'
  * 두 로스터리 벡터(userId→score)의 코사인 유사도 계산.
  * 공통 평가자 없거나 영벡터이면 0.0 반환.
  */
-export function cosineSimilarity(
-  vecA: Map<string, number>,
-  vecB: Map<string, number>,
-): number {
+export function cosineSimilarity(vecA: Map<string, number>, vecB: Map<string, number>): number {
   let dot = 0
   let normA = 0
   let normB = 0
@@ -34,9 +31,7 @@ export function cosineSimilarity(
  * 전체 평가 데이터로 로스터리 간 코사인 유사도 행렬 구성.
  * 반환: Map<roasteryId, Map<roasteryId, similarity>>
  */
-export function buildSimilarityMatrix(
-  ratings: RawRating[],
-): Map<string, Map<string, number>> {
+export function buildSimilarityMatrix(ratings: RawRating[]): Map<string, Map<string, number>> {
   // 로스터리별 userId→score 맵 구성
   const roasteryVecs = new Map<string, Map<string, number>>()
   for (const { roasteryId, userId, score } of ratings) {
@@ -122,8 +117,8 @@ export async function computeAndSaveCF(userId: string): Promise<void> {
         where: { userId_roasteryId: { userId, roasteryId: rec.roasteryId } },
         create: { userId, roasteryId: rec.roasteryId, score: rec.score },
         update: { score: rec.score },
-      }),
-    ),
+      })
+    )
   )
 
   // 이번 계산에 포함되지 않은 기존 추천 레코드 삭제 (더 이상 유효하지 않은 것)

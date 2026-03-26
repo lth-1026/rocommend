@@ -20,7 +20,12 @@ interface DeleteRatingDialogProps {
   onSuccess: () => void
 }
 
-export function DeleteRatingDialog({ open, onOpenChange, roasteryId, onSuccess }: DeleteRatingDialogProps) {
+export function DeleteRatingDialog({
+  open,
+  onOpenChange,
+  roasteryId,
+  onSuccess,
+}: DeleteRatingDialogProps) {
   const [isPending, startTransition] = useTransition()
 
   function handleDelete() {
@@ -41,7 +46,9 @@ export function DeleteRatingDialog({ open, onOpenChange, roasteryId, onSuccess }
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>평가 삭제</DialogTitle>
-          <DialogDescription>이 로스터리에 남긴 평가를 삭제할까요? 되돌릴 수 없어요.</DialogDescription>
+          <DialogDescription>
+            이 로스터리에 남긴 평가를 삭제할까요? 되돌릴 수 없어요.
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>

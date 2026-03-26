@@ -24,17 +24,18 @@ export function Header({ className }: { className?: string }) {
   const { data: session } = useSession()
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-40 w-full border-b border-border bg-surface',
-        className
-      )}
-    >
+    <header className={cn('sticky top-0 z-40 w-full border-b border-border bg-surface', className)}>
       <div className="page-wrapper flex h-14 items-center justify-between">
         {/* 로고 */}
         <Link href="/home" className="flex items-center gap-2">
           <Image src="/brand/logo.svg" alt="roco" width={24} height={24} className="dark:hidden" />
-          <Image src="/brand/logo-reversed.svg" alt="roco" width={24} height={24} className="hidden dark:block" />
+          <Image
+            src="/brand/logo-reversed.svg"
+            alt="roco"
+            width={24}
+            height={24}
+            className="hidden dark:block"
+          />
           <span className="text-lg font-bold text-text-primary">roco</span>
         </Link>
 
@@ -46,9 +47,7 @@ export function Header({ className }: { className?: string }) {
               href={href}
               className={cn(
                 'text-sm font-medium transition-colors hover:text-text-primary',
-                pathname.startsWith(href)
-                  ? 'text-text-primary'
-                  : 'text-text-secondary'
+                pathname.startsWith(href) ? 'text-text-primary' : 'text-text-secondary'
               )}
             >
               {label}
@@ -59,9 +58,7 @@ export function Header({ className }: { className?: string }) {
         {/* 아바타 드롭다운 / 로그인 버튼 */}
         {session?.user ? (
           <DropdownMenu>
-            <DropdownMenuTrigger
-              className="flex size-8 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-border focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
+            <DropdownMenuTrigger className="flex size-8 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-border focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               {session.user.image ? (
                 <Image
                   src={session.user.image}
@@ -79,7 +76,9 @@ export function Header({ className }: { className?: string }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem>
-                <Link href="/profile" className="w-full">프로필</Link>
+                <Link href="/profile" className="w-full">
+                  프로필
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem

@@ -28,9 +28,7 @@ export function DeleteAccountDialog() {
 
   return (
     <Dialog>
-      <DialogTrigger
-        className="w-full cursor-pointer rounded-lg border border-border bg-surface px-4 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg"
-      >
+      <DialogTrigger className="w-full cursor-pointer rounded-lg border border-border bg-surface px-4 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg">
         회원 탈퇴
       </DialogTrigger>
       <DialogContent showCloseButton={false}>

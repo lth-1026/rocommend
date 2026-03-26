@@ -6,7 +6,7 @@ const DEFAULT_FILTER: FilterParams = { q: '', price: [], decaf: false, regions: 
 export async function getRoasteries(
   sort: SortOption = 'popular',
   filter: FilterParams = DEFAULT_FILTER,
-  userId?: string,
+  userId?: string
 ): Promise<RoasteryWithStats[]> {
   const where = {
     ...(filter.price.length > 0 && { priceRange: { in: filter.price } }),
