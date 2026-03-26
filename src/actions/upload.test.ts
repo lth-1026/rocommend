@@ -50,7 +50,7 @@ describe('uploadAvatar', () => {
 
   // 인증 검사
   it('미인증 유저는 UNAUTHORIZED를 반환한다', async () => {
-    vi.mocked(auth).mockResolvedValue(null)
+    vi.mocked(auth).mockResolvedValue(null as never)
     const fd = makeFormData(makeFile('photo.jpg', 'image/jpeg', 100))
     const result = await uploadAvatar(fd)
     expect(result).toEqual({ success: false, error: expect.any(String), code: 'UNAUTHORIZED' })
