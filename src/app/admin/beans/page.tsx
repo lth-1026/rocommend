@@ -43,7 +43,9 @@ export default async function AdminBeansPage() {
                 <tr key={b.id} className="hover:bg-surface-sub transition-colors">
                   <td className="px-4 py-3 font-medium text-text">{b.name}</td>
                   <td className="px-4 py-3 text-text-sub">{b.roastery.name}</td>
-                  <td className="px-4 py-3 text-text-sub">{ROASTING_LEVEL_LABEL[b.roastingLevel] ?? b.roastingLevel}</td>
+                  <td className="px-4 py-3 text-text-sub">
+                    {ROASTING_LEVEL_LABEL[b.roastingLevel] ?? b.roastingLevel}
+                  </td>
                   <td className="px-4 py-3 text-text-sub">{b.origins.join(', ') || '—'}</td>
                   <td className="px-4 py-3 text-text-sub">{b.decaf ? 'O' : '—'}</td>
                   <td className="px-4 py-3">

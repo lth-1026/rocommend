@@ -33,7 +33,9 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
   const [decaf, setDecaf] = useState(initialData?.decaf ?? false)
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? '')
   const [website, setWebsite] = useState(initialData?.website ?? '')
-  const [isOnboardingCandidate, setIsOnboardingCandidate] = useState(initialData?.isOnboardingCandidate ?? false)
+  const [isOnboardingCandidate, setIsOnboardingCandidate] = useState(
+    initialData?.isOnboardingCandidate ?? false
+  )
 
   const isEdit = !!roasteryId
 
@@ -41,12 +43,19 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
     e.preventDefault()
     setError(null)
 
-    const input = { name, description, regions, priceRange, decaf, imageUrl, website, isOnboardingCandidate }
+    const input = {
+      name,
+      description,
+      regions,
+      priceRange,
+      decaf,
+      imageUrl,
+      website,
+      isOnboardingCandidate,
+    }
 
     startTransition(async () => {
-      const result = isEdit
-        ? await updateRoastery(roasteryId, input)
-        : await createRoastery(input)
+      const result = isEdit ? await updateRoastery(roasteryId, input) : await createRoastery(input)
 
       if (!result.success) {
         setError(result.error)
@@ -60,9 +69,7 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      {error && (
-        <div className="rounded-lg bg-error/10 px-4 py-3 text-sm text-error">{error}</div>
-      )}
+      {error && <div className="rounded-lg bg-error/10 px-4 py-3 text-sm text-error">{error}</div>}
 
       {/* 이름 */}
       <div className="flex flex-col gap-1.5">
@@ -121,7 +128,9 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
         folder="roasteries"
         value={imageUrl}
         onChange={setImageUrl}
-        onError={(msg) => { if (msg) setError(msg) }}
+        onError={(msg) => {
+          if (msg) setError(msg)
+        }}
       />
 
       {/* 웹사이트 */}

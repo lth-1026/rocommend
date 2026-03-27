@@ -34,7 +34,9 @@ export interface CreateRoasteryInput {
   isOnboardingCandidate: boolean
 }
 
-export async function createRoastery(input: CreateRoasteryInput): Promise<ActionResult<{ id: string }>> {
+export async function createRoastery(
+  input: CreateRoasteryInput
+): Promise<ActionResult<{ id: string }>> {
   const check = await requireAdmin()
   if ('error' in check) {
     return { success: false, error: check.error, code: check.code }
@@ -119,7 +121,10 @@ export async function createBean(input: CreateBeanInput): Promise<ActionResult<{
 }
 
 // ── 로스터리 수정 ───────────────────────────────────────
-export async function updateRoastery(id: string, input: CreateRoasteryInput): Promise<ActionResult<{ id: string }>> {
+export async function updateRoastery(
+  id: string,
+  input: CreateRoasteryInput
+): Promise<ActionResult<{ id: string }>> {
   const check = await requireAdmin()
   if ('error' in check) {
     return { success: false, error: check.error, code: check.code }
@@ -157,7 +162,10 @@ export async function updateRoastery(id: string, input: CreateRoasteryInput): Pr
 }
 
 // ── 원두 수정 ───────────────────────────────────────────
-export async function updateBean(id: string, input: CreateBeanInput): Promise<ActionResult<{ id: string }>> {
+export async function updateBean(
+  id: string,
+  input: CreateBeanInput
+): Promise<ActionResult<{ id: string }>> {
   const check = await requireAdmin()
   if ('error' in check) {
     return { success: false, error: check.error, code: check.code }

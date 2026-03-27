@@ -52,7 +52,9 @@ export function ImageUpload({ folder, value, onChange, onError }: ImageUploadPro
             // eslint-disable-next-line @next/next/no-img-element
             <img src={displaySrc} alt="미리보기" className="h-full w-full object-cover" />
           ) : (
-            <span className="absolute inset-0 flex items-center justify-center text-xs text-text-sub">없음</span>
+            <span className="absolute inset-0 flex items-center justify-center text-xs text-text-sub">
+              없음
+            </span>
           )}
           {isUploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-xs text-white">
@@ -74,7 +76,10 @@ export function ImageUpload({ folder, value, onChange, onError }: ImageUploadPro
           {value && (
             <button
               type="button"
-              onClick={() => { onChange(''); setPreview(null) }}
+              onClick={() => {
+                onChange('')
+                setPreview(null)
+              }}
               className="text-xs text-text-sub hover:text-error transition-colors"
             >
               삭제

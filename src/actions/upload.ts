@@ -72,12 +72,16 @@ async function deleteFile(url: string): Promise<void> {
 }
 
 function isOwnImage(url: string): boolean {
-  return url.includes(BLOB_HOST) || url.startsWith(LOCAL_UPLOADS_PATH) || url.startsWith(LOCAL_ADMIN_UPLOADS_PATH)
+  return (
+    url.includes(BLOB_HOST) ||
+    url.startsWith(LOCAL_UPLOADS_PATH) ||
+    url.startsWith(LOCAL_ADMIN_UPLOADS_PATH)
+  )
 }
 
 export async function uploadAdminImage(
   formData: FormData,
-  folder: 'roasteries' | 'beans',
+  folder: 'roasteries' | 'beans'
 ): Promise<ActionResult<{ url: string }>> {
   const session = await auth()
   if (!session?.user?.id) {
@@ -92,7 +96,11 @@ export async function uploadAdminImage(
     return { success: false, error: '파일을 선택해주세요', code: 'VALIDATION' }
   }
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return { success: false, error: 'jpg, png, webp 형식만 업로드할 수 있습니다', code: 'VALIDATION' }
+    return {
+      success: false,
+      error: 'jpg, png, webp 형식만 업로드할 수 있습니다',
+      code: 'VALIDATION',
+    }
   }
   if (file.size > MAX_SIZE) {
     return { success: false, error: '파일 크기는 4MB 이하여야 합니다', code: 'VALIDATION' }
@@ -118,7 +126,11 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<{ u
   }
 
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return { success: false, error: 'jpg, png, webp 형식만 업로드할 수 있습니다', code: 'VALIDATION' }
+    return {
+      success: false,
+      error: 'jpg, png, webp 형식만 업로드할 수 있습니다',
+      code: 'VALIDATION',
+    }
   }
 
   if (file.size > MAX_SIZE) {

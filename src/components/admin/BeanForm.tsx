@@ -54,9 +54,7 @@ export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
     const input = { roasteryId, name, origins, roastingLevel, decaf, cupNotes, imageUrl }
 
     startTransition(async () => {
-      const result = isEdit
-        ? await updateBean(beanId, input)
-        : await createBean(input)
+      const result = isEdit ? await updateBean(beanId, input) : await createBean(input)
 
       if (!result.success) {
         setError(result.error)
@@ -70,9 +68,7 @@ export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      {error && (
-        <div className="rounded-lg bg-error/10 px-4 py-3 text-sm text-error">{error}</div>
-      )}
+      {error && <div className="rounded-lg bg-error/10 px-4 py-3 text-sm text-error">{error}</div>}
 
       {/* 로스터리 선택 */}
       <div className="flex flex-col gap-1.5">
@@ -113,12 +109,7 @@ export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
       </div>
 
       {/* 원산지 (태그) */}
-      <TagInput
-        label="원산지"
-        tags={origins}
-        onChange={setOrigins}
-        placeholder="예: 에티오피아"
-      />
+      <TagInput label="원산지" tags={origins} onChange={setOrigins} placeholder="예: 에티오피아" />
 
       {/* 로스팅 레벨 */}
       <div className="flex flex-col gap-1.5">
@@ -151,7 +142,9 @@ export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
         folder="beans"
         value={imageUrl}
         onChange={setImageUrl}
-        onError={(msg) => { if (msg) setError(msg) }}
+        onError={(msg) => {
+          if (msg) setError(msg)
+        }}
       />
 
       {/* 디카페인 */}

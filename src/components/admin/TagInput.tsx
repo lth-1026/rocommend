@@ -10,7 +10,13 @@ interface TagInputProps {
   required?: boolean
 }
 
-export function TagInput({ label, tags, onChange, placeholder = '입력 후 Enter', required }: TagInputProps) {
+export function TagInput({
+  label,
+  tags,
+  onChange,
+  placeholder = '입력 후 Enter',
+  required,
+}: TagInputProps) {
   const [input, setInput] = useState('')
 
   function addTag() {
