@@ -63,7 +63,11 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<{ u
   }
 
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return { success: false, error: 'jpg, png, webp 형식만 업로드할 수 있습니다', code: 'VALIDATION' }
+    return {
+      success: false,
+      error: 'jpg, png, webp 형식만 업로드할 수 있습니다',
+      code: 'VALIDATION',
+    }
   }
 
   if (file.size > MAX_SIZE) {

@@ -1,12 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { RatingForm } from './RatingForm'
 import { DeleteRatingDialog } from './DeleteRatingDialog'
 import { Button } from '@/components/ui/button'

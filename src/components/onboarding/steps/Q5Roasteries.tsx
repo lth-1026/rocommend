@@ -54,13 +54,13 @@ export function Q5Roasteries({
               'rounded-xl border px-3 py-3 text-left transition-colors',
               selected.includes(r.id)
                 ? 'border-primary bg-primary/10'
-                : 'border-border bg-card hover:border-primary/50',
+                : 'border-border bg-card hover:border-primary/50'
             )}
           >
             <p
               className={cn(
                 'text-sm font-medium',
-                selected.includes(r.id) ? 'text-primary' : 'text-text-primary',
+                selected.includes(r.id) ? 'text-primary' : 'text-text-primary'
               )}
             >
               {r.name}
@@ -70,12 +70,7 @@ export function Q5Roasteries({
         ))}
       </div>
 
-      <Button
-        className="w-full"
-        size="lg"
-        onClick={onSubmit}
-        disabled={!isReady || isLoading}
-      >
+      <Button className="w-full" size="lg" onClick={onSubmit} disabled={!isReady || isLoading}>
         {isLoading ? '저장 중...' : '완료 및 제출'}
       </Button>
     </div>

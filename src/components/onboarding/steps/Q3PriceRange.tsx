@@ -1,10 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import {
-  PRICE_RANGES,
-  PRICE_RANGE_LABELS,
-  type OnboardingPriceRange,
-} from '@/types/onboarding'
+import { PRICE_RANGES, PRICE_RANGE_LABELS, type OnboardingPriceRange } from '@/types/onboarding'
 
 interface Q3PriceRangeProps {
   selected: OnboardingPriceRange[]
@@ -32,7 +28,9 @@ export function Q3PriceRange({ selected, onChange, onNext }: Q3PriceRangeProps) 
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-text-primary">선호하는 가격대가 있나요?</h2>
-        <p className="mt-1 text-sm text-text-secondary">200g 기준. 해당하는 것을 모두 선택해주세요</p>
+        <p className="mt-1 text-sm text-text-secondary">
+          200g 기준. 해당하는 것을 모두 선택해주세요
+        </p>
       </div>
 
       <div className="space-y-3">
@@ -45,7 +43,7 @@ export function Q3PriceRange({ selected, onChange, onNext }: Q3PriceRangeProps) 
               'w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors',
               selected.includes(range)
                 ? 'border-primary bg-primary/10 text-primary'
-                : 'border-border bg-card text-text-primary hover:border-primary/50',
+                : 'border-border bg-card text-text-primary hover:border-primary/50'
             )}
           >
             {PRICE_RANGE_LABELS[range]}

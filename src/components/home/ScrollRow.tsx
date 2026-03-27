@@ -23,9 +23,7 @@ export function ScrollRow({ children }: ScrollRowProps) {
       </div>
 
       {/* 데스크탑: 스크롤 없이 전체 카드 표시 */}
-      <div className="hidden lg:flex gap-4 page-wrapper">
-        {children}
-      </div>
+      <div className="hidden lg:flex gap-4 page-wrapper">{children}</div>
     </div>
   )
 }

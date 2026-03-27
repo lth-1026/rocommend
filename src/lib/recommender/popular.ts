@@ -4,7 +4,7 @@ import type { PriceRange } from '@/types/roastery'
 
 export async function getPopularFallback(
   userId: string,
-  preferredPriceRanges?: PriceRange[],
+  preferredPriceRanges?: PriceRange[]
 ): Promise<RecommendationResult> {
   const roasteries = await getPopularRoasteries(userId, preferredPriceRanges)
 

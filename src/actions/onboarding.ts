@@ -46,8 +46,8 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
               where: { userId_roasteryId: { userId, roasteryId } },
               create: { userId, roasteryId, score: 5, source: 'onboarding' },
               update: {}, // 사용자가 이미 직접 평가한 경우 보존
-            }),
-          ),
+            })
+          )
         )
       }
 
@@ -66,7 +66,11 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
       })
     })
   } catch {
-    return { success: false, error: '저장 중 오류가 발생했습니다. 다시 시도해주세요.', code: 'DB_ERROR' }
+    return {
+      success: false,
+      error: '저장 중 오류가 발생했습니다. 다시 시도해주세요.',
+      code: 'DB_ERROR',
+    }
   }
 
   // 이벤트 로그는 non-critical — 실패해도 온보딩 결과에 영향 없음

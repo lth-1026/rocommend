@@ -5,13 +5,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { SlidersHorizontal, RotateCcw, ChevronDown } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { PRICE_RANGE_LABELS, PRICE_OPTIONS, REGIONS } from '@/types/roastery'
 import type { FilterParams, PriceRange, SortOption } from '@/types/roastery'
 import { SortSelector } from './SortSelector'
@@ -41,7 +35,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
     if (inputValue.trim() === filter.q) return
     const t = setTimeout(() => navigate({ q: inputValue.trim() }), 400)
     return () => clearTimeout(t)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue])
 
   function buildParams(updates: Partial<FilterParams>): string {
@@ -113,9 +107,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           <SheetTrigger className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent/10 transition-colors">
             <SlidersHorizontal className="h-4 w-4" />
             필터
-            {isFiltered && (
-              <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
-            )}
+            {isFiltered && <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />}
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
             <SheetHeader>
@@ -123,10 +115,16 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
             </SheetHeader>
             <div className="flex flex-col gap-6 px-4 pb-6">
               <PriceGroup selected={filter.price} onToggle={togglePrice} />
-              <DecafGroup checked={filter.decaf} onToggle={() => navigate({ decaf: !filter.decaf })} />
+              <DecafGroup
+                checked={filter.decaf}
+                onToggle={() => navigate({ decaf: !filter.decaf })}
+              />
               <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
               {isLoggedIn && (
-                <RatedGroup checked={filter.rated} onToggle={() => navigate({ rated: !filter.rated })} />
+                <RatedGroup
+                  checked={filter.rated}
+                  onToggle={() => navigate({ rated: !filter.rated })}
+                />
               )}
               {isFiltered && (
                 <button

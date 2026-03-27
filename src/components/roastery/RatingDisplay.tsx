@@ -19,7 +19,8 @@ export function RatingDisplay({ avgRating, ratingCount, size = 'default' }: Rati
         ★ {avgRating?.toFixed(1)}
       </span>
       <span className={size === 'lg' ? 'text-xs text-muted-foreground' : 'text-muted-foreground'}>
-        ({ratingCount}{size === 'lg' ? '개 평가' : ''})
+        ({ratingCount}
+        {size === 'lg' ? '개 평가' : ''})
       </span>
     </>
   )
