@@ -12,12 +12,11 @@ const MAX_SIZE = 4 * 1024 * 1024 // 4MB
 const BLOB_HOST = 'blob.vercel-storage.com'
 const LOCAL_UPLOADS_PATH = '/uploads/avatars'
 const LOCAL_ADMIN_UPLOADS_PATH = '/uploads/admin'
-// BLOB_READ_WRITE_TOKEN이 없을 때만 로컬 파일시스템 사용
-// NODE_ENV 기준이 아닌 토큰 유무 기준 — dev라도 원격 DB 사용 시 Blob에 저장해야 함
-const useLocalFS = !process.env.BLOB_READ_WRITE_TOKEN
 
 /** 로컬 dev: public/uploads/avatars/ 에 저장, 프로덕션: Vercel Blob */
 async function putFile(userId: string, file: File): Promise<string> {
+  // BLOB_READ_WRITE_TOKEN이 없을 때만 로컬 파일시스템 사용 (호출 시점에 평가)
+  const useLocalFS = !process.env.BLOB_READ_WRITE_TOKEN
   const ext = file.type.split('/')[1]
   // 업로드마다 고유 파일명 → 브라우저 캐시 자동 무효화
   const filename = `${userId}_${Date.now()}.${ext}`
@@ -40,6 +39,7 @@ async function putFile(userId: string, file: File): Promise<string> {
 
 /** 로컬 dev: public/uploads/admin/ 에 저장, 프로덕션: Vercel Blob admin/ */
 async function putAdminFile(folder: string, file: File): Promise<string> {
+  const useLocalFS = !process.env.BLOB_READ_WRITE_TOKEN
   const ext = file.type.split('/')[1]
   const filename = `${Date.now()}.${ext}`
 
@@ -61,6 +61,7 @@ async function putAdminFile(folder: string, file: File): Promise<string> {
 
 /** 로컬 dev: 파일 삭제, 프로덕션: Vercel Blob 삭제 */
 async function deleteFile(url: string): Promise<void> {
+  const useLocalFS = !process.env.BLOB_READ_WRITE_TOKEN
   if (useLocalFS && url.startsWith(LOCAL_UPLOADS_PATH)) {
     const { unlink } = await import('fs/promises')
     await unlink(join(process.cwd(), 'public', url)).catch(() => {})
