@@ -6,9 +6,10 @@ interface Q3PriceRangeProps {
   selected: OnboardingPriceRange[]
   onChange: (value: OnboardingPriceRange[]) => void
   onNext: () => void
+  onBack: () => void
 }
 
-export function Q3PriceRange({ selected, onChange, onNext }: Q3PriceRangeProps) {
+export function Q3PriceRange({ selected, onChange, onNext, onBack }: Q3PriceRangeProps) {
   function toggle(range: OnboardingPriceRange) {
     if (range === 'NO_PREFERENCE') {
       // NO_PREFERENCE 선택 시 나머지 해제
@@ -51,9 +52,14 @@ export function Q3PriceRange({ selected, onChange, onNext }: Q3PriceRangeProps) 
         ))}
       </div>
 
-      <Button className="w-full" size="lg" onClick={onNext} disabled={selected.length === 0}>
-        다음
-      </Button>
+      <div className="flex gap-3">
+        <Button variant="outline" size="lg" onClick={onBack} className="shrink-0">
+          이전
+        </Button>
+        <Button className="flex-1" size="lg" onClick={onNext} disabled={selected.length === 0}>
+          다음
+        </Button>
+      </div>
     </div>
   )
 }
