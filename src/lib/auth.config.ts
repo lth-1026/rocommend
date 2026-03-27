@@ -20,19 +20,31 @@ export const authConfig: NextAuthConfig = {
     error: '/error',
   },
   callbacks: {
-    jwt({ token, trigger, session }) {
+    jwt({ token, user, trigger, session }) {
       if (trigger === 'update' && session?.image) {
         token.picture = session.image
+      }
+      if (user?.role) {
+        token.role = user.role
       }
       return token
     },
     session({ session, token }) {
       session.user.id = token.sub!
+      session.user.role = token.role ?? 'USER'
       return session
     },
     authorized({ auth, request: { nextUrl } }) {
       const { pathname } = nextUrl
       const isLoggedIn = !!auth?.user
+      const isAdmin = auth?.user?.role === 'ADMIN'
+
+      // 어드민 전용 경로
+      if (pathname.startsWith('/admin')) {
+        if (!isLoggedIn) return Response.redirect(new URL('/login', nextUrl))
+        if (!isAdmin) return Response.redirect(new URL('/home', nextUrl))
+        return true
+      }
 
       if (isPublicPath(pathname)) {
         // 로그인된 유저가 /login 접근 시 /home으로

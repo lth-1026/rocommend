@@ -12,6 +12,7 @@ model User {
   emailVerified   DateTime?
   name            String?
   image           String?
+  role            Role             @default(USER)
   preferences     Json?            // { onboardingVersion: number, inferredProfile: object }
   createdAt       DateTime         @default(now())
   accounts        Account[]
@@ -176,4 +177,9 @@ enum PriceRange {
   LOW  // 200g 기준 20,000원 미만
   MID  // 20,000–35,000원
   HIGH // 35,000원 초과
+}
+
+enum Role {
+  USER
+  ADMIN
 }

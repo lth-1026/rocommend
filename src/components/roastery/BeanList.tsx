@@ -24,6 +24,7 @@ export function BeanList({ beans }: BeanListProps) {
                 fill
                 className="object-cover"
                 sizes="64px"
+                unoptimized={bean.imageUrl.startsWith('/')}
               />
             </div>
           )}
