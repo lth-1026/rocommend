@@ -40,7 +40,10 @@ export function NameEditForm({ currentName }: NameEditFormProps) {
       <div className="flex gap-2">
         <Input
           value={name}
-          onChange={(e) => { setName(e.target.value); setSaved(false) }}
+          onChange={(e) => {
+            setName(e.target.value)
+            setSaved(false)
+          }}
           placeholder="이름을 입력하세요"
           maxLength={20}
           className="flex-1"

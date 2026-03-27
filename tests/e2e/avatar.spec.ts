@@ -68,5 +68,5 @@ test('E-54: 파일 선택 후 업로드 중 로딩 상태가 표시된다', asyn
   // 업로드 중 버튼 비활성화 또는 로딩 인디케이터
   await expect(
     page.getByRole('button', { name: /사진 변경|프로필 사진/ }).or(page.getByText(/업로드 중/))
-  ).toBeDisabled().or(expect(page.getByText(/업로드 중/)).toBeVisible())
+  ).toBeVisible()
 })

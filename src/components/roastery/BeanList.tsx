@@ -24,13 +24,18 @@ export function BeanList({ beans }: BeanListProps) {
                 fill
                 className="object-cover"
                 sizes="64px"
+                unoptimized={bean.imageUrl.startsWith('/')}
               />
             </div>
           )}
           <div className="flex flex-col gap-1.5 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-medium text-sm">{bean.name}</span>
-              {bean.decaf && <Badge variant="secondary" className="text-xs">디카페인</Badge>}
+              {bean.decaf && (
+                <Badge variant="secondary" className="text-xs">
+                  디카페인
+                </Badge>
+              )}
             </div>
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-xs text-muted-foreground">

@@ -30,10 +30,7 @@ export default async function ProfilePage() {
         image={user?.image ?? session.user.image ?? null}
       />
 
-      <ActivitySummary
-        ratingCount={summary.ratingCount}
-        bookmarkCount={summary.bookmarkCount}
-      />
+      <ActivitySummary ratingCount={summary.ratingCount} bookmarkCount={summary.bookmarkCount} />
 
       <Link
         href="/account"

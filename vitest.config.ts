@@ -20,6 +20,9 @@ export default defineConfig({
             'src/lib/**/*.integration.test.ts',
           ],
           environment: 'node',
+          env: {
+            BLOB_READ_WRITE_TOKEN: 'test',
+          },
         },
       },
       {

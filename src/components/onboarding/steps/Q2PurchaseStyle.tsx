@@ -26,7 +26,7 @@ export function Q2PurchaseStyle({ selected, onChange, onNext }: Q2PurchaseStyleP
               'w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors',
               selected === style
                 ? 'border-primary bg-primary/10 text-primary'
-                : 'border-border bg-card text-text-primary hover:border-primary/50',
+                : 'border-border bg-card text-text-primary hover:border-primary/50'
             )}
           >
             {PURCHASE_STYLE_LABELS[style]}

@@ -31,7 +31,15 @@ export async function POST(req: Request) {
   if (complete) {
     await prisma.onboarding.upsert({
       where: { userId: user.id },
-      create: { userId: user.id, version: 3, q1: ['ESPRESSO'], q2: 'ONLINE', q3: [], q4: 'MONTHLY', q5: [] },
+      create: {
+        userId: user.id,
+        version: 3,
+        q1: ['ESPRESSO'],
+        q2: 'ONLINE',
+        q3: [],
+        q4: 'MONTHLY',
+        q5: [],
+      },
       update: {},
     })
   }

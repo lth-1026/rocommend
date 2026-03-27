@@ -19,7 +19,9 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
 
   const filter: FilterParams = {
     q: typeof params.q === 'string' ? params.q.trim() : '',
-    price: toArray(params.price).filter((v): v is PriceRange => PRICE_OPTIONS.includes(v as PriceRange)),
+    price: toArray(params.price).filter((v): v is PriceRange =>
+      PRICE_OPTIONS.includes(v as PriceRange)
+    ),
     decaf: params.decaf === '1',
     regions: toArray(params.region),
     rated: params.rated === '1',

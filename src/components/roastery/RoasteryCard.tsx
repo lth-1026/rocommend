@@ -59,6 +59,7 @@ export function RoasteryCard({
                 priority={priority}
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="64px"
+                unoptimized={roastery.imageUrl.startsWith('/')}
               />
             ) : (
               <CoffeePlaceholder size={24} />
@@ -105,6 +106,7 @@ export function RoasteryCard({
               priority={priority}
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 20vw"
+              unoptimized={roastery.imageUrl.startsWith('/')}
             />
           ) : (
             <CoffeePlaceholder size={32} />

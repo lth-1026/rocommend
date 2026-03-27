@@ -5,12 +5,18 @@ import { FREQUENCIES, FREQUENCY_LABELS, type Frequency } from '@/types/onboardin
 interface Q4FrequencyProps {
   selected: Frequency | null
   onChange: (value: Frequency) => void
-  onNext: () => void          // FIRST_TIME 외: Q5로 이동
-  onSubmitEarly: () => void   // FIRST_TIME: 제출
+  onNext: () => void // FIRST_TIME 외: Q5로 이동
+  onSubmitEarly: () => void // FIRST_TIME: 제출
   isLoading?: boolean
 }
 
-export function Q4Frequency({ selected, onChange, onNext, onSubmitEarly, isLoading }: Q4FrequencyProps) {
+export function Q4Frequency({
+  selected,
+  onChange,
+  onNext,
+  onSubmitEarly,
+  isLoading,
+}: Q4FrequencyProps) {
   const isFirstTime = selected === 'FIRST_TIME'
 
   function handleAction() {
@@ -24,7 +30,9 @@ export function Q4Frequency({ selected, onChange, onNext, onSubmitEarly, isLoadi
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">얼마나 자주 원두를 구매하시나요?</h2>
+        <h2 className="text-xl font-semibold text-text-primary">
+          얼마나 자주 원두를 구매하시나요?
+        </h2>
         <p className="mt-1 text-sm text-text-secondary">하나를 선택해주세요</p>
       </div>
 
@@ -39,7 +47,7 @@ export function Q4Frequency({ selected, onChange, onNext, onSubmitEarly, isLoadi
               'w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors',
               selected === freq
                 ? 'border-primary bg-primary/10 text-primary'
-                : 'border-border bg-card text-text-primary hover:border-primary/50',
+                : 'border-border bg-card text-text-primary hover:border-primary/50'
             )}
           >
             {FREQUENCY_LABELS[freq]}

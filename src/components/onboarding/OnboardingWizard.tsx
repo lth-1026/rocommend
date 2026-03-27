@@ -57,11 +57,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
     return (
       <div className="space-y-6">
         <ProgressBar current={currentStep} total={totalSteps} />
-        <Q1BrewingMethod
-          selected={q1}
-          onChange={setQ1}
-          onNext={() => setStep('Q2')}
-        />
+        <Q1BrewingMethod selected={q1} onChange={setQ1} onNext={() => setStep('Q2')} />
       </div>
     )
   }
@@ -70,11 +66,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
     return (
       <div className="space-y-6">
         <ProgressBar current={currentStep} total={totalSteps} />
-        <Q2PurchaseStyle
-          selected={q2}
-          onChange={setQ2}
-          onNext={() => setStep('Q3')}
-        />
+        <Q2PurchaseStyle selected={q2} onChange={setQ2} onNext={() => setStep('Q3')} />
       </div>
     )
   }
@@ -83,11 +75,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
     return (
       <div className="space-y-6">
         <ProgressBar current={currentStep} total={totalSteps} />
-        <Q3PriceRange
-          selected={q3}
-          onChange={setQ3}
-          onNext={() => setStep('Q4')}
-        />
+        <Q3PriceRange selected={q3} onChange={setQ3} onNext={() => setStep('Q4')} />
       </div>
     )
   }

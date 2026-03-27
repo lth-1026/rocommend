@@ -13,7 +13,12 @@ interface RatingFormProps {
   onSuccess: () => void
 }
 
-export function RatingForm({ roasteryId, initialScore = 0, initialComment = '', onSuccess }: RatingFormProps) {
+export function RatingForm({
+  roasteryId,
+  initialScore = 0,
+  initialComment = '',
+  onSuccess,
+}: RatingFormProps) {
   const [score, setScore] = useState(initialScore)
   const [comment, setComment] = useState(initialComment)
   const [isPending, startTransition] = useTransition()

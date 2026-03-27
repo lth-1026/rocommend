@@ -43,9 +43,7 @@ export function BottomTab({ className }: { className?: string }) {
                   isActive ? 'text-text-primary' : 'text-text-disabled hover:text-text-secondary'
                 )}
               >
-                <Icon
-                  className={cn('size-5', isActive ? 'stroke-[2.5]' : 'stroke-[1.5]')}
-                />
+                <Icon className={cn('size-5', isActive ? 'stroke-[2.5]' : 'stroke-[1.5]')} />
                 <span className="whitespace-nowrap">{label}</span>
               </Link>
             </li>

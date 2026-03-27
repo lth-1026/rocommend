@@ -6,7 +6,9 @@ import { prisma } from '@/lib/prisma'
 import { bookmarkSchema } from '@/lib/schemas/bookmark'
 import type { ActionResult } from '@/types/action'
 
-export async function toggleBookmark(input: { roasteryId: string }): Promise<ActionResult<{ isBookmarked: boolean }>> {
+export async function toggleBookmark(input: {
+  roasteryId: string
+}): Promise<ActionResult<{ isBookmarked: boolean }>> {
   const session = await auth()
   if (!session?.user?.id) {
     return { success: false, error: '로그인이 필요합니다', code: 'UNAUTHORIZED' }
