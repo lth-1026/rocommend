@@ -32,6 +32,7 @@ export function RoasteryDetail({ roastery, isLoggedIn, userRating, isBookmarked 
             className="object-cover"
             priority
             sizes="(max-width: 768px) 100vw, (max-width: 1440px) 90vw, 1300px"
+            unoptimized={roastery.imageUrl.startsWith('/')}
           />
         </div>
       )}
