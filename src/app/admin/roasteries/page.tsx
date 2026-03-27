@@ -16,7 +16,7 @@ export default async function AdminRoasteriesPage() {
         <h1 className="text-2xl font-bold text-text">로스터리 목록</h1>
         <Link
           href="/admin/roasteries/new"
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-fg hover:opacity-90 transition-opacity"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
         >
           + 새 로스터리
         </Link>
@@ -35,6 +35,7 @@ export default async function AdminRoasteriesPage() {
                 <th className="px-4 py-3 text-left font-medium text-text-sub">디카페인</th>
                 <th className="px-4 py-3 text-left font-medium text-text-sub">원두 수</th>
                 <th className="px-4 py-3 text-left font-medium text-text-sub">Q5 노출</th>
+                <th className="px-4 py-3 text-left font-medium text-text-sub"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border bg-surface">
@@ -46,6 +47,14 @@ export default async function AdminRoasteriesPage() {
                   <td className="px-4 py-3 text-text-sub">{r.decaf ? 'O' : '—'}</td>
                   <td className="px-4 py-3 text-text-sub">{r._count.beans}</td>
                   <td className="px-4 py-3 text-text-sub">{r.isOnboardingCandidate ? 'O' : '—'}</td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/roasteries/${r.id}/edit`}
+                      className="text-xs text-text-sub hover:text-text transition-colors"
+                    >
+                      수정
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

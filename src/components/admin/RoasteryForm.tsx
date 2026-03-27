@@ -2,40 +2,51 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { createRoastery } from '@/actions/admin'
+import { createRoastery, updateRoastery } from '@/actions/admin'
 import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
 import type { PriceRange } from '@prisma/client'
 
-export function RoasteryForm() {
+interface RoasteryFormProps {
+  roasteryId?: string
+  initialData?: {
+    name: string
+    description: string
+    regions: string[]
+    priceRange: PriceRange
+    decaf: boolean
+    imageUrl: string
+    website: string
+    isOnboardingCandidate: boolean
+  }
+}
+
+export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [regions, setRegions] = useState<string[]>([])
-  const [priceRange, setPriceRange] = useState<PriceRange>('MID')
-  const [decaf, setDecaf] = useState(false)
-  const [imageUrl, setImageUrl] = useState('')
-  const [website, setWebsite] = useState('')
-  const [isOnboardingCandidate, setIsOnboardingCandidate] = useState(false)
+  const [name, setName] = useState(initialData?.name ?? '')
+  const [description, setDescription] = useState(initialData?.description ?? '')
+  const [regions, setRegions] = useState<string[]>(initialData?.regions ?? [])
+  const [priceRange, setPriceRange] = useState<PriceRange>(initialData?.priceRange ?? 'MID')
+  const [decaf, setDecaf] = useState(initialData?.decaf ?? false)
+  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? '')
+  const [website, setWebsite] = useState(initialData?.website ?? '')
+  const [isOnboardingCandidate, setIsOnboardingCandidate] = useState(initialData?.isOnboardingCandidate ?? false)
+
+  const isEdit = !!roasteryId
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
 
+    const input = { name, description, regions, priceRange, decaf, imageUrl, website, isOnboardingCandidate }
+
     startTransition(async () => {
-      const result = await createRoastery({
-        name,
-        description,
-        regions,
-        priceRange,
-        decaf,
-        imageUrl,
-        website,
-        isOnboardingCandidate,
-      })
+      const result = isEdit
+        ? await updateRoastery(roasteryId, input)
+        : await createRoastery(input)
 
       if (!result.success) {
         setError(result.error)
@@ -159,9 +170,9 @@ export function RoasteryForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-fg hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {isPending ? '저장 중...' : '로스터리 등록'}
+          {isPending ? '저장 중...' : isEdit ? '변경사항 저장' : '로스터리 등록'}
         </button>
       </div>
     </form>

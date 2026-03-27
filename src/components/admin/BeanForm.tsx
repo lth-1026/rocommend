@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { createBean } from '@/actions/admin'
+import { createBean, updateBean } from '@/actions/admin'
 import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
 
@@ -13,6 +13,16 @@ interface Roastery {
 
 interface BeanFormProps {
   roasteries: Roastery[]
+  beanId?: string
+  initialData?: {
+    roasteryId: string
+    name: string
+    origins: string[]
+    roastingLevel: string
+    decaf: boolean
+    cupNotes: string[]
+    imageUrl: string
+  }
 }
 
 const ROASTING_LEVELS = [
@@ -22,33 +32,31 @@ const ROASTING_LEVELS = [
   { value: 'DARK', label: '다크' },
 ]
 
-export function BeanForm({ roasteries }: BeanFormProps) {
+export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  const [roasteryId, setRoasteryId] = useState(roasteries[0]?.id ?? '')
-  const [name, setName] = useState('')
-  const [origins, setOrigins] = useState<string[]>([])
-  const [roastingLevel, setRoastingLevel] = useState('MEDIUM')
-  const [decaf, setDecaf] = useState(false)
-  const [cupNotes, setCupNotes] = useState<string[]>([])
-  const [imageUrl, setImageUrl] = useState('')
+  const [roasteryId, setRoasteryId] = useState(initialData?.roasteryId ?? roasteries[0]?.id ?? '')
+  const [name, setName] = useState(initialData?.name ?? '')
+  const [origins, setOrigins] = useState<string[]>(initialData?.origins ?? [])
+  const [roastingLevel, setRoastingLevel] = useState(initialData?.roastingLevel ?? 'MEDIUM')
+  const [decaf, setDecaf] = useState(initialData?.decaf ?? false)
+  const [cupNotes, setCupNotes] = useState<string[]>(initialData?.cupNotes ?? [])
+  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? '')
+
+  const isEdit = !!beanId
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
 
+    const input = { roasteryId, name, origins, roastingLevel, decaf, cupNotes, imageUrl }
+
     startTransition(async () => {
-      const result = await createBean({
-        roasteryId,
-        name,
-        origins,
-        roastingLevel,
-        decaf,
-        cupNotes,
-        imageUrl,
-      })
+      const result = isEdit
+        ? await updateBean(beanId, input)
+        : await createBean(input)
 
       if (!result.success) {
         setError(result.error)
@@ -169,9 +177,9 @@ export function BeanForm({ roasteries }: BeanFormProps) {
         <button
           type="submit"
           disabled={isPending || roasteries.length === 0}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-fg hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {isPending ? '저장 중...' : '원두 등록'}
+          {isPending ? '저장 중...' : isEdit ? '변경사항 저장' : '원두 등록'}
         </button>
       </div>
     </form>
