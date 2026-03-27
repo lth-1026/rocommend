@@ -73,7 +73,13 @@ export function Q5Roasteries({
       </div>
 
       <div className="flex gap-3">
-        <Button variant="outline" size="lg" onClick={onBack} disabled={isLoading} className="shrink-0">
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={onBack}
+          disabled={isLoading}
+          className="shrink-0"
+        >
           이전
         </Button>
         <Button className="flex-1" size="lg" onClick={onSubmit} disabled={!isReady || isLoading}>
