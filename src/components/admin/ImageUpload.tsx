@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import Image from 'next/image'
 import { uploadAdminImage } from '@/actions/upload'
 
 interface ImageUploadProps {
@@ -50,7 +49,8 @@ export function ImageUpload({ folder, value, onChange, onError }: ImageUploadPro
         {/* 미리보기 */}
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-sub">
           {displaySrc ? (
-            <Image src={displaySrc} alt="미리보기" fill className="object-cover" unoptimized={displaySrc.startsWith('blob:')} />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={displaySrc} alt="미리보기" className="h-full w-full object-cover" />
           ) : (
             <span className="absolute inset-0 flex items-center justify-center text-xs text-text-sub">없음</span>
           )}
