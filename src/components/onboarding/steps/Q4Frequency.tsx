@@ -7,6 +7,7 @@ interface Q4FrequencyProps {
   onChange: (value: Frequency) => void
   onNext: () => void // FIRST_TIME 외: Q5로 이동
   onSubmitEarly: () => void // FIRST_TIME: 제출
+  onBack: () => void
   isLoading?: boolean
 }
 
@@ -15,6 +16,7 @@ export function Q4Frequency({
   onChange,
   onNext,
   onSubmitEarly,
+  onBack,
   isLoading,
 }: Q4FrequencyProps) {
   const isFirstTime = selected === 'FIRST_TIME'
@@ -55,14 +57,19 @@ export function Q4Frequency({
         ))}
       </div>
 
-      <Button
-        className="w-full"
-        size="lg"
-        onClick={handleAction}
-        disabled={selected === null || !!isLoading}
-      >
-        {isLoading && isFirstTime ? '저장 중...' : isFirstTime ? '완료 및 제출' : '다음'}
-      </Button>
+      <div className="flex gap-3">
+        <Button variant="outline" size="lg" onClick={onBack} disabled={!!isLoading} className="shrink-0">
+          이전
+        </Button>
+        <Button
+          className="flex-1"
+          size="lg"
+          onClick={handleAction}
+          disabled={selected === null || !!isLoading}
+        >
+          {isLoading && isFirstTime ? '저장 중...' : isFirstTime ? '완료 및 제출' : '다음'}
+        </Button>
+      </div>
     </div>
   )
 }

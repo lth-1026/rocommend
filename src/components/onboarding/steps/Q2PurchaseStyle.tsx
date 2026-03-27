@@ -6,9 +6,10 @@ interface Q2PurchaseStyleProps {
   selected: PurchaseStyle | null
   onChange: (value: PurchaseStyle) => void
   onNext: () => void
+  onBack: () => void
 }
 
-export function Q2PurchaseStyle({ selected, onChange, onNext }: Q2PurchaseStyleProps) {
+export function Q2PurchaseStyle({ selected, onChange, onNext, onBack }: Q2PurchaseStyleProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -34,9 +35,14 @@ export function Q2PurchaseStyle({ selected, onChange, onNext }: Q2PurchaseStyleP
         ))}
       </div>
 
-      <Button className="w-full" size="lg" onClick={onNext} disabled={selected === null}>
-        다음
-      </Button>
+      <div className="flex gap-3">
+        <Button variant="outline" size="lg" onClick={onBack} className="shrink-0">
+          이전
+        </Button>
+        <Button className="flex-1" size="lg" onClick={onNext} disabled={selected === null}>
+          다음
+        </Button>
+      </div>
     </div>
   )
 }
