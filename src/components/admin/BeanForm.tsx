@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBean } from '@/actions/admin'
 import { TagInput } from './TagInput'
+import { ImageUpload } from './ImageUpload'
 
 interface Roastery {
   id: string
@@ -137,17 +138,13 @@ export function BeanForm({ roasteries }: BeanFormProps) {
         placeholder="예: 자몽, 카카오, 흑설탕"
       />
 
-      {/* 이미지 URL */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-text">이미지 URL</label>
-        <input
-          type="url"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
-          placeholder="https://..."
-        />
-      </div>
+      {/* 이미지 업로드 */}
+      <ImageUpload
+        folder="beans"
+        value={imageUrl}
+        onChange={setImageUrl}
+        onError={(msg) => { if (msg) setError(msg) }}
+      />
 
       {/* 디카페인 */}
       <label className="flex items-center gap-2.5 cursor-pointer">

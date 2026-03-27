@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createRoastery } from '@/actions/admin'
 import { TagInput } from './TagInput'
+import { ImageUpload } from './ImageUpload'
 import type { PriceRange } from '@prisma/client'
 
 export function RoasteryForm() {
@@ -104,17 +105,13 @@ export function RoasteryForm() {
         </select>
       </div>
 
-      {/* 이미지 URL */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-text">이미지 URL</label>
-        <input
-          type="url"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
-          placeholder="https://..."
-        />
-      </div>
+      {/* 이미지 업로드 */}
+      <ImageUpload
+        folder="roasteries"
+        value={imageUrl}
+        onChange={setImageUrl}
+        onError={(msg) => { if (msg) setError(msg) }}
+      />
 
       {/* 웹사이트 */}
       <div className="flex flex-col gap-1.5">
