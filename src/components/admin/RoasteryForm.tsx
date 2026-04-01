@@ -30,9 +30,7 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
 
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
-  const [regions, setRegions] = useState<string[]>(
-    initialData ? getRegions(initialData.tags) : []
-  )
+  const [regions, setRegions] = useState<string[]>(initialData ? getRegions(initialData.tags) : [])
   const [characteristicTags, setCharacteristicTags] = useState<string[]>(
     initialData ? getCharacteristicTags(initialData.tags) : []
   )

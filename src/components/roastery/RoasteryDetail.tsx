@@ -49,9 +49,7 @@ export function RoasteryDetail({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold">{roastery.name}</h1>
-          {regions.length > 0 && (
-            <p className="text-sm text-muted-foreground">{regions[0]}</p>
-          )}
+          {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
           {roastery.description && (
             <p className="text-sm text-foreground leading-relaxed max-w-prose">
               {roastery.description}

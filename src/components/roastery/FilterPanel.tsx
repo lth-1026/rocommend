@@ -387,13 +387,7 @@ function RegionGroup({
   )
 }
 
-function TagGroup({
-  selected,
-  onToggle,
-}: {
-  selected: string[]
-  onToggle: (t: string) => void
-}) {
+function TagGroup({ selected, onToggle }: { selected: string[]; onToggle: (t: string) => void }) {
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-medium">태그</legend>

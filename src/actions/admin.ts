@@ -42,7 +42,10 @@ async function upsertTags(
 ): Promise<{ id: string }[]> {
   const tagData = [
     ...regions.map((name) => ({ name: name.trim(), category: 'REGION' as const })),
-    ...characteristicTags.map((name) => ({ name: name.trim(), category: 'CHARACTERISTIC' as const })),
+    ...characteristicTags.map((name) => ({
+      name: name.trim(),
+      category: 'CHARACTERISTIC' as const,
+    })),
   ].filter((t) => t.name)
 
   if (tagData.length === 0) return []
