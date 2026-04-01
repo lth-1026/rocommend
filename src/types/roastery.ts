@@ -6,6 +6,16 @@ export interface TagItem {
   id: string
   name: string
   category: TagCategory
+  isPrimary: boolean
+}
+
+/** Prisma RoasteryTag include 결과를 TagItem[]로 변환 (대표 지역 먼저) */
+export function flattenTags(
+  rawTags: { isPrimary: boolean; tag: { id: string; name: string; category: TagCategory } }[]
+): TagItem[] {
+  return rawTags
+    .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary))
+    .map(({ isPrimary, tag }) => ({ ...tag, isPrimary }))
 }
 
 export interface RoasteryWithStats {
@@ -94,9 +104,13 @@ export const CHARACTERISTIC_TAGS = [
 
 export type CharacteristicTag = (typeof CHARACTERISTIC_TAGS)[number]
 
-/** tags 배열에서 REGION 카테고리만 추출 */
+/** tags 배열에서 REGION 카테고리만 추출 (isPrimary=true 먼저) */
 export function getRegions(tags: TagItem[]): string[] {
-  return tags.filter((t) => t.category === 'REGION').map((t) => t.name)
+  const regions = tags.filter((t) => t.category === 'REGION')
+  return [
+    ...regions.filter((t) => t.isPrimary).map((t) => t.name),
+    ...regions.filter((t) => !t.isPrimary).map((t) => t.name),
+  ]
 }
 
 /** tags 배열에서 CHARACTERISTIC 카테고리만 추출 */

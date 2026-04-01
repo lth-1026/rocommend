@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import type { Prisma } from '@prisma/client'
 import type { SortOption, RoasteryWithStats, RoasteryDetail, FilterParams } from '@/types/roastery'
+import { flattenTags } from '@/types/roastery'
 
 const DEFAULT_FILTER: FilterParams = {
   q: '',
@@ -11,7 +12,12 @@ const DEFAULT_FILTER: FilterParams = {
   rated: false,
 }
 
-const TAG_SELECT = { select: { id: true, name: true, category: true } } as const
+const TAG_SELECT = {
+  select: {
+    isPrimary: true,
+    tag: { select: { id: true, name: true, category: true } },
+  },
+} as const
 
 export async function getRoasteries(
   sort: SortOption = 'popular',
@@ -22,12 +28,12 @@ export async function getRoasteries(
 
   if (filter.regions.length > 0) {
     andConditions.push({
-      tags: { some: { category: 'REGION', name: { in: filter.regions } } },
+      tags: { some: { tag: { category: 'REGION', name: { in: filter.regions } } } },
     })
   }
   if (filter.tags.length > 0) {
     andConditions.push({
-      tags: { some: { category: 'CHARACTERISTIC', name: { in: filter.tags } } },
+      tags: { some: { tag: { category: 'CHARACTERISTIC', name: { in: filter.tags } } } },
     })
   }
 
@@ -65,6 +71,7 @@ export async function getRoasteries(
 
   const result = roasteries.map((r) => ({
     ...r,
+    tags: flattenTags(r.tags),
     ratingCount: r._count.ratings,
     avgRating: avgMap.get(r.id) ?? null,
   }))
@@ -120,6 +127,7 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
 
   return {
     ...roastery,
+    tags: flattenTags(roastery.tags),
     ratingCount: roastery._count.ratings,
     avgRating: avgRating._avg.score ?? null,
   }

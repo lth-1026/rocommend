@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { getRegions, getCharacteristicTags } from '../types/roastery'
 import type { TagItem } from '../types/roastery'
 
-const makeTags = (items: { name: string; category: 'REGION' | 'CHARACTERISTIC' }[]): TagItem[] =>
-  items.map((t, i) => ({ id: `tag-${i}`, ...t }))
+const makeTags = (
+  items: { name: string; category: 'REGION' | 'CHARACTERISTIC'; isPrimary?: boolean }[]
+): TagItem[] => items.map((t, i) => ({ id: `tag-${i}`, isPrimary: false, ...t }))
 
 describe('getRegions', () => {
   it('REGION 카테고리 태그만 반환한다', () => {
@@ -22,6 +23,14 @@ describe('getRegions', () => {
 
   it('빈 배열이면 빈 배열을 반환한다', () => {
     expect(getRegions([])).toEqual([])
+  })
+
+  it('isPrimary=true인 REGION이 먼저 반환된다', () => {
+    const tags = makeTags([
+      { name: '부산', category: 'REGION', isPrimary: false },
+      { name: '서울', category: 'REGION', isPrimary: true },
+    ])
+    expect(getRegions(tags)).toEqual(['서울', '부산'])
   })
 })
 

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import type { ActionResult } from '@/types/action'
 import type { PriceRange } from '@prisma/client'
+import { flattenTags } from '@/types/roastery'
 
 // ── 권한 체크 헬퍼 ─────────────────────────────────────
 type AdminCheckError = { error: string; code: 'UNAUTHORIZED' }
@@ -35,30 +36,36 @@ export interface CreateRoasteryInput {
   isOnboardingCandidate: boolean
 }
 
-/** 지역 + 특성 태그를 upsert하고 ID 배열을 반환 */
+/** 지역 + 특성 태그를 upsert하고 ID + isPrimary 배열을 반환 */
 async function upsertTags(
   regions: string[],
   characteristicTags: string[]
-): Promise<{ id: string }[]> {
+): Promise<{ id: string; isPrimary: boolean }[]> {
   const tagData = [
-    ...regions.map((name) => ({ name: name.trim(), category: 'REGION' as const })),
+    ...regions.map((name, i) => ({
+      name: name.trim(),
+      category: 'REGION' as const,
+      isPrimary: i === 0,
+    })),
     ...characteristicTags.map((name) => ({
       name: name.trim(),
       category: 'CHARACTERISTIC' as const,
+      isPrimary: false,
     })),
   ].filter((t) => t.name)
 
   if (tagData.length === 0) return []
 
   const tags = await Promise.all(
-    tagData.map((tag) =>
-      prisma.tag.upsert({
-        where: { name_category: { name: tag.name, category: tag.category } },
-        create: tag,
+    tagData.map(async ({ isPrimary, ...tagFields }) => {
+      const tag = await prisma.tag.upsert({
+        where: { name_category: { name: tagFields.name, category: tagFields.category } },
+        create: tagFields,
         update: {},
         select: { id: true },
       })
-    )
+      return { id: tag.id, isPrimary }
+    })
   )
   return tags
 }
@@ -93,7 +100,7 @@ export async function createRoastery(
         imageUrl: input.imageUrl.trim() || null,
         website: input.website.trim() || null,
         isOnboardingCandidate: input.isOnboardingCandidate,
-        tags: { connect: tagIds },
+        tags: { create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })) },
       },
       select: { id: true },
     })
@@ -184,7 +191,10 @@ export async function updateRoastery(
         imageUrl: input.imageUrl.trim() || null,
         website: input.website.trim() || null,
         isOnboardingCandidate: input.isOnboardingCandidate,
-        tags: { set: tagIds },
+        tags: {
+          deleteMany: {},
+          create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })),
+        },
       },
       select: { id: true },
     })
@@ -239,13 +249,15 @@ export async function getAdminRoastery(id: string) {
   const check = await requireAdmin()
   if ('error' in check) redirect('/home')
 
-  return prisma.roastery.findUnique({
+  const raw = await prisma.roastery.findUnique({
     where: { id },
     select: {
       id: true,
       name: true,
       description: true,
-      tags: { select: { id: true, name: true, category: true } },
+      tags: {
+        select: { isPrimary: true, tag: { select: { id: true, name: true, category: true } } },
+      },
       priceRange: true,
       decaf: true,
       imageUrl: true,
@@ -253,6 +265,8 @@ export async function getAdminRoastery(id: string) {
       isOnboardingCandidate: true,
     },
   })
+  if (!raw) return null
+  return { ...raw, tags: flattenTags(raw.tags) }
 }
 
 // ── 원두 단건 조회 (admin 전용) ──────────────────────────
@@ -280,11 +294,13 @@ export async function getAdminRoasteries() {
   const check = await requireAdmin()
   if ('error' in check) redirect('/home')
 
-  return prisma.roastery.findMany({
+  const rows = await prisma.roastery.findMany({
     select: {
       id: true,
       name: true,
-      tags: { select: { id: true, name: true, category: true } },
+      tags: {
+        select: { isPrimary: true, tag: { select: { id: true, name: true, category: true } } },
+      },
       priceRange: true,
       decaf: true,
       isOnboardingCandidate: true,
@@ -293,6 +309,7 @@ export async function getAdminRoasteries() {
     },
     orderBy: { createdAt: 'desc' },
   })
+  return rows.map((r) => ({ ...r, tags: flattenTags(r.tags) }))
 }
 
 // ── 원두 목록 (admin 전용) ──────────────────────────────

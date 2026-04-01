@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import type { RawRating } from '@/lib/recommender/types'
 import type { RoasteryWithStats } from '@/types/roastery'
 import type { PriceRange } from '@/types/roastery'
+import { flattenTags } from '@/types/roastery'
 
 export async function getAllRatings(): Promise<RawRating[]> {
   return prisma.rating.findMany({
@@ -28,7 +29,9 @@ export async function getPopularRoasteries(
         id: true,
         name: true,
         description: true,
-        tags: { select: { id: true, name: true, category: true } },
+        tags: {
+          select: { isPrimary: true, tag: { select: { id: true, name: true, category: true } } },
+        },
         priceRange: true,
         decaf: true,
         imageUrl: true,
@@ -48,6 +51,7 @@ export async function getPopularRoasteries(
   return roasteries
     .map((r) => ({
       ...r,
+      tags: flattenTags(r.tags),
       ratingCount: r._count.ratings,
       avgRating: avgMap.get(r.id) ?? null,
     }))
@@ -78,7 +82,12 @@ export async function getStoredRecommendations(userId: string): Promise<StoredRe
             id: true,
             name: true,
             description: true,
-            tags: { select: { id: true, name: true, category: true } },
+            tags: {
+              select: {
+                isPrimary: true,
+                tag: { select: { id: true, name: true, category: true } },
+              },
+            },
             priceRange: true,
             decaf: true,
             imageUrl: true,
@@ -106,6 +115,7 @@ export async function getStoredRecommendations(userId: string): Promise<StoredRe
     cfScore: rec.score,
     roastery: {
       ...rec.roastery,
+      tags: flattenTags(rec.roastery.tags),
       ratingCount: rec.roastery._count.ratings,
       avgRating: avgMap.get(rec.roasteryId) ?? null,
     },

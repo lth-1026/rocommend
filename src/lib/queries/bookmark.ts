@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import type { BookmarkWithRoastery, BookmarkSort } from '@/types/bookmark'
+import { flattenTags } from '@/types/roastery'
 
 export async function getBookmarkStatus(userId: string, roasteryId: string): Promise<boolean> {
   const bookmark = await prisma.bookmark.findUnique({
@@ -24,7 +25,12 @@ export async function getBookmarks(
             id: true,
             name: true,
             description: true,
-            tags: { select: { id: true, name: true, category: true } },
+            tags: {
+              select: {
+                isPrimary: true,
+                tag: { select: { id: true, name: true, category: true } },
+              },
+            },
             priceRange: true,
             decaf: true,
             imageUrl: true,
@@ -53,6 +59,7 @@ export async function getBookmarks(
     roasteryId: b.roasteryId,
     roastery: {
       ...b.roastery,
+      tags: flattenTags(b.roastery.tags),
       ratingCount: b.roastery._count.ratings,
       avgRating: avgMap.get(b.roasteryId) ?? null,
     },

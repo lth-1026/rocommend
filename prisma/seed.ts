@@ -270,25 +270,26 @@ const roasteries = [
   },
 ]
 
-/** name_category 복합키로 Tag를 upsert하고 ID를 반환 */
+/** name_category 복합키로 Tag를 upsert하고 ID + isPrimary를 반환 */
 async function upsertTags(
   regions: string[],
   characteristicTags: string[]
-): Promise<{ id: string }[]> {
+): Promise<{ id: string; isPrimary: boolean }[]> {
   const tagData = [
-    ...regions.map((name) => ({ name, category: 'REGION' as const })),
-    ...characteristicTags.map((name) => ({ name, category: 'CHARACTERISTIC' as const })),
+    ...regions.map((name, i) => ({ name, category: 'REGION' as const, isPrimary: i === 0 })),
+    ...characteristicTags.map((name) => ({ name, category: 'CHARACTERISTIC' as const, isPrimary: false })),
   ]
 
   return Promise.all(
-    tagData.map((tag) =>
-      prisma.tag.upsert({
-        where: { name_category: { name: tag.name, category: tag.category } },
-        create: tag,
+    tagData.map(async ({ isPrimary, ...fields }) => {
+      const tag = await prisma.tag.upsert({
+        where: { name_category: { name: fields.name, category: fields.category } },
+        create: fields,
         update: {},
         select: { id: true },
       })
-    )
+      return { id: tag.id, isPrimary }
+    })
   )
 }
 
@@ -306,7 +307,7 @@ async function main() {
       roastery = await prisma.roastery.create({
         data: {
           ...roasteryData,
-          tags: { connect: tagIds },
+          tags: { create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })) },
         },
       })
     } else {
@@ -314,7 +315,10 @@ async function main() {
         where: { id: roastery.id },
         data: {
           ...roasteryData,
-          tags: { set: tagIds },
+          tags: {
+            deleteMany: {},
+            create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })),
+          },
         },
       })
     }
