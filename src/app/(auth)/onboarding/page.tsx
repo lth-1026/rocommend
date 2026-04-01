@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { flattenTags } from '@/types/roastery'
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard'
 
 export default async function OnboardingPage() {
@@ -13,7 +14,13 @@ export default async function OnboardingPage() {
 
   const roasteries = await prisma.roastery.findMany({
     where: { isOnboardingCandidate: true },
-    select: { id: true, name: true, tags: { select: { id: true, name: true, category: true } } },
+    select: {
+      id: true,
+      name: true,
+      tags: {
+        select: { isPrimary: true, tag: { select: { id: true, name: true, category: true } } },
+      },
+    },
     orderBy: { name: 'asc' },
   })
 
@@ -25,7 +32,7 @@ export default async function OnboardingPage() {
           맞춤 로스터리 추천을 위해 취향을 알려주세요
         </p>
       </div>
-      <OnboardingWizard roasteries={roasteries} />
+      <OnboardingWizard roasteries={roasteries.map((r) => ({ ...r, tags: flattenTags(r.tags) }))} />
     </div>
   )
 }
