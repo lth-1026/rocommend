@@ -27,11 +27,37 @@ export interface CreateRoasteryInput {
   name: string
   description: string
   regions: string[]
+  tags: string[] // CHARACTERISTIC 태그
   priceRange: PriceRange
   decaf: boolean
   imageUrl: string
   website: string
   isOnboardingCandidate: boolean
+}
+
+/** 지역 + 특성 태그를 upsert하고 ID 배열을 반환 */
+async function upsertTags(
+  regions: string[],
+  characteristicTags: string[]
+): Promise<{ id: string }[]> {
+  const tagData = [
+    ...regions.map((name) => ({ name: name.trim(), category: 'REGION' as const })),
+    ...characteristicTags.map((name) => ({ name: name.trim(), category: 'CHARACTERISTIC' as const })),
+  ].filter((t) => t.name)
+
+  if (tagData.length === 0) return []
+
+  const tags = await Promise.all(
+    tagData.map((tag) =>
+      prisma.tag.upsert({
+        where: { name_category: { name: tag.name, category: tag.category } },
+        create: tag,
+        update: {},
+        select: { id: true },
+      })
+    )
+  )
+  return tags
 }
 
 export async function createRoastery(
@@ -53,16 +79,18 @@ export async function createRoastery(
   }
 
   try {
+    const tagIds = await upsertTags(input.regions, input.tags)
+
     const roastery = await prisma.roastery.create({
       data: {
         name: input.name.trim(),
         description: input.description.trim() || null,
-        regions: input.regions.map((r) => r.trim()).filter(Boolean),
         priceRange: input.priceRange,
         decaf: input.decaf,
         imageUrl: input.imageUrl.trim() || null,
         website: input.website.trim() || null,
         isOnboardingCandidate: input.isOnboardingCandidate,
+        tags: { connect: tagIds },
       },
       select: { id: true },
     })
@@ -141,17 +169,19 @@ export async function updateRoastery(
   }
 
   try {
+    const tagIds = await upsertTags(input.regions, input.tags)
+
     const roastery = await prisma.roastery.update({
       where: { id },
       data: {
         name: input.name.trim(),
         description: input.description.trim() || null,
-        regions: input.regions.map((r) => r.trim()).filter(Boolean),
         priceRange: input.priceRange,
         decaf: input.decaf,
         imageUrl: input.imageUrl.trim() || null,
         website: input.website.trim() || null,
         isOnboardingCandidate: input.isOnboardingCandidate,
+        tags: { set: tagIds },
       },
       select: { id: true },
     })
@@ -212,7 +242,7 @@ export async function getAdminRoastery(id: string) {
       id: true,
       name: true,
       description: true,
-      regions: true,
+      tags: { select: { id: true, name: true, category: true } },
       priceRange: true,
       decaf: true,
       imageUrl: true,
@@ -251,7 +281,7 @@ export async function getAdminRoasteries() {
     select: {
       id: true,
       name: true,
-      regions: true,
+      tags: { select: { id: true, name: true, category: true } },
       priceRange: true,
       decaf: true,
       isOnboardingCandidate: true,

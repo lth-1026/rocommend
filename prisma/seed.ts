@@ -11,6 +11,7 @@ const roasteries = [
   {
     name: '블루보틀 서울',
     regions: ['서울'],
+    tags: ['블렌드', '에스프레소'],
     priceRange: 'HIGH' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -24,6 +25,7 @@ const roasteries = [
   {
     name: '프릳츠',
     regions: ['서울'],
+    tags: ['싱글오리진', '핸드드립'],
     priceRange: 'MID' as const,
     decaf: true,
     isOnboardingCandidate: true,
@@ -37,6 +39,7 @@ const roasteries = [
   {
     name: '테라로사',
     regions: ['서울', '강원'],
+    tags: ['싱글오리진', '직수입', '마이크로로스터리'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -50,6 +53,7 @@ const roasteries = [
   {
     name: '커피리브레',
     regions: ['서울'],
+    tags: ['싱글오리진', '공정무역', '직수입'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -63,6 +67,7 @@ const roasteries = [
   {
     name: '앤트러사이트',
     regions: ['서울', '제주'],
+    tags: ['싱글오리진', '핸드드립'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -75,6 +80,7 @@ const roasteries = [
   {
     name: '모모스커피',
     regions: ['부산'],
+    tags: ['싱글오리진', '내추럴', '마이크로로스터리'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -88,6 +94,7 @@ const roasteries = [
   {
     name: '카페 온뇨',
     regions: ['부산'],
+    tags: ['싱글오리진'],
     priceRange: 'LOW' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -99,6 +106,7 @@ const roasteries = [
   {
     name: '핸즈커피',
     regions: ['대구'],
+    tags: ['블렌드', '에스프레소'],
     priceRange: 'MID' as const,
     decaf: true,
     isOnboardingCandidate: true,
@@ -112,6 +120,7 @@ const roasteries = [
   {
     name: '빈브라더스',
     regions: ['서울'],
+    tags: ['싱글오리진', '워시드'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -125,6 +134,7 @@ const roasteries = [
   {
     name: '롤링폴리',
     regions: ['서울'],
+    tags: ['싱글오리진', '마이크로로스터리'],
     priceRange: 'HIGH' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -137,6 +147,7 @@ const roasteries = [
   {
     name: '나무사이로',
     regions: ['서울'],
+    tags: ['싱글오리진', '핸드드립'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -148,6 +159,7 @@ const roasteries = [
   {
     name: '스텀프타운',
     regions: ['서울'],
+    tags: ['블렌드', '에스프레소'],
     priceRange: 'HIGH' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -159,6 +171,7 @@ const roasteries = [
   {
     name: '더 베이커스테이블',
     regions: ['제주'],
+    tags: ['싱글오리진', '내추럴'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -170,6 +183,7 @@ const roasteries = [
   {
     name: '드롭탑',
     regions: ['서울', '부산', '대구'],
+    tags: ['블렌드', '구독서비스'],
     priceRange: 'LOW' as const,
     decaf: true,
     isOnboardingCandidate: true,
@@ -183,6 +197,7 @@ const roasteries = [
   {
     name: '커피앤필름',
     regions: ['광주'],
+    tags: ['싱글오리진', '워시드'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -194,6 +209,7 @@ const roasteries = [
   {
     name: '리브레 에스프레소',
     regions: ['서울'],
+    tags: ['에스프레소', '블렌드'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -205,6 +221,7 @@ const roasteries = [
   {
     name: '소울커피',
     regions: ['전북'],
+    tags: ['싱글오리진'],
     priceRange: 'LOW' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -216,6 +233,7 @@ const roasteries = [
   {
     name: '로스터리 공간',
     regions: ['인천'],
+    tags: ['싱글오리진', '마이크로로스터리'],
     priceRange: 'MID' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -227,6 +245,7 @@ const roasteries = [
   {
     name: '카페 드 무지개',
     regions: ['대전'],
+    tags: ['블렌드'],
     priceRange: 'LOW' as const,
     decaf: true,
     isOnboardingCandidate: true,
@@ -239,6 +258,7 @@ const roasteries = [
   {
     name: '하이엔드 로스터스',
     regions: ['서울'],
+    tags: ['싱글오리진', '마이크로로스터리', '직수입'],
     priceRange: 'HIGH' as const,
     decaf: false,
     isOnboardingCandidate: true,
@@ -250,17 +270,53 @@ const roasteries = [
   },
 ]
 
+/** name_category 복합키로 Tag를 upsert하고 ID를 반환 */
+async function upsertTags(
+  regions: string[],
+  characteristicTags: string[]
+): Promise<{ id: string }[]> {
+  const tagData = [
+    ...regions.map((name) => ({ name, category: 'REGION' as const })),
+    ...characteristicTags.map((name) => ({ name, category: 'CHARACTERISTIC' as const })),
+  ]
+
+  return Promise.all(
+    tagData.map((tag) =>
+      prisma.tag.upsert({
+        where: { name_category: { name: tag.name, category: tag.category } },
+        create: tag,
+        update: {},
+        select: { id: true },
+      })
+    )
+  )
+}
+
 async function main() {
   let roasteryCount = 0
   let beanCount = 0
 
-  for (const { beans, ...roasteryData } of roasteries) {
+  for (const { beans, regions, tags, ...roasteryData } of roasteries) {
     // Roastery.name은 unique 제약 없음 → findFirst 후 없으면 생성 (멱등성 보장)
     let roastery = await prisma.roastery.findFirst({ where: { name: roasteryData.name } })
+
+    const tagIds = await upsertTags(regions, tags)
+
     if (!roastery) {
-      roastery = await prisma.roastery.create({ data: roasteryData })
+      roastery = await prisma.roastery.create({
+        data: {
+          ...roasteryData,
+          tags: { connect: tagIds },
+        },
+      })
     } else {
-      roastery = await prisma.roastery.update({ where: { id: roastery.id }, data: roasteryData })
+      roastery = await prisma.roastery.update({
+        where: { id: roastery.id },
+        data: {
+          ...roasteryData,
+          tags: { set: tagIds },
+        },
+      })
     }
     roasteryCount++
 

@@ -22,7 +22,7 @@ type Step = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5'
 interface Roastery {
   id: string
   name: string
-  regions: string[]
+  tags: { id: string; name: string; category: string }[]
 }
 
 interface OnboardingWizardProps {

@@ -42,7 +42,9 @@ export default async function AdminRoasteriesPage() {
               {roasteries.map((r) => (
                 <tr key={r.id} className="hover:bg-surface-sub transition-colors">
                   <td className="px-4 py-3 font-medium text-text">{r.name}</td>
-                  <td className="px-4 py-3 text-text-sub">{r.regions[0] ?? '—'}</td>
+                  <td className="px-4 py-3 text-text-sub">
+                    {r.tags.find((t) => t.category === 'REGION')?.name ?? '—'}
+                  </td>
                   <td className="px-4 py-3 text-text-sub">{PRICE_RANGE_LABEL[r.priceRange]}</td>
                   <td className="px-4 py-3 text-text-sub">{r.decaf ? 'O' : '—'}</td>
                   <td className="px-4 py-3 text-text-sub">{r._count.beans}</td>

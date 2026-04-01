@@ -8,6 +8,7 @@ interface TagInputProps {
   onChange: (tags: string[]) => void
   placeholder?: string
   required?: boolean
+  suggestions?: string[]
 }
 
 export function TagInput({
@@ -16,8 +17,10 @@ export function TagInput({
   onChange,
   placeholder = '입력 후 Enter',
   required,
+  suggestions,
 }: TagInputProps) {
   const [input, setInput] = useState('')
+  const listId = `tag-suggestions-${label.replace(/\s/g, '-')}`
 
   function addTag() {
     const trimmed = input.trim()
@@ -60,6 +63,7 @@ export function TagInput({
         ))}
         <input
           type="text"
+          list={suggestions ? listId : undefined}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -68,6 +72,15 @@ export function TagInput({
           className="min-w-24 flex-1 bg-transparent text-sm text-text outline-none placeholder:text-text-sub"
         />
       </div>
+      {suggestions && (
+        <datalist id={listId}>
+          {suggestions
+            .filter((s) => !tags.includes(s))
+            .map((s) => (
+              <option key={s} value={s} />
+            ))}
+        </datalist>
+      )}
     </div>
   )
 }

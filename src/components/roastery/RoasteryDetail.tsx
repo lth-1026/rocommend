@@ -8,7 +8,7 @@ import { WebsiteLink } from './WebsiteLink'
 import { RatingButton } from '@/components/rating/RatingButton'
 import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
-import { PRICE_RANGE_LABELS } from '@/types/roastery'
+import { PRICE_RANGE_LABELS, getRegions, getCharacteristicTags } from '@/types/roastery'
 
 interface RoasteryDetailProps {
   roastery: RoasteryDetailType
@@ -23,6 +23,9 @@ export function RoasteryDetail({
   userRating,
   isBookmarked,
 }: RoasteryDetailProps) {
+  const regions = getRegions(roastery.tags)
+  const charTags = getCharacteristicTags(roastery.tags)
+
   return (
     <div className="flex flex-col gap-8">
       <BackButton />
@@ -46,13 +49,22 @@ export function RoasteryDetail({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold">{roastery.name}</h1>
-          {roastery.regions.length > 0 && (
-            <p className="text-sm text-muted-foreground">{roastery.regions[0]}</p>
+          {regions.length > 0 && (
+            <p className="text-sm text-muted-foreground">{regions[0]}</p>
           )}
           {roastery.description && (
             <p className="text-sm text-foreground leading-relaxed max-w-prose">
               {roastery.description}
             </p>
+          )}
+          {charTags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {charTags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
           )}
         </div>
 

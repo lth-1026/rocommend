@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getAdminRoastery } from '@/actions/admin'
 import { RoasteryForm } from '@/components/admin/RoasteryForm'
-import type { PriceRange } from '@prisma/client'
+import type { PriceRange, TagCategory } from '@prisma/client'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -31,7 +31,7 @@ export default async function EditRoasteryPage({ params }: Props) {
           initialData={{
             name: roastery.name,
             description: roastery.description ?? '',
-            regions: roastery.regions,
+            tags: roastery.tags.map((t) => ({ ...t, category: t.category as TagCategory })),
             priceRange: roastery.priceRange as PriceRange,
             decaf: roastery.decaf,
             imageUrl: roastery.imageUrl ?? '',

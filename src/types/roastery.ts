@@ -1,12 +1,18 @@
-import type { PriceRange } from '@prisma/client'
+import type { PriceRange, TagCategory } from '@prisma/client'
 
-export type { PriceRange }
+export type { PriceRange, TagCategory }
+
+export interface TagItem {
+  id: string
+  name: string
+  category: TagCategory
+}
 
 export interface RoasteryWithStats {
   id: string
   name: string
   description: string | null
-  regions: string[]
+  tags: TagItem[]
   priceRange: PriceRange
   decaf: boolean
   imageUrl: string | null
@@ -69,10 +75,40 @@ export const REGIONS = [
 
 export type Region = (typeof REGIONS)[number]
 
+// 로스터리 특성 태그 (어드민 폼 자동완성용)
+export const CHARACTERISTIC_TAGS = [
+  '싱글오리진',
+  '블렌드',
+  '내추럴',
+  '워시드',
+  '허니프로세스',
+  '에스프레소',
+  '핸드드립',
+  '콜드브루',
+  '구독서비스',
+  '마이크로로스터리',
+  '직수입',
+  '공정무역',
+  '유기농',
+] as const
+
+export type CharacteristicTag = (typeof CHARACTERISTIC_TAGS)[number]
+
+/** tags 배열에서 REGION 카테고리만 추출 */
+export function getRegions(tags: TagItem[]): string[] {
+  return tags.filter((t) => t.category === 'REGION').map((t) => t.name)
+}
+
+/** tags 배열에서 CHARACTERISTIC 카테고리만 추출 */
+export function getCharacteristicTags(tags: TagItem[]): string[] {
+  return tags.filter((t) => t.category === 'CHARACTERISTIC').map((t) => t.name)
+}
+
 export interface FilterParams {
   q: string
   price: PriceRange[]
   decaf: boolean
   regions: string[]
+  tags: string[] // CHARACTERISTIC 태그 필터
   rated: boolean
 }

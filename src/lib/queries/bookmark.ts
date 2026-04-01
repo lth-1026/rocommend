@@ -24,7 +24,7 @@ export async function getBookmarks(
             id: true,
             name: true,
             description: true,
-            regions: true,
+            tags: { select: { id: true, name: true, category: true } },
             priceRange: true,
             decaf: true,
             imageUrl: true,

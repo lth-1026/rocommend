@@ -13,7 +13,7 @@ export default async function OnboardingPage() {
 
   const roasteries = await prisma.roastery.findMany({
     where: { isOnboardingCandidate: true },
-    select: { id: true, name: true, regions: true },
+    select: { id: true, name: true, tags: { select: { id: true, name: true, category: true } } },
     orderBy: { name: 'asc' },
   })
 
