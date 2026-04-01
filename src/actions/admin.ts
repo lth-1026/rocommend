@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import type { ActionResult } from '@/types/action'
 import type { PriceRange } from '@prisma/client'
+import { flattenTags } from '@/types/roastery'
 
 // ── 권한 체크 헬퍼 ─────────────────────────────────────
 type AdminCheckError = { error: string; code: 'UNAUTHORIZED' }
@@ -27,11 +28,46 @@ export interface CreateRoasteryInput {
   name: string
   description: string
   regions: string[]
+  tags: string[] // CHARACTERISTIC 태그
   priceRange: PriceRange
   decaf: boolean
   imageUrl: string
   website: string
   isOnboardingCandidate: boolean
+}
+
+/** 지역 + 특성 태그를 upsert하고 ID + isPrimary 배열을 반환 */
+async function upsertTags(
+  regions: string[],
+  characteristicTags: string[]
+): Promise<{ id: string; isPrimary: boolean }[]> {
+  const tagData = [
+    ...regions.map((name, i) => ({
+      name: name.trim(),
+      category: 'REGION' as const,
+      isPrimary: i === 0,
+    })),
+    ...characteristicTags.map((name) => ({
+      name: name.trim(),
+      category: 'CHARACTERISTIC' as const,
+      isPrimary: false,
+    })),
+  ].filter((t) => t.name)
+
+  if (tagData.length === 0) return []
+
+  const tags = await Promise.all(
+    tagData.map(async ({ isPrimary, ...tagFields }) => {
+      const tag = await prisma.tag.upsert({
+        where: { name_category: { name: tagFields.name, category: tagFields.category } },
+        create: tagFields,
+        update: {},
+        select: { id: true },
+      })
+      return { id: tag.id, isPrimary }
+    })
+  )
+  return tags
 }
 
 export async function createRoastery(
@@ -53,16 +89,18 @@ export async function createRoastery(
   }
 
   try {
+    const tagIds = await upsertTags(input.regions, input.tags)
+
     const roastery = await prisma.roastery.create({
       data: {
         name: input.name.trim(),
         description: input.description.trim() || null,
-        regions: input.regions.map((r) => r.trim()).filter(Boolean),
         priceRange: input.priceRange,
         decaf: input.decaf,
         imageUrl: input.imageUrl.trim() || null,
         website: input.website.trim() || null,
         isOnboardingCandidate: input.isOnboardingCandidate,
+        tags: { create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })) },
       },
       select: { id: true },
     })
@@ -141,17 +179,22 @@ export async function updateRoastery(
   }
 
   try {
+    const tagIds = await upsertTags(input.regions, input.tags)
+
     const roastery = await prisma.roastery.update({
       where: { id },
       data: {
         name: input.name.trim(),
         description: input.description.trim() || null,
-        regions: input.regions.map((r) => r.trim()).filter(Boolean),
         priceRange: input.priceRange,
         decaf: input.decaf,
         imageUrl: input.imageUrl.trim() || null,
         website: input.website.trim() || null,
         isOnboardingCandidate: input.isOnboardingCandidate,
+        tags: {
+          deleteMany: {},
+          create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })),
+        },
       },
       select: { id: true },
     })
@@ -206,13 +249,15 @@ export async function getAdminRoastery(id: string) {
   const check = await requireAdmin()
   if ('error' in check) redirect('/home')
 
-  return prisma.roastery.findUnique({
+  const raw = await prisma.roastery.findUnique({
     where: { id },
     select: {
       id: true,
       name: true,
       description: true,
-      regions: true,
+      tags: {
+        select: { isPrimary: true, tag: { select: { id: true, name: true, category: true } } },
+      },
       priceRange: true,
       decaf: true,
       imageUrl: true,
@@ -220,6 +265,8 @@ export async function getAdminRoastery(id: string) {
       isOnboardingCandidate: true,
     },
   })
+  if (!raw) return null
+  return { ...raw, tags: flattenTags(raw.tags) }
 }
 
 // ── 원두 단건 조회 (admin 전용) ──────────────────────────
@@ -247,11 +294,13 @@ export async function getAdminRoasteries() {
   const check = await requireAdmin()
   if ('error' in check) redirect('/home')
 
-  return prisma.roastery.findMany({
+  const rows = await prisma.roastery.findMany({
     select: {
       id: true,
       name: true,
-      regions: true,
+      tags: {
+        select: { isPrimary: true, tag: { select: { id: true, name: true, category: true } } },
+      },
       priceRange: true,
       decaf: true,
       isOnboardingCandidate: true,
@@ -260,6 +309,7 @@ export async function getAdminRoasteries() {
     },
     orderBy: { createdAt: 'desc' },
   })
+  return rows.map((r) => ({ ...r, tags: flattenTags(r.tags) }))
 }
 
 // ── 원두 목록 (admin 전용) ──────────────────────────────

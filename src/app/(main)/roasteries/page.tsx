@@ -24,6 +24,7 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
     ),
     decaf: params.decaf === '1',
     regions: toArray(params.region),
+    tags: toArray(params.tag),
     rated: params.rated === '1',
   }
 

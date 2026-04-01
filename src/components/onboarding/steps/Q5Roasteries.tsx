@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 interface Roastery {
   id: string
   name: string
-  regions: string[]
+  tags: { id: string; name: string; category: string }[]
 }
 
 interface Q5RoasteriesProps {
@@ -67,7 +67,9 @@ export function Q5Roasteries({
             >
               {r.name}
             </p>
-            <p className="mt-0.5 text-xs text-text-secondary">{r.regions[0]}</p>
+            <p className="mt-0.5 text-xs text-text-secondary">
+              {r.tags.find((t) => t.category === 'REGION')?.name ?? ''}
+            </p>
           </button>
         ))}
       </div>

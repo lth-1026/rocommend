@@ -6,7 +6,7 @@ import { SlidersHorizontal, RotateCcw, ChevronDown } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { PRICE_RANGE_LABELS, PRICE_OPTIONS, REGIONS } from '@/types/roastery'
+import { PRICE_RANGE_LABELS, PRICE_OPTIONS, REGIONS, CHARACTERISTIC_TAGS } from '@/types/roastery'
 import type { FilterParams, PriceRange, SortOption } from '@/types/roastery'
 import { SortSelector } from './SortSelector'
 
@@ -16,7 +16,7 @@ interface FilterPanelProps {
   isLoggedIn: boolean
 }
 
-type PillId = 'price' | 'region'
+type PillId = 'price' | 'region' | 'tag'
 
 export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
   const router = useRouter()
@@ -54,6 +54,9 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
     params.delete('region')
     next.regions.forEach((r) => params.append('region', r))
 
+    params.delete('tag')
+    next.tags.forEach((t) => params.append('tag', t))
+
     if (next.rated) params.set('rated', '1')
     else params.delete('rated')
 
@@ -80,12 +83,24 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
     navigate({ regions: next })
   }
 
+  function toggleTag(tag: string) {
+    const next = filter.tags.includes(tag)
+      ? filter.tags.filter((t) => t !== tag)
+      : [...filter.tags, tag]
+    navigate({ tags: next })
+  }
+
   function reset() {
-    navigate({ q: '', price: [], decaf: false, regions: [], rated: false })
+    navigate({ q: '', price: [], decaf: false, regions: [], tags: [], rated: false })
   }
 
   const isFiltered =
-    filter.q || filter.price.length > 0 || filter.decaf || filter.regions.length > 0 || filter.rated
+    filter.q ||
+    filter.price.length > 0 ||
+    filter.decaf ||
+    filter.regions.length > 0 ||
+    filter.tags.length > 0 ||
+    filter.rated
 
   return (
     <div className={isPending ? 'opacity-60 pointer-events-none' : ''}>
@@ -120,6 +135,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
                 onToggle={() => navigate({ decaf: !filter.decaf })}
               />
               <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+              <TagGroup selected={filter.tags} onToggle={toggleTag} />
               {isLoggedIn && (
                 <RatedGroup
                   checked={filter.rated}
@@ -177,6 +193,28 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           디카페인
         </button>
 
+        <FilterPill
+          id="region"
+          label="지역"
+          count={filter.regions.length}
+          open={openPill === 'region'}
+          onToggle={() => setOpenPill(openPill === 'region' ? null : 'region')}
+          onClose={() => setOpenPill(null)}
+        >
+          <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+        </FilterPill>
+
+        <FilterPill
+          id="tag"
+          label="태그"
+          count={filter.tags.length}
+          open={openPill === 'tag'}
+          onToggle={() => setOpenPill(openPill === 'tag' ? null : 'tag')}
+          onClose={() => setOpenPill(null)}
+        >
+          <TagGroup selected={filter.tags} onToggle={toggleTag} />
+        </FilterPill>
+
         {isLoggedIn && (
           <button
             onClick={() => navigate({ rated: !filter.rated })}
@@ -189,17 +227,6 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
             내가 평가한
           </button>
         )}
-
-        <FilterPill
-          id="region"
-          label="지역"
-          count={filter.regions.length}
-          open={openPill === 'region'}
-          onToggle={() => setOpenPill(openPill === 'region' ? null : 'region')}
-          onClose={() => setOpenPill(null)}
-        >
-          <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
-        </FilterPill>
 
         {isFiltered && (
           <button
@@ -352,6 +379,28 @@ function RegionGroup({
             />
             <Label htmlFor={`region-${r}`} className="text-sm cursor-pointer">
               {r}
+            </Label>
+          </div>
+        ))}
+      </div>
+    </fieldset>
+  )
+}
+
+function TagGroup({ selected, onToggle }: { selected: string[]; onToggle: (t: string) => void }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 text-sm font-medium">태그</legend>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+        {CHARACTERISTIC_TAGS.map((t) => (
+          <div key={t} className="flex items-center gap-1.5">
+            <Checkbox
+              id={`tag-${t}`}
+              checked={selected.includes(t)}
+              onCheckedChange={() => onToggle(t)}
+            />
+            <Label htmlFor={`tag-${t}`} className="text-sm cursor-pointer">
+              {t}
             </Label>
           </div>
         ))}

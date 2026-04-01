@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { RegionDisplay } from './RegionDisplay'
 import { RatingDisplay } from './RatingDisplay'
 import type { RoasteryWithStats } from '@/types/roastery'
-import { PRICE_RANGE_LABELS } from '@/types/roastery'
+import { PRICE_RANGE_LABELS, getRegions, getCharacteristicTags } from '@/types/roastery'
 
 interface RoasteryCardProps {
   roastery: RoasteryWithStats
@@ -43,6 +43,9 @@ export function RoasteryCard({
   activeRegions,
   variant = 'portrait',
 }: RoasteryCardProps) {
+  const regions = getRegions(roastery.tags)
+  const charTags = getCharacteristicTags(roastery.tags)
+
   if (variant === 'landscape') {
     return (
       <Link
@@ -68,10 +71,10 @@ export function RoasteryCard({
           <div className="flex flex-col justify-between h-16 min-w-0">
             <p className="font-medium text-sm leading-tight line-clamp-1">{roastery.name}</p>
             <p className="text-xs text-muted-foreground line-clamp-1">
-              {roastery.regions.length > 0 && (
-                <RegionDisplay regions={roastery.regions} activeRegions={activeRegions} />
+              {regions.length > 0 && (
+                <RegionDisplay regions={regions} activeRegions={activeRegions} />
               )}
-              {roastery.regions.length > 0 && ' · '}
+              {regions.length > 0 && ' · '}
               {PRICE_RANGE_LABELS[roastery.priceRange]}
             </p>
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -115,13 +118,13 @@ export function RoasteryCard({
         <div className="flex flex-col gap-0.5 px-0.5">
           <p className="text-sm font-medium leading-tight line-clamp-1">{roastery.name}</p>
           <p className="text-xs text-muted-foreground line-clamp-1">
-            {roastery.regions.length > 0 && (
-              <RegionDisplay regions={roastery.regions} activeRegions={activeRegions} />
+            {regions.length > 0 && (
+              <RegionDisplay regions={regions} activeRegions={activeRegions} />
             )}
-            {roastery.regions.length > 0 && ' · '}
+            {regions.length > 0 && ' · '}
             {PRICE_RANGE_LABELS[roastery.priceRange]}
           </p>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-xs">
               <RatingDisplay avgRating={roastery.avgRating} ratingCount={roastery.ratingCount} />
             </span>
@@ -130,6 +133,11 @@ export function RoasteryCard({
                 디카페인
               </Badge>
             )}
+            {charTags.slice(0, 2).map((tag) => (
+              <Badge key={tag} variant="outline" className="text-xs py-0 px-1.5">
+                {tag}
+              </Badge>
+            ))}
           </div>
         </div>
       </div>

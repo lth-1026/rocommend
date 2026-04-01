@@ -12,8 +12,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",
-    "pretest:e2e": "pnpm build && pnpm dlx prisma db seed",
-    "prepare": "husky"
+    "prepare": "husky",
+    "pretest:e2e": "pnpm build && pnpm dlx prisma db seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
