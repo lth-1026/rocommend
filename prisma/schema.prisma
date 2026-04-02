@@ -40,24 +40,45 @@ model Onboarding {
 }
 
 model Roastery {
-  id                   String           @id @default(cuid())
-  name                 String
-  description          String?
-  regions              String[]         // 복수 지역 저장. 배열 첫 번째 = 대표 지역
-  priceRange           PriceRange
-  decaf                Boolean          @default(false)
-  imageUrl             String?
-  website              String?
-  isOnboardingCandidate Boolean         @default(false) // Q5 목록 노출 여부
-  createdAt            DateTime         @default(now())
-  ratings              Rating[]
-  bookmarks            Bookmark[]
-  beans                Bean[]
-  recommendations      Recommendation[]
+  id                    String           @id @default(cuid())
+  name                  String
+  description           String?
+  priceRange            PriceRange
+  decaf                 Boolean          @default(false)
+  imageUrl              String?
+  website               String?
+  isOnboardingCandidate Boolean          @default(false) // Q5 목록 노출 여부
+  createdAt             DateTime         @default(now())
+  tags                  RoasteryTag[]
+  ratings               Rating[]
+  bookmarks             Bookmark[]
+  beans                 Bean[]
+  recommendations       Recommendation[]
 
   @@index([priceRange])
   @@index([decaf])
   @@index([name])
+}
+
+model Tag {
+  id         String        @id @default(cuid())
+  name       String
+  category   TagCategory
+  roasteries RoasteryTag[]
+
+  @@unique([name, category])
+  @@index([category])
+}
+
+model RoasteryTag {
+  roasteryId String
+  tagId      String
+  isPrimary  Boolean  @default(false)
+  roastery   Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([roasteryId, tagId])
+  @@index([tagId])
 }
 
 model Bean {
@@ -177,6 +198,11 @@ enum PriceRange {
   LOW  // 200g 기준 20,000원 미만
   MID  // 20,000–35,000원
   HIGH // 35,000원 초과
+}
+
+enum TagCategory {
+  REGION         // 한국 광역자치단체 (서울, 부산 등)
+  CHARACTERISTIC // 로스터리 특성 (싱글오리진, 블렌드 등)
 }
 
 enum Role {

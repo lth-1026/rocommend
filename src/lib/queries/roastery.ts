@@ -1,19 +1,48 @@
 import { prisma } from '@/lib/prisma'
+import type { Prisma } from '@prisma/client'
 import type { SortOption, RoasteryWithStats, RoasteryDetail, FilterParams } from '@/types/roastery'
+import { flattenTags } from '@/types/roastery'
 
-const DEFAULT_FILTER: FilterParams = { q: '', price: [], decaf: false, regions: [], rated: false }
+const DEFAULT_FILTER: FilterParams = {
+  q: '',
+  price: [],
+  decaf: false,
+  regions: [],
+  tags: [],
+  rated: false,
+}
+
+const TAG_SELECT = {
+  select: {
+    isPrimary: true,
+    tag: { select: { id: true, name: true, category: true } },
+  },
+} as const
 
 export async function getRoasteries(
   sort: SortOption = 'popular',
   filter: FilterParams = DEFAULT_FILTER,
   userId?: string
 ): Promise<RoasteryWithStats[]> {
-  const where = {
+  const andConditions: Prisma.RoasteryWhereInput[] = []
+
+  if (filter.regions.length > 0) {
+    andConditions.push({
+      tags: { some: { tag: { category: 'REGION', name: { in: filter.regions } } } },
+    })
+  }
+  if (filter.tags.length > 0) {
+    andConditions.push({
+      tags: { some: { tag: { category: 'CHARACTERISTIC', name: { in: filter.tags } } } },
+    })
+  }
+
+  const where: Prisma.RoasteryWhereInput = {
     ...(filter.price.length > 0 && { priceRange: { in: filter.price } }),
     ...(filter.decaf && { decaf: true }),
-    ...(filter.regions.length > 0 && { regions: { hasSome: filter.regions } }),
     ...(filter.q && { name: { contains: filter.q, mode: 'insensitive' as const } }),
     ...(filter.rated && userId && { ratings: { some: { userId } } }),
+    ...(andConditions.length > 0 && { AND: andConditions }),
   }
 
   const [roasteries, avgRatings] = await Promise.all([
@@ -22,7 +51,7 @@ export async function getRoasteries(
         id: true,
         name: true,
         description: true,
-        regions: true,
+        tags: TAG_SELECT,
         priceRange: true,
         decaf: true,
         imageUrl: true,
@@ -42,6 +71,7 @@ export async function getRoasteries(
 
   const result = roasteries.map((r) => ({
     ...r,
+    tags: flattenTags(r.tags),
     ratingCount: r._count.ratings,
     avgRating: avgMap.get(r.id) ?? null,
   }))
@@ -67,7 +97,7 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
         id: true,
         name: true,
         description: true,
-        regions: true,
+        tags: TAG_SELECT,
         priceRange: true,
         decaf: true,
         imageUrl: true,
@@ -97,6 +127,7 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
 
   return {
     ...roastery,
+    tags: flattenTags(roastery.tags),
     ratingCount: roastery._count.ratings,
     avgRating: avgRating._avg.score ?? null,
   }

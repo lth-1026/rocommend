@@ -31,7 +31,7 @@ export default async function EditRoasteryPage({ params }: Props) {
           initialData={{
             name: roastery.name,
             description: roastery.description ?? '',
-            regions: roastery.regions,
+            tags: roastery.tags,
             priceRange: roastery.priceRange as PriceRange,
             decaf: roastery.decaf,
             imageUrl: roastery.imageUrl ?? '',

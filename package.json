@@ -1,5 +1,6 @@
 {
   "name": "rocommend-init",
+  "version": "0.3.0",
   "version": "0.2.0",
   "private": true,
   "scripts": {
@@ -12,6 +13,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",
+    "prepare": "husky",
     "pretest:e2e": "pnpm build && pnpm dlx prisma db seed"
   },
   "prisma": {
@@ -61,6 +63,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
     "jsdom": "^28.1.0",
     "prettier": "^3.8.1",
     "tailwindcss": "^4",

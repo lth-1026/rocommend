@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 interface Roastery {
   id: string
   name: string
-  regions: string[]
+  tags: { id: string; name: string; category: string }[]
 }
 
 interface Q5RoasteriesProps {
@@ -12,6 +12,7 @@ interface Q5RoasteriesProps {
   selected: string[]
   onChange: (value: string[]) => void
   onSubmit: () => void
+  onBack: () => void
   isLoading: boolean
 }
 
@@ -22,6 +23,7 @@ export function Q5Roasteries({
   selected,
   onChange,
   onSubmit,
+  onBack,
   isLoading,
 }: Q5RoasteriesProps) {
   function toggle(id: string) {
@@ -65,14 +67,27 @@ export function Q5Roasteries({
             >
               {r.name}
             </p>
-            <p className="mt-0.5 text-xs text-text-secondary">{r.regions[0]}</p>
+            <p className="mt-0.5 text-xs text-text-secondary">
+              {r.tags.find((t) => t.category === 'REGION')?.name ?? ''}
+            </p>
           </button>
         ))}
       </div>
 
-      <Button className="w-full" size="lg" onClick={onSubmit} disabled={!isReady || isLoading}>
-        {isLoading ? '저장 중...' : '완료 및 제출'}
-      </Button>
+      <div className="flex gap-3">
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={onBack}
+          disabled={isLoading}
+          className="shrink-0"
+        >
+          이전
+        </Button>
+        <Button className="flex-1" size="lg" onClick={onSubmit} disabled={!isReady || isLoading}>
+          {isLoading ? '저장 중...' : '완료 및 제출'}
+        </Button>
+      </div>
     </div>
   )
 }

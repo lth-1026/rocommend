@@ -22,7 +22,7 @@ type Step = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5'
 interface Roastery {
   id: string
   name: string
-  regions: string[]
+  tags: { id: string; name: string; category: string; isPrimary: boolean }[]
 }
 
 interface OnboardingWizardProps {
@@ -66,7 +66,12 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
     return (
       <div className="space-y-6">
         <ProgressBar current={currentStep} total={totalSteps} />
-        <Q2PurchaseStyle selected={q2} onChange={setQ2} onNext={() => setStep('Q3')} />
+        <Q2PurchaseStyle
+          selected={q2}
+          onChange={setQ2}
+          onNext={() => setStep('Q3')}
+          onBack={() => setStep('Q1')}
+        />
       </div>
     )
   }
@@ -75,7 +80,12 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
     return (
       <div className="space-y-6">
         <ProgressBar current={currentStep} total={totalSteps} />
-        <Q3PriceRange selected={q3} onChange={setQ3} onNext={() => setStep('Q4')} />
+        <Q3PriceRange
+          selected={q3}
+          onChange={setQ3}
+          onNext={() => setStep('Q4')}
+          onBack={() => setStep('Q2')}
+        />
       </div>
     )
   }
@@ -91,6 +101,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
           onSubmitEarly={() => {
             handleSubmit({ q1, q2: q2!, q3, q4: 'FIRST_TIME' })
           }}
+          onBack={() => setStep('Q3')}
           isLoading={isLoading}
         />
       </div>
@@ -105,6 +116,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
         selected={q5}
         onChange={setQ5}
         onSubmit={() => handleSubmit({ q1, q2: q2!, q3, q4: q4!, q5 })}
+        onBack={() => setStep('Q4')}
         isLoading={isLoading}
       />
     </div>

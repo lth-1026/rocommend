@@ -6,13 +6,15 @@ import { createRoastery, updateRoastery } from '@/actions/admin'
 import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
 import type { PriceRange } from '@prisma/client'
+import type { TagItem } from '@/types/roastery'
+import { getRegions, getCharacteristicTags, CHARACTERISTIC_TAGS } from '@/types/roastery'
 
 interface RoasteryFormProps {
   roasteryId?: string
   initialData?: {
     name: string
     description: string
-    regions: string[]
+    tags: TagItem[]
     priceRange: PriceRange
     decaf: boolean
     imageUrl: string
@@ -28,7 +30,10 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
 
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
-  const [regions, setRegions] = useState<string[]>(initialData?.regions ?? [])
+  const [regions, setRegions] = useState<string[]>(initialData ? getRegions(initialData.tags) : [])
+  const [characteristicTags, setCharacteristicTags] = useState<string[]>(
+    initialData ? getCharacteristicTags(initialData.tags) : []
+  )
   const [priceRange, setPriceRange] = useState<PriceRange>(initialData?.priceRange ?? 'MID')
   const [decaf, setDecaf] = useState(initialData?.decaf ?? false)
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? '')
@@ -47,6 +52,7 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
       name,
       description,
       regions,
+      tags: characteristicTags,
       priceRange,
       decaf,
       imageUrl,
@@ -105,6 +111,15 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
         onChange={setRegions}
         placeholder="예: 서울 (첫 번째 = 대표 지역)"
         required
+      />
+
+      {/* 특성 태그 */}
+      <TagInput
+        label="특성 태그"
+        tags={characteristicTags}
+        onChange={setCharacteristicTags}
+        placeholder="예: 싱글오리진 (Tab으로 추가)"
+        suggestions={CHARACTERISTIC_TAGS as unknown as string[]}
       />
 
       {/* 가격대 */}

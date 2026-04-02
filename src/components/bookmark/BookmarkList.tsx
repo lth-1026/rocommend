@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { RatingDisplay } from '@/components/roastery/RatingDisplay'
 import { RegionDisplay } from '@/components/roastery/RegionDisplay'
 import { RemoveBookmarkDialog } from './RemoveBookmarkDialog'
-import { PRICE_RANGE_LABELS } from '@/types/roastery'
+import { PRICE_RANGE_LABELS, getRegions } from '@/types/roastery'
 import type { BookmarkWithRoastery, BookmarkSort } from '@/types/bookmark'
 import { cn } from '@/lib/utils'
 
@@ -58,7 +58,7 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
             >
               <span className="font-medium truncate">{item.roastery.name}</span>
               <span className="text-sm text-muted-foreground">
-                <RegionDisplay regions={item.roastery.regions} />
+                <RegionDisplay regions={getRegions(item.roastery.tags)} />
               </span>
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="outline" className="text-xs">
