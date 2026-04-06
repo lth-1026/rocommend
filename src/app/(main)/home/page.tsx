@@ -4,14 +4,14 @@ import { getRecommendations } from '@/lib/recommender'
 import { HomeFeedClient } from '@/components/home/HomeFeedClient'
 import { FeedSkeleton } from '@/components/home/FeedSkeleton'
 
-async function HomeFeed({ userId }: { userId: string }) {
+async function HomeFeed({ userId }: { userId?: string }) {
   const result = await getRecommendations(userId)
   return <HomeFeedClient result={result} />
 }
 
 export default async function HomePage() {
   const session = await auth()
-  const userId = session!.user!.id!
+  const userId = session?.user?.id
 
   return (
     <div className="py-8 flex flex-col gap-6">
