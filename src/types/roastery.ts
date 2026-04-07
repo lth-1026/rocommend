@@ -26,9 +26,36 @@ export interface RoasteryWithStats {
   priceRange: PriceRange
   decaf: boolean
   imageUrl: string | null
-  website: string | null
+  website: string | null // deprecated — 채널 마이그레이션 완료 후 제거
   avgRating: number | null
   ratingCount: number
+}
+
+/** 채널 정의 상수 — 어드민 UI 등에서 재사용 */
+export const CHANNEL_DEFS = [
+  { key: 'naver', label: '네이버 스마트스토어' },
+  { key: 'website', label: '자사몰' },
+  { key: 'cm29', label: '29cm' },
+  { key: 'unspecialty', label: '언스페셜티' },
+  { key: 'homebaristar', label: '홈바리스타' },
+] as const
+
+export type ChannelKey = (typeof CHANNEL_DEFS)[number]['key']
+
+export interface ChannelWithPrice {
+  channelId: string
+  channelKey: string
+  label: string
+  url: string
+  price: number | null // null = 가격 없이 링크만 (언스페셜티 등)
+  order: number
+}
+
+/** 채널 정렬: 가격 있는 것 오름차순 → 가격 없는 것 order 기준 */
+export function sortChannels(channels: ChannelWithPrice[]): ChannelWithPrice[] {
+  const withPrice = channels.filter((c) => c.price !== null).sort((a, b) => a.price! - b.price!)
+  const noPrice = channels.filter((c) => c.price === null).sort((a, b) => a.order - b.order)
+  return [...withPrice, ...noPrice]
 }
 
 export interface BeanWithDetails {
@@ -39,10 +66,13 @@ export interface BeanWithDetails {
   decaf: boolean
   cupNotes: string[]
   imageUrl: string | null
+  channelPrices: ChannelWithPrice[]
 }
 
 export interface RoasteryDetail extends RoasteryWithStats {
+  address: string | null
   beans: BeanWithDetails[]
+  channels: ChannelWithPrice[] // 원두 미선택 시 또는 가격 없는 로스터리의 기본 채널 목록
 }
 
 export const PRICE_RANGE_LABELS: Record<PriceRange, string> = {

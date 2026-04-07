@@ -3,23 +3,30 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createRoastery, updateRoastery } from '@/actions/admin'
+import type { ChannelInput } from '@/actions/admin'
 import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
 import type { PriceRange } from '@prisma/client'
 import type { TagItem } from '@/types/roastery'
-import { getRegions, getCharacteristicTags, CHARACTERISTIC_TAGS } from '@/types/roastery'
+import {
+  getRegions,
+  getCharacteristicTags,
+  CHARACTERISTIC_TAGS,
+  CHANNEL_DEFS,
+} from '@/types/roastery'
 
 interface RoasteryFormProps {
   roasteryId?: string
   initialData?: {
     name: string
     description: string
+    address: string
     tags: TagItem[]
     priceRange: PriceRange
     decaf: boolean
     imageUrl: string
-    website: string
     isOnboardingCandidate: boolean
+    channels: { id: string; channelKey: string; url: string }[]
   }
 }
 
@@ -30,6 +37,7 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
 
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
+  const [address, setAddress] = useState(initialData?.address ?? '')
   const [regions, setRegions] = useState<string[]>(initialData ? getRegions(initialData.tags) : [])
   const [characteristicTags, setCharacteristicTags] = useState<string[]>(
     initialData ? getCharacteristicTags(initialData.tags) : []
@@ -37,12 +45,26 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
   const [priceRange, setPriceRange] = useState<PriceRange>(initialData?.priceRange ?? 'MID')
   const [decaf, setDecaf] = useState(initialData?.decaf ?? false)
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? '')
-  const [website, setWebsite] = useState(initialData?.website ?? '')
   const [isOnboardingCandidate, setIsOnboardingCandidate] = useState(
     initialData?.isOnboardingCandidate ?? false
   )
+  const [channels, setChannels] = useState<ChannelInput[]>(
+    initialData?.channels.map((c) => ({ channelKey: c.channelKey, url: c.url })) ?? []
+  )
 
   const isEdit = !!roasteryId
+
+  function addChannel() {
+    setChannels((prev) => [...prev, { channelKey: 'naver', url: '' }])
+  }
+
+  function removeChannel(index: number) {
+    setChannels((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function updateChannel(index: number, field: keyof ChannelInput, value: string) {
+    setChannels((prev) => prev.map((c, i) => (i === index ? { ...c, [field]: value } : c)))
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -51,12 +73,13 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
     const input = {
       name,
       description,
+      address,
       regions,
       tags: characteristicTags,
       priceRange,
       decaf,
       imageUrl,
-      website,
+      channels,
       isOnboardingCandidate,
     }
 
@@ -104,6 +127,18 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
         />
       </div>
 
+      {/* 주소 */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-text">주소</label>
+        <input
+          type="text"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
+          placeholder="예: 마포구 도화동 179-9"
+        />
+      </div>
+
       {/* 지역 (태그) */}
       <TagInput
         label="지역"
@@ -148,16 +183,49 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
         }}
       />
 
-      {/* 웹사이트 */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-text">웹사이트</label>
-        <input
-          type="url"
-          value={website}
-          onChange={(e) => setWebsite(e.target.value)}
-          className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
-          placeholder="https://..."
-        />
+      {/* 구매 채널 */}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-text">구매 채널</label>
+        {channels.length > 0 && (
+          <ul className="flex flex-col gap-2">
+            {channels.map((ch, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <select
+                  value={ch.channelKey}
+                  onChange={(e) => updateChannel(i, 'channelKey', e.target.value)}
+                  className="w-36 shrink-0 rounded-lg border border-border bg-surface px-2 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
+                >
+                  {CHANNEL_DEFS.map((def) => (
+                    <option key={def.key} value={def.key}>
+                      {def.label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="url"
+                  value={ch.url}
+                  onChange={(e) => updateChannel(i, 'url', e.target.value)}
+                  className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
+                  placeholder="https://..."
+                />
+                <button
+                  type="button"
+                  onClick={() => removeChannel(i)}
+                  className="shrink-0 rounded-lg border border-border px-2 py-2 text-sm text-muted-foreground hover:bg-surface-sub hover:text-error transition-colors"
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <button
+          type="button"
+          onClick={addChannel}
+          className="w-fit rounded-lg border border-dashed border-border px-3 py-2 text-sm text-muted-foreground hover:bg-surface-sub transition-colors"
+        >
+          + 채널 추가
+        </button>
       </div>
 
       {/* 체크박스 옵션 */}

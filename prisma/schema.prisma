@@ -43,10 +43,11 @@ model Roastery {
   id                    String           @id @default(cuid())
   name                  String
   description           String?
+  address               String?
   priceRange            PriceRange
   decaf                 Boolean          @default(false)
   imageUrl              String?
-  website               String?
+  website               String?          // deprecated — RoasteryChannel로 마이그레이션 예정
   isOnboardingCandidate Boolean          @default(false) // Q5 목록 노출 여부
   createdAt             DateTime         @default(now())
   tags                  RoasteryTag[]
@@ -54,6 +55,7 @@ model Roastery {
   bookmarks             Bookmark[]
   beans                 Bean[]
   recommendations       Recommendation[]
+  channels              RoasteryChannel[]
 
   @@index([priceRange])
   @@index([decaf])
@@ -82,18 +84,52 @@ model RoasteryTag {
 }
 
 model Bean {
-  id            String   @id @default(cuid())
+  id            String             @id @default(cuid())
   roasteryId    String
   name          String
-  origins       String[] // 원산지 (복수)
-  roastingLevel String   // LIGHT | MEDIUM | MEDIUM_DARK | DARK
-  decaf         Boolean  @default(false)
-  cupNotes      String[] // e.g. ["자몽", "카카오", "흑설탕"]
+  origins       String[]           // 원산지 (복수)
+  roastingLevel String             // LIGHT | MEDIUM | MEDIUM_DARK | DARK
+  decaf         Boolean            @default(false)
+  cupNotes      String[]           // e.g. ["자몽", "카카오", "흑설탕"]
   imageUrl      String?
-  createdAt     DateTime @default(now())
-  roastery      Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  createdAt     DateTime           @default(now())
+  roastery      Roastery           @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  channelPrices BeanChannelPrice[]
 
   @@index([roasteryId])
+}
+
+model ChannelDefinition {
+  id       String            @id @default(cuid())
+  key      String            @unique  // "naver" | "website" | "cm29" | "unspecialty" | ...
+  label    String            // "네이버 스마트스토어" | "자사몰" | ...
+  logoUrl  String?
+  order    Int               @default(0) // 가격 없는 채널의 fallback 정렬
+  channels RoasteryChannel[]
+}
+
+model RoasteryChannel {
+  id         String            @id @default(cuid())
+  roasteryId String
+  channelKey String
+  url        String
+  createdAt  DateTime          @default(now())
+  roastery   Roastery          @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  definition ChannelDefinition @relation(fields: [channelKey], references: [key])
+  beanPrices BeanChannelPrice[]
+
+  @@unique([roasteryId, channelKey])
+  @@index([roasteryId])
+}
+
+model BeanChannelPrice {
+  beanId    String
+  channelId String
+  price     Int              // 원 단위 (e.g. 16000)
+  bean      Bean            @relation(fields: [beanId], references: [id], onDelete: Cascade)
+  channel   RoasteryChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([beanId, channelId])
 }
 
 model Rating {
