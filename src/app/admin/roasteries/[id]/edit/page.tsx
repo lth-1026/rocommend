@@ -31,12 +31,13 @@ export default async function EditRoasteryPage({ params }: Props) {
           initialData={{
             name: roastery.name,
             description: roastery.description ?? '',
+            address: roastery.address ?? '',
             tags: roastery.tags,
             priceRange: roastery.priceRange as PriceRange,
             decaf: roastery.decaf,
             imageUrl: roastery.imageUrl ?? '',
-            website: roastery.website ?? '',
             isOnboardingCandidate: roastery.isOnboardingCandidate,
+            channels: roastery.channels,
           }}
         />
       </div>

@@ -24,15 +24,21 @@ async function requireAdmin(): Promise<AdminCheck> {
 }
 
 // ── 로스터리 생성 ───────────────────────────────────────
+export interface ChannelInput {
+  channelKey: string
+  url: string
+}
+
 export interface CreateRoasteryInput {
   name: string
   description: string
+  address: string
   regions: string[]
   tags: string[] // CHARACTERISTIC 태그
   priceRange: PriceRange
   decaf: boolean
   imageUrl: string
-  website: string
+  channels: ChannelInput[]
   isOnboardingCandidate: boolean
 }
 
@@ -95,12 +101,17 @@ export async function createRoastery(
       data: {
         name: input.name.trim(),
         description: input.description.trim() || null,
+        address: input.address.trim() || null,
         priceRange: input.priceRange,
         decaf: input.decaf,
         imageUrl: input.imageUrl.trim() || null,
-        website: input.website.trim() || null,
         isOnboardingCandidate: input.isOnboardingCandidate,
         tags: { create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })) },
+        channels: {
+          create: input.channels
+            .filter((c) => c.channelKey && c.url.trim())
+            .map((c) => ({ channelKey: c.channelKey, url: c.url.trim() })),
+        },
       },
       select: { id: true },
     })
@@ -186,14 +197,20 @@ export async function updateRoastery(
       data: {
         name: input.name.trim(),
         description: input.description.trim() || null,
+        address: input.address.trim() || null,
         priceRange: input.priceRange,
         decaf: input.decaf,
         imageUrl: input.imageUrl.trim() || null,
-        website: input.website.trim() || null,
         isOnboardingCandidate: input.isOnboardingCandidate,
         tags: {
           deleteMany: {},
           create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })),
+        },
+        channels: {
+          deleteMany: {},
+          create: input.channels
+            .filter((c) => c.channelKey && c.url.trim())
+            .map((c) => ({ channelKey: c.channelKey, url: c.url.trim() })),
         },
       },
       select: { id: true },
@@ -255,14 +272,18 @@ export async function getAdminRoastery(id: string) {
       id: true,
       name: true,
       description: true,
+      address: true,
       tags: {
         select: { isPrimary: true, tag: { select: { id: true, name: true, category: true } } },
       },
       priceRange: true,
       decaf: true,
       imageUrl: true,
-      website: true,
       isOnboardingCandidate: true,
+      channels: {
+        select: { id: true, channelKey: true, url: true },
+        orderBy: { createdAt: 'asc' },
+      },
     },
   })
   if (!raw) return null

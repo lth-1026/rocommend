@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator'
 import { BeanList } from './BeanList'
 import { RatingDisplay } from './RatingDisplay'
 import { BackButton } from './BackButton'
-import { WebsiteLink } from './WebsiteLink'
+import { RoasteryPurchaseFlow } from './RoasteryPurchaseFlow'
 import { RatingButton } from '@/components/rating/RatingButton'
 import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
@@ -45,11 +45,23 @@ export function RoasteryDetail({
         </div>
       )}
 
+      {/* 구매하기 섹션 — 상단 배치 */}
+      <RoasteryPurchaseFlow
+        roasteryId={roastery.id}
+        baseChannels={roastery.channels}
+        beans={roastery.beans}
+      />
+
       {/* 기본 정보 */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold">{roastery.name}</h1>
-          {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
+          <div className="flex flex-col gap-0.5">
+            {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
+            {roastery.address && (
+              <p className="text-xs text-muted-foreground/70">{roastery.address}</p>
+            )}
+          </div>
           {roastery.description && (
             <p className="text-sm text-foreground leading-relaxed max-w-prose">
               {roastery.description}
@@ -78,7 +90,6 @@ export function RoasteryDetail({
               size="lg"
             />
           </div>
-          {/* 주 CTA: 평가하기 + 보조: 즐겨찾기 */}
           {isLoggedIn && (
             <div className="flex items-center gap-2">
               <RatingButton
@@ -98,13 +109,12 @@ export function RoasteryDetail({
               isLoggedIn={false}
             />
           )}
-          {roastery.website && <WebsiteLink href={roastery.website} roasteryId={roastery.id} />}
         </div>
       </div>
 
       <Separator />
 
-      {/* 원두 목록 */}
+      {/* 원두 라인업 */}
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-medium">원두 라인업 ({roastery.beans.length})</h2>
         <BeanList beans={roastery.beans} />

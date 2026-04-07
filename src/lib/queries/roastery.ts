@@ -1,6 +1,12 @@
 import { prisma } from '@/lib/prisma'
 import type { Prisma } from '@prisma/client'
-import type { SortOption, RoasteryWithStats, RoasteryDetail, FilterParams } from '@/types/roastery'
+import type {
+  SortOption,
+  RoasteryWithStats,
+  RoasteryDetail,
+  FilterParams,
+  ChannelWithPrice,
+} from '@/types/roastery'
 import { flattenTags } from '@/types/roastery'
 
 const DEFAULT_FILTER: FilterParams = {
@@ -89,6 +95,35 @@ export async function getRoasteries(
   return result
 }
 
+const CHANNEL_SELECT = {
+  select: {
+    id: true,
+    channelKey: true,
+    url: true,
+    definition: { select: { label: true, order: true } },
+  },
+} as const
+
+function flattenChannels(
+  raw: {
+    id: string
+    channelKey: string
+    url: string
+    definition: { label: string; order: number }
+    beanPrices?: { price: number }[]
+  }[],
+  priceByChannelId?: Map<string, number>
+): ChannelWithPrice[] {
+  return raw.map((c) => ({
+    channelId: c.id,
+    channelKey: c.channelKey,
+    label: c.definition.label,
+    url: c.url,
+    price: priceByChannelId ? (priceByChannelId.get(c.id) ?? null) : null,
+    order: c.definition.order,
+  }))
+}
+
 export async function getRoasteryById(id: string): Promise<RoasteryDetail | null> {
   const [roastery, avgRating] = await Promise.all([
     prisma.roastery.findUnique({
@@ -97,11 +132,15 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
         id: true,
         name: true,
         description: true,
+        address: true,
         tags: TAG_SELECT,
         priceRange: true,
         decaf: true,
         imageUrl: true,
         website: true,
+        channels: {
+          ...CHANNEL_SELECT,
+        },
         beans: {
           select: {
             id: true,
@@ -111,8 +150,14 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
             decaf: true,
             cupNotes: true,
             imageUrl: true,
+            channelPrices: {
+              select: {
+                price: true,
+                channel: CHANNEL_SELECT,
+              },
+            },
           },
-          orderBy: { name: 'asc' },
+          orderBy: { createdAt: 'asc' },
         },
         _count: { select: { ratings: true } },
       },
@@ -125,10 +170,30 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
 
   if (!roastery) return null
 
+  // 로스터리 기본 채널 (가격 없음)
+  const baseChannels = flattenChannels(roastery.channels)
+
+  // 원두별 채널 가격
+  const beans: RoasteryDetail['beans'] = roastery.beans.map((bean) => {
+    const priceByChannelId = new Map(bean.channelPrices.map((bp) => [bp.channel.id, bp.price]))
+    return {
+      id: bean.id,
+      name: bean.name,
+      origins: bean.origins,
+      roastingLevel: bean.roastingLevel,
+      decaf: bean.decaf,
+      cupNotes: bean.cupNotes,
+      imageUrl: bean.imageUrl,
+      channelPrices: flattenChannels(roastery.channels, priceByChannelId),
+    }
+  })
+
   return {
     ...roastery,
     tags: flattenTags(roastery.tags),
     ratingCount: roastery._count.ratings,
     avgRating: avgRating._avg.score ?? null,
+    channels: baseChannels,
+    beans,
   }
 }
