@@ -13,7 +13,8 @@ const { mockTx, mockPrisma } = vi.hoisted(() => {
     mockPrisma: {
       $transaction: vi
         .fn()
-        .mockImplementation(async (fn: (tx: typeof tx) => Promise<unknown>) => fn(tx)),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .mockImplementation(async (fn: (tx: any) => unknown) => fn(tx)),
       eventLog: { create: vi.fn().mockResolvedValue({}) },
     },
   }
