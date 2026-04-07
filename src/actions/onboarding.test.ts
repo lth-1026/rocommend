@@ -21,7 +21,7 @@ const { mockTx, mockPrisma } = vi.hoisted(() => {
 const mockRedirect = vi.hoisted(() => vi.fn())
 const mockComputeAndSaveCF = vi.hoisted(() => vi.fn().mockResolvedValue(undefined))
 
-vi.mock('@/lib/auth', () => ({ auth: mockAuth }))
+vi.mock('@/lib/auth', () => ({ auth: mockAuth, unstable_update: vi.fn().mockResolvedValue(null) }))
 vi.mock('@/lib/prisma', () => ({ prisma: mockPrisma }))
 vi.mock('next/navigation', () => ({ redirect: mockRedirect }))
 vi.mock('next/server', () => ({ after: vi.fn((fn: () => unknown) => fn()) }))

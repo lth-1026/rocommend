@@ -4,7 +4,7 @@ import { testPrisma, cleanDb } from '@/tests/db-helpers'
 const mockAuth = vi.hoisted(() => vi.fn())
 const mockRedirect = vi.hoisted(() => vi.fn())
 
-vi.mock('@/lib/auth', () => ({ auth: mockAuth }))
+vi.mock('@/lib/auth', () => ({ auth: mockAuth, unstable_update: vi.fn().mockResolvedValue(null) }))
 vi.mock('next/navigation', () => ({ redirect: mockRedirect }))
 vi.mock('next/server', () => ({ after: vi.fn((fn: () => unknown) => fn()) }))
 vi.mock('@/lib/recommender', () => ({ computeAndSaveCF: vi.fn().mockResolvedValue(undefined) }))
