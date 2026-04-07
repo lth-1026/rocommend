@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { config as dotenvConfig } from 'dotenv'
+
+// vitest config 파싱 시점에 .env.test 로드 → env.ts 모듈 레벨 검사가 setupFiles보다 먼저 실행되는 문제 해결
+dotenvConfig({ path: '.env.test' })
 
 export default defineConfig({
   plugins: [react()],
