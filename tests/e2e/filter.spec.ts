@@ -56,27 +56,28 @@ test('E-20: 지역 필터 선택 시 해당 지역 로스터리만 표시된다'
 // E-21: URL 상태 유지 (뒤로가기)
 test('E-21: 필터 적용 후 상세 페이지 방문 후 뒤로가기 시 필터가 유지된다', async ({ page }) => {
   await loginComplete(page)
-  await page.goto('/roasteries?price=LOW')
+  await page.goto('/roasteries?price=MID')
 
   const firstCard = page.locator('a[href^="/roasteries/"]').first()
-  if (await firstCard.isVisible()) {
+  if (await firstCard.isVisible({ timeout: 5000 }).catch(() => false)) {
     await firstCard.click()
+    await expect(page).toHaveURL(/\/roasteries\/.+/)
     await page.goBack()
-    await expect(page).toHaveURL(/price=LOW/)
+    await expect(page).toHaveURL(/price=MID/)
   }
 })
 
 // E-22: 초기화 버튼
+// decaf URL param은 decaf=1 (decaf=true 아님)
 test('E-22: 필터 초기화 버튼을 누르면 모든 필터가 해제된다', async ({ page }) => {
   await loginComplete(page)
-  await page.goto('/roasteries?price=LOW&decaf=true')
+  await page.goto('/roasteries?price=LOW&decaf=1')
 
-  const resetButton = page.getByRole('button', { name: /초기화|전체/i })
-  if (await resetButton.isVisible()) {
-    await resetButton.click()
-    await expect(page).not.toHaveURL(/price=/)
-    await expect(page).not.toHaveURL(/decaf=true/)
-  }
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await expect(page.getByRole('button', { name: '초기화' })).toBeVisible()
+  await page.getByRole('button', { name: '초기화' }).click()
+  await expect(page).not.toHaveURL(/price=/)
+  await expect(page).not.toHaveURL(/decaf=/)
 })
 
 // E-23: 검색 + 결과 0개 안내
