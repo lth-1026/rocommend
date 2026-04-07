@@ -129,7 +129,7 @@ test('E-29: 평가 제출 후 평균 평점이 갱신된다', async ({ page }) =
       await star5.click()
       await page.getByRole('button', { name: '평가 저장' }).click()
       // 평가 저장 후 평점 표시 업데이트 확인
-      await expect(page.getByText(/★|평가/i)).toBeVisible({ timeout: 5000 })
+      await expect(page.getByText(/★|평가/i).first()).toBeVisible({ timeout: 5000 })
     }
   }
 })
