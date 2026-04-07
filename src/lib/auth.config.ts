@@ -20,6 +20,14 @@ export const authConfig: NextAuthConfig = {
     error: '/error',
   },
   callbacks: {
+    // Edge Runtime에서 JWT → session 매핑 (Prisma 없음)
+    // auth.ts의 session callback은 Node.js 전용이므로 여기서 중복 정의 필요
+    session({ session, token }) {
+      session.user.id = token.sub!
+      session.user.role = token.role ?? 'USER'
+      session.user.onboardingVersion = token.onboardingVersion ?? null
+      return session
+    },
     authorized({ auth, request: { nextUrl } }) {
       const { pathname } = nextUrl
       const isLoggedIn = !!auth?.user
