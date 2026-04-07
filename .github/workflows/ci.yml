@@ -9,6 +9,29 @@ jobs:
     name: Lint / Type Check / Test
     runs-on: ubuntu-latest
 
+    # CI 전용 임시 PostgreSQL 컨테이너 (별도 클라우드 DB 불필요)
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ci_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_test
+      AUTH_SECRET: test-secret-for-ci-only-not-real-value-32x
+      AUTH_URL: http://localhost:3000
+      TEST_SESSION_TOKEN: GJqJOE9YwkHOYhZlD49Dl4s32qTsDKp4pPWwBKLMJb4=
+      ENABLE_TEST_API: "1"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -24,8 +47,12 @@ jobs:
 
       - name: Generate Prisma Client
         run: pnpm prisma generate
-        env:
-          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+      - name: Migrate DB
+        run: pnpm prisma migrate deploy
+
+      - name: Seed DB
+        run: pnpm prisma db seed
 
       - name: Lint
         run: pnpm lint
@@ -36,5 +63,5 @@ jobs:
       - name: Type check
         run: pnpm tsc --noEmit
 
-      - name: Unit test
-        run: pnpm test
+      - name: Test
+        run: pnpm test --run
