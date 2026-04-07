@@ -1,10 +1,8 @@
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { BeanList } from './BeanList'
 import { RatingDisplay } from './RatingDisplay'
 import { BackButton } from './BackButton'
-import { RoasteryPurchaseFlow } from './RoasteryPurchaseFlow'
+import { RoasteryBuyAndBeans } from './RoasteryBuyAndBeans'
 import { RatingButton } from '@/components/rating/RatingButton'
 import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
@@ -44,13 +42,6 @@ export function RoasteryDetail({
           />
         </div>
       )}
-
-      {/* 구매하기 섹션 — 상단 배치 */}
-      <RoasteryPurchaseFlow
-        roasteryId={roastery.id}
-        baseChannels={roastery.channels}
-        beans={roastery.beans}
-      />
 
       {/* 기본 정보 */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -112,13 +103,12 @@ export function RoasteryDetail({
         </div>
       </div>
 
-      <Separator />
-
-      {/* 원두 라인업 */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-medium">원두 라인업 ({roastery.beans.length})</h2>
-        <BeanList beans={roastery.beans} />
-      </section>
+      {/* 구매하기 + 원두 라인업 */}
+      <RoasteryBuyAndBeans
+        roasteryId={roastery.id}
+        baseChannels={roastery.channels}
+        beans={roastery.beans}
+      />
     </div>
   )
 }
