@@ -14,15 +14,21 @@ export default defineConfig({
         test: {
           name: 'server',
           include: [
+            'src/*.test.ts',
             'src/actions/**/*.test.ts',
             'src/lib/**/*.test.ts',
             'src/actions/**/*.integration.test.ts',
             'src/lib/**/*.integration.test.ts',
           ],
           environment: 'node',
+          fileParallelism: false,
+          setupFiles: ['./src/tests/setup.ts'],
           env: {
             BLOB_READ_WRITE_TOKEN: 'test',
           },
+        },
+        resolve: {
+          alias: { '@': path.resolve(__dirname, './src') },
         },
       },
       {
@@ -32,7 +38,7 @@ export default defineConfig({
           name: 'components',
           include: ['src/components/**/*.test.tsx'],
           environment: 'jsdom',
-          setupFiles: ['./src/tests/setup.ts'],
+          setupFiles: ['./src/tests/setup.ts', './src/tests/setup.components.ts'],
         },
         resolve: {
           alias: { '@': path.resolve(__dirname, './src') },

@@ -20,24 +20,11 @@ export const authConfig: NextAuthConfig = {
     error: '/error',
   },
   callbacks: {
-    jwt({ token, user, trigger, session }) {
-      if (trigger === 'update' && session?.image) {
-        token.picture = session.image
-      }
-      if (user?.role) {
-        token.role = user.role
-      }
-      return token
-    },
-    session({ session, token }) {
-      session.user.id = token.sub!
-      session.user.role = token.role ?? 'USER'
-      return session
-    },
     authorized({ auth, request: { nextUrl } }) {
       const { pathname } = nextUrl
       const isLoggedIn = !!auth?.user
       const isAdmin = auth?.user?.role === 'ADMIN'
+      const isOnboardingComplete = auth?.user?.onboardingVersion != null
 
       // 어드민 전용 경로
       if (pathname.startsWith('/admin')) {
@@ -46,18 +33,23 @@ export const authConfig: NextAuthConfig = {
         return true
       }
 
-      if (isPublicPath(pathname)) {
-        // 로그인된 유저가 /login 접근 시 /home으로
-        if (pathname.startsWith('/login') && isLoggedIn) {
-          return Response.redirect(new URL('/home', nextUrl))
-        }
-        return true
-      }
-
-      // 미로그인 → /login
+      // 비로그인 → 공개 경로는 통과, 보호 경로는 /login
       if (!isLoggedIn) {
+        if (isPublicPath(pathname)) return true
         return Response.redirect(new URL('/login', nextUrl))
       }
+
+      // AUTH-COMPLETE가 /login → /home
+      if (pathname.startsWith('/login') && isOnboardingComplete)
+        return Response.redirect(new URL('/home', nextUrl))
+
+      // AUTH-INCOMPLETE: /onboarding·/api 외 모든 경로 → /onboarding
+      if (
+        !isOnboardingComplete &&
+        !pathname.startsWith('/onboarding') &&
+        !pathname.startsWith('/api')
+      )
+        return Response.redirect(new URL('/onboarding', nextUrl))
 
       return true
     },
