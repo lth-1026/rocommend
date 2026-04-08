@@ -506,3 +506,21 @@ export async function deleteSection(id: string): Promise<ActionResult<void>> {
     return { success: false, error: '삭제 중 오류가 발생했습니다', code: 'DB_ERROR' }
   }
 }
+
+export async function reorderSections(orderedIds: string[]): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  try {
+    await Promise.all(
+      orderedIds.map((id, i) =>
+        prisma.featuredSection.update({ where: { id }, data: { order: i } })
+      )
+    )
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '순서 저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
