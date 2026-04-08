@@ -370,3 +370,139 @@ export async function getAdminRoasteryBeans(roasteryId: string) {
     orderBy: { createdAt: 'desc' },
   })
 }
+
+// ── 추천 섹션 ────────────────────────────────────────────
+
+export interface CreateSectionInput {
+  title: string
+  order: number
+  isActive: boolean
+  roasteryIds: string[] // 최대 7개
+}
+
+export async function getAdminSections() {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/home')
+
+  return prisma.featuredSection.findMany({
+    select: {
+      id: true,
+      title: true,
+      order: true,
+      isActive: true,
+      createdAt: true,
+      _count: { select: { roasteries: true } },
+    },
+    orderBy: { order: 'asc' },
+  })
+}
+
+export async function getAdminSection(id: string) {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/home')
+
+  return prisma.featuredSection.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      order: true,
+      isActive: true,
+      roasteries: {
+        select: { roasteryId: true, order: true },
+        orderBy: { order: 'asc' },
+      },
+    },
+  })
+}
+
+export async function createSection(
+  input: CreateSectionInput
+): Promise<ActionResult<{ id: string }>> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  if (!input.title.trim()) {
+    return { success: false, error: '섹션 제목은 필수입니다', code: 'VALIDATION' }
+  }
+  if (input.roasteryIds.length > 7) {
+    return {
+      success: false,
+      error: '로스터리는 최대 7개까지 선택할 수 있습니다',
+      code: 'VALIDATION',
+    }
+  }
+
+  try {
+    const section = await prisma.featuredSection.create({
+      data: {
+        title: input.title.trim(),
+        order: input.order,
+        isActive: input.isActive,
+        roasteries: {
+          create: input.roasteryIds.map((roasteryId, i) => ({ roasteryId, order: i })),
+        },
+      },
+      select: { id: true },
+    })
+    return { success: true, data: { id: section.id } }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function updateSection(
+  id: string,
+  input: CreateSectionInput
+): Promise<ActionResult<{ id: string }>> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  if (!input.title.trim()) {
+    return { success: false, error: '섹션 제목은 필수입니다', code: 'VALIDATION' }
+  }
+  if (input.roasteryIds.length > 7) {
+    return {
+      success: false,
+      error: '로스터리는 최대 7개까지 선택할 수 있습니다',
+      code: 'VALIDATION',
+    }
+  }
+
+  try {
+    const section = await prisma.featuredSection.update({
+      where: { id },
+      data: {
+        title: input.title.trim(),
+        order: input.order,
+        isActive: input.isActive,
+        roasteries: {
+          deleteMany: {},
+          create: input.roasteryIds.map((roasteryId, i) => ({ roasteryId, order: i })),
+        },
+      },
+      select: { id: true },
+    })
+    return { success: true, data: { id: section.id } }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function deleteSection(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  try {
+    await prisma.featuredSection.delete({ where: { id } })
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '삭제 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
