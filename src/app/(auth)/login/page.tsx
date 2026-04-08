@@ -1,6 +1,13 @@
 import { LoginButton } from '@/components/auth/LoginButton'
+import { ErrorAlert } from '@/components/auth/ErrorAlert'
 
-export default function LoginPage() {
+interface Props {
+  searchParams: Promise<{ error?: string; provider?: string }>
+}
+
+export default async function LoginPage({ searchParams }: Props) {
+  const { error, provider } = await searchParams
+
   return (
     <div className="w-full max-w-sm space-y-8">
       {/* 로고 + 슬로건 */}
@@ -10,6 +17,8 @@ export default function LoginPage() {
           취향에 맞는 스페셜티 커피 로스터리를 찾아보세요
         </p>
       </div>
+
+      {error && <ErrorAlert error={error} provider={provider} />}
 
       {/* 소셜 로그인 버튼 */}
       <div className="space-y-3">

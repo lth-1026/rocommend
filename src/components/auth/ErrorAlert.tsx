@@ -1,12 +1,26 @@
+const PROVIDER_LABELS: Record<string, string> = {
+  google: 'Google',
+  kakao: '카카오',
+  naver: '네이버',
+}
+
 const errorMessages: Record<string, string> = {
-  OAuthAccountNotLinked: '해당 이메일로는 다른 로그인 방법을 사용해주세요',
   OAuthCallbackError: '로그인 중 문제가 발생했습니다. 다시 시도해주세요',
   OAuthSignInError: '로그인 중 문제가 발생했습니다. 다시 시도해주세요',
   default: '로그인 중 문제가 발생했습니다. 다시 시도해주세요',
 }
 
-export function ErrorAlert({ error }: { error: string }) {
-  const message = errorMessages[error] ?? errorMessages.default
+export function ErrorAlert({ error, provider }: { error: string; provider?: string }) {
+  let message: string
+
+  if (error === 'OAuthAccountNotLinked') {
+    const label = provider ? (PROVIDER_LABELS[provider] ?? provider) : null
+    message = label
+      ? `이미 ${label}로 가입된 계정입니다. ${label} 로그인을 사용해주세요.`
+      : '이미 가입된 계정입니다. 처음 가입할 때 사용한 로그인 방법으로 시도해주세요.'
+  } else {
+    message = errorMessages[error] ?? errorMessages.default
+  }
 
   return (
     <div

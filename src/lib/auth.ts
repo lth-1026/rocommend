@@ -15,6 +15,24 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   },
   callbacks: {
     authorized: authConfig.callbacks!.authorized!,
+    async signIn({ user, account }) {
+      if (!user?.email || !account) return true
+
+      // 동일 이메일로 다른 provider가 이미 등록된 경우 감지
+      const existing = await prisma.user.findUnique({
+        where: { email: user.email },
+        select: { accounts: { select: { provider: true }, take: 1 } },
+      })
+
+      if (existing?.accounts.length) {
+        const existingProvider = existing.accounts[0].provider
+        if (existingProvider !== account.provider) {
+          return `/login?error=OAuthAccountNotLinked&provider=${existingProvider}`
+        }
+      }
+
+      return true
+    },
     async jwt({ token, user, trigger, session }) {
       if (trigger === 'update' && session?.image) token.picture = session.image
       if (user?.role) token.role = user.role
