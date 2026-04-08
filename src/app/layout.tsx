@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { auth } from '@/lib/auth'
 import { SessionProvider } from '@/components/layout/SessionProvider'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
@@ -32,6 +34,8 @@ export default async function RootLayout({
           <ThemeProvider>
             {children}
             <Toaster position="top-center" richColors />
+            <Analytics />
+            <SpeedInsights />
           </ThemeProvider>
         </SessionProvider>
       </body>

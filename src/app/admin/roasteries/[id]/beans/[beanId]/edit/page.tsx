@@ -31,6 +31,7 @@ export default async function EditBeanPage({ params }: Props) {
           beanId={bean.id}
           fixedRoasteryId={id}
           redirectTo={`/admin/roasteries/${id}`}
+          channels={roastery.channels.map((c) => ({ id: c.id, channelKey: c.channelKey }))}
           initialData={{
             roasteryId: bean.roasteryId,
             name: bean.name,
@@ -39,6 +40,7 @@ export default async function EditBeanPage({ params }: Props) {
             decaf: bean.decaf,
             cupNotes: bean.cupNotes,
             imageUrl: bean.imageUrl ?? '',
+            prices: bean.channelPrices,
           }}
         />
       </div>

@@ -122,6 +122,11 @@ export async function createRoastery(
 }
 
 // ── 원두 생성 ───────────────────────────────────────────
+export interface BeanPriceInput {
+  channelId: string
+  price: number | null
+}
+
 export interface CreateBeanInput {
   roasteryId: string
   name: string
@@ -130,6 +135,7 @@ export interface CreateBeanInput {
   decaf: boolean
   cupNotes: string[]
   imageUrl: string
+  prices: BeanPriceInput[]
 }
 
 const ROASTING_LEVELS = ['LIGHT', 'MEDIUM', 'MEDIUM_DARK', 'DARK']
@@ -151,6 +157,7 @@ export async function createBean(input: CreateBeanInput): Promise<ActionResult<{
   }
 
   try {
+    const validPrices = input.prices.filter((p) => p.price !== null && p.price >= 0)
     const bean = await prisma.bean.create({
       data: {
         roasteryId: input.roasteryId,
@@ -160,6 +167,9 @@ export async function createBean(input: CreateBeanInput): Promise<ActionResult<{
         decaf: input.decaf,
         cupNotes: input.cupNotes.map((n) => n.trim()).filter(Boolean),
         imageUrl: input.imageUrl.trim() || null,
+        channelPrices: {
+          create: validPrices.map((p) => ({ channelId: p.channelId, price: p.price as number })),
+        },
       },
       select: { id: true },
     })
@@ -242,6 +252,7 @@ export async function updateBean(
   }
 
   try {
+    const validPrices = input.prices.filter((p) => p.price !== null && p.price >= 0)
     const bean = await prisma.bean.update({
       where: { id },
       data: {
@@ -252,6 +263,10 @@ export async function updateBean(
         decaf: input.decaf,
         cupNotes: input.cupNotes.map((n) => n.trim()).filter(Boolean),
         imageUrl: input.imageUrl.trim() || null,
+        channelPrices: {
+          deleteMany: {},
+          create: validPrices.map((p) => ({ channelId: p.channelId, price: p.price as number })),
+        },
       },
       select: { id: true },
     })
@@ -306,6 +321,9 @@ export async function getAdminBean(id: string) {
       decaf: true,
       cupNotes: true,
       imageUrl: true,
+      channelPrices: {
+        select: { channelId: true, price: true },
+      },
     },
   })
 }
