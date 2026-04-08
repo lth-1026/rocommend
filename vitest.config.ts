@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { config as dotenvConfig } from 'dotenv'
+
+// vitest config 파싱 시점에 .env.test 로드 → env.ts 모듈 레벨 검사가 setupFiles보다 먼저 실행되는 문제 해결
+dotenvConfig({ path: '.env.test' })
 
 export default defineConfig({
   plugins: [react()],
@@ -14,15 +18,21 @@ export default defineConfig({
         test: {
           name: 'server',
           include: [
+            'src/*.test.ts',
             'src/actions/**/*.test.ts',
             'src/lib/**/*.test.ts',
             'src/actions/**/*.integration.test.ts',
             'src/lib/**/*.integration.test.ts',
           ],
           environment: 'node',
+          fileParallelism: false,
+          setupFiles: ['./src/tests/setup.ts'],
           env: {
             BLOB_READ_WRITE_TOKEN: 'test',
           },
+        },
+        resolve: {
+          alias: { '@': path.resolve(__dirname, './src') },
         },
       },
       {
@@ -32,7 +42,7 @@ export default defineConfig({
           name: 'components',
           include: ['src/components/**/*.test.tsx'],
           environment: 'jsdom',
-          setupFiles: ['./src/tests/setup.ts'],
+          setupFiles: ['./src/tests/setup.ts', './src/tests/setup.components.ts'],
         },
         resolve: {
           alias: { '@': path.resolve(__dirname, './src') },

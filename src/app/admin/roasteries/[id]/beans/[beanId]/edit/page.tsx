@@ -1,41 +1,36 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { getAdminBean } from '@/actions/admin'
+import { getAdminBean, getAdminRoastery } from '@/actions/admin'
 import { BeanForm } from '@/components/admin/BeanForm'
 
 interface Props {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string; beanId: string }>
 }
 
 export default async function EditBeanPage({ params }: Props) {
   const session = await auth()
   if (session?.user?.role !== 'ADMIN') redirect('/home')
 
-  const { id } = await params
-  const [bean, roasteries] = await Promise.all([
-    getAdminBean(id),
-    prisma.roastery.findMany({
-      select: { id: true, name: true },
-      orderBy: { name: 'asc' },
-    }),
-  ])
+  const { id, beanId } = await params
+  const [roastery, bean] = await Promise.all([getAdminRoastery(id), getAdminBean(beanId)])
 
-  if (!bean) notFound()
+  if (!roastery || !bean || bean.roasteryId !== id) notFound()
 
   return (
     <div className="mx-auto max-w-2xl">
       <div className="mb-6 flex items-center gap-3">
-        <Link href="/admin/beans" className="text-sm text-text-sub hover:text-text">
-          ← 목록
+        <Link href={`/admin/roasteries/${id}`} className="text-sm text-text-sub hover:text-text">
+          ← {roastery.name}
         </Link>
         <h1 className="text-2xl font-bold text-text">원두 수정</h1>
       </div>
       <div className="rounded-xl border border-border bg-surface p-6">
         <BeanForm
-          roasteries={roasteries}
+          roasteries={[]}
           beanId={bean.id}
+          fixedRoasteryId={id}
+          redirectTo={`/admin/roasteries/${id}`}
           initialData={{
             roasteryId: bean.roasteryId,
             name: bean.name,

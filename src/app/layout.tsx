@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { SessionProvider } from '@/components/layout/SessionProvider'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -28,7 +29,10 @@ export default async function RootLayout({
       </head>
       <body>
         <SessionProvider session={session}>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            {children}
+            <Toaster position="top-center" richColors />
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

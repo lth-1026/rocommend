@@ -1,17 +1,30 @@
 import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
 import { getRecommendations } from '@/lib/recommender'
+import { getFeaturedSections, getPopularRoasteries } from '@/lib/queries/recommendation'
 import { HomeFeedClient } from '@/components/home/HomeFeedClient'
 import { FeedSkeleton } from '@/components/home/FeedSkeleton'
 
-async function HomeFeed({ userId }: { userId: string }) {
-  const result = await getRecommendations(userId)
-  return <HomeFeedClient result={result} />
+async function HomeFeed({ userId }: { userId?: string }) {
+  const [result, sections, popularItems] = await Promise.all([
+    getRecommendations(userId),
+    getFeaturedSections(),
+    getPopularRoasteries(userId),
+  ])
+
+  return (
+    <HomeFeedClient
+      result={result}
+      sections={sections}
+      popularItems={popularItems}
+      isLoggedIn={!!userId}
+    />
+  )
 }
 
 export default async function HomePage() {
   const session = await auth()
-  const userId = session!.user!.id!
+  const userId = session?.user?.id
 
   return (
     <div className="py-8 flex flex-col gap-6">

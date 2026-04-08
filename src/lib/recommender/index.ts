@@ -5,7 +5,9 @@ import type { RecommendationResult } from './types'
 export type { RecommendationResult, RecommendationItem } from './types'
 export { computeAndSaveCF } from './item-cf'
 
-export async function getRecommendations(userId: string): Promise<RecommendationResult> {
+export async function getRecommendations(userId?: string): Promise<RecommendationResult> {
+  if (!userId) return getPopularFallback()
+
   const ratingCount = await getUserRatingCount(userId)
 
   if (ratingCount < 3) {

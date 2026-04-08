@@ -3,6 +3,9 @@ import type { RawRating } from '@/lib/recommender/types'
 import type { RoasteryWithStats } from '@/types/roastery'
 import type { PriceRange } from '@/types/roastery'
 import { flattenTags } from '@/types/roastery'
+import type { SectionType } from '@prisma/client'
+
+export type { SectionType }
 
 export async function getAllRatings(): Promise<RawRating[]> {
   return prisma.rating.findMany({
@@ -63,6 +66,65 @@ export async function getPopularRoasteries(
       return b.ratingCount - a.ratingCount
     })
     .slice(0, 7)
+}
+
+export interface FeaturedSectionData {
+  id: string
+  title: string
+  type: SectionType
+  roasteries: RoasteryWithStats[]
+}
+
+export async function getFeaturedSections(): Promise<FeaturedSectionData[]> {
+  const [sections, avgRatings] = await Promise.all([
+    prisma.featuredSection.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        roasteries: {
+          orderBy: { order: 'asc' },
+          select: {
+            roastery: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                tags: {
+                  select: {
+                    isPrimary: true,
+                    tag: { select: { id: true, name: true, category: true } },
+                  },
+                },
+                priceRange: true,
+                decaf: true,
+                imageUrl: true,
+                website: true,
+                _count: { select: { ratings: true } },
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.rating.groupBy({ by: ['roasteryId'], _avg: { score: true } }),
+  ])
+
+  const avgMap = new Map(avgRatings.map((r) => [r.roasteryId, r._avg.score]))
+
+  return sections.map((s) => ({
+    id: s.id,
+    title: s.title,
+    type: s.type,
+    roasteries: s.roasteries.map(({ roastery: r }) => ({
+      ...r,
+      tags: flattenTags(r.tags),
+      ratingCount: r._count.ratings,
+      avgRating: avgMap.get(r.id) ?? null,
+    })),
+  }))
 }
 
 export interface StoredRecommendation {

@@ -32,11 +32,15 @@ pnpm prisma db seed        # 시드 재실행
 - `src/middleware.ts` 생성 금지 → Next.js 16은 `src/proxy.ts`
 
 ## 브랜치 전략 (Git Flow)
-- `main` — 프로덕션. 직접 커밋 금지
-- `develop` — 통합 브랜치. 직접 커밋 금지
+> **⚠️ 모든 작업은 반드시 브랜치를 먼저 만든 뒤 시작한다.**
+> `main`과 `develop`에 직접 커밋하면 절대 안 된다.
+> 작업 시작 전 `git checkout -b feat/...` 또는 `git checkout -b fix/...` 실행 필수.
+
+- `main` — 프로덕션. **직접 커밋 절대 금지**
+- `develop` — 통합 브랜치. **직접 커밋 절대 금지**
 - `feat/{kebab-case}` — 기능 개발 → develop으로 PR (Squash merge)
 - `fix/{kebab-case}` — 버그 수정 → develop으로 PR (Squash merge)
-- `release/{version}` — 배포 준비 → main + develop으로 PR (Merge commit)
+- `release/{version}` — 배포 준비 → main은 PR (Merge commit), develop은 로컬 merge 후 push (version 충돌 수동 해결)
 - `hotfix/{kebab-case}` — 프로덕션 긴급 수정 → main + develop으로 PR (Merge commit)
 
 ## 커밋

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { createBean, updateBean } from '@/actions/admin'
 import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
@@ -14,6 +15,8 @@ interface Roastery {
 interface BeanFormProps {
   roasteries: Roastery[]
   beanId?: string
+  fixedRoasteryId?: string
+  redirectTo?: string
   initialData?: {
     roasteryId: string
     name: string
@@ -32,12 +35,20 @@ const ROASTING_LEVELS = [
   { value: 'DARK', label: '다크' },
 ]
 
-export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
+export function BeanForm({
+  roasteries,
+  beanId,
+  fixedRoasteryId,
+  redirectTo,
+  initialData,
+}: BeanFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  const [roasteryId, setRoasteryId] = useState(initialData?.roasteryId ?? roasteries[0]?.id ?? '')
+  const [roasteryId, setRoasteryId] = useState(
+    fixedRoasteryId ?? initialData?.roasteryId ?? roasteries[0]?.id ?? ''
+  )
   const [name, setName] = useState(initialData?.name ?? '')
   const [origins, setOrigins] = useState<string[]>(initialData?.origins ?? [])
   const [roastingLevel, setRoastingLevel] = useState(initialData?.roastingLevel ?? 'MEDIUM')
@@ -58,11 +69,12 @@ export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
 
       if (!result.success) {
         setError(result.error)
+        toast.error(result.error)
         return
       }
 
-      router.push('/admin/beans')
-      router.refresh()
+      toast.success(isEdit ? '원두가 수정되었습니다.' : '원두가 등록되었습니다.')
+      router.push(redirectTo ?? '/admin/beans')
     })
   }
 
@@ -70,28 +82,30 @@ export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       {error && <div className="rounded-lg bg-error/10 px-4 py-3 text-sm text-error">{error}</div>}
 
-      {/* 로스터리 선택 */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-text">
-          로스터리 <span className="text-error">*</span>
-        </label>
-        {roasteries.length === 0 ? (
-          <p className="text-sm text-error">먼저 로스터리를 등록해주세요.</p>
-        ) : (
-          <select
-            value={roasteryId}
-            onChange={(e) => setRoasteryId(e.target.value)}
-            required
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
-          >
-            {roasteries.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
+      {/* 로스터리 선택 (fixedRoasteryId가 없을 때만 표시) */}
+      {!fixedRoasteryId && (
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-text">
+            로스터리 <span className="text-error">*</span>
+          </label>
+          {roasteries.length === 0 ? (
+            <p className="text-sm text-error">먼저 로스터리를 등록해주세요.</p>
+          ) : (
+            <select
+              value={roasteryId}
+              onChange={(e) => setRoasteryId(e.target.value)}
+              required
+              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
+            >
+              {roasteries.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      )}
 
       {/* 원두 이름 */}
       <div className="flex flex-col gap-1.5">
@@ -169,7 +183,7 @@ export function BeanForm({ roasteries, beanId, initialData }: BeanFormProps) {
         </button>
         <button
           type="submit"
-          disabled={isPending || roasteries.length === 0}
+          disabled={isPending || (!fixedRoasteryId && roasteries.length === 0)}
           className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {isPending ? '저장 중...' : isEdit ? '변경사항 저장' : '원두 등록'}

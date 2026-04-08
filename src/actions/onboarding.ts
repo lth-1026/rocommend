@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { onboardingSchema } from '@/lib/schemas/onboarding'
 import { computeAndSaveCF } from '@/lib/recommender'
 import { redirect } from 'next/navigation'
+import { unstable_update } from '@/lib/auth'
 import type { OnboardingAnswers } from '@/types/onboarding'
 import type { ActionResult } from '@/types/action'
 
@@ -88,6 +89,9 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
       await computeAndSaveCF(userId)
     })
   }
+
+  // JWT 갱신 → onboardingVersion을 토큰에 반영 (미들웨어 AUTH-INCOMPLETE 검사 통과)
+  await unstable_update({})
 
   // 서버에서 직접 리다이렉트 → 클라이언트 Router Cache를 우회
   redirect('/home')

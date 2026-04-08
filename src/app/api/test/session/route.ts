@@ -44,6 +44,13 @@ export async function POST(req: Request) {
     })
   }
 
+  const onboarding = complete
+    ? await prisma.onboarding.findUnique({
+        where: { userId: user.id },
+        select: { version: true },
+      })
+    : null
+
   const expires = new Date(Date.now() + 1000 * 60 * 60 * 24) // 24시간
   const jwt = await encode({
     secret: process.env.AUTH_SECRET!,
@@ -51,6 +58,7 @@ export async function POST(req: Request) {
       sub: user.id,
       name: user.name,
       email: user.email,
+      onboardingVersion: onboarding?.version ?? null,
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(expires.getTime() / 1000),
     },
