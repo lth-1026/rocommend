@@ -179,6 +179,7 @@ model Bookmark {
 model FeaturedSection {
   id         String                    @id @default(cuid())
   title      String
+  type       SectionType               @default(CUSTOM)
   order      Int                       @default(0)
   isActive   Boolean                   @default(true)
   roasteries FeaturedSectionRoastery[]
@@ -250,6 +251,13 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+enum SectionType {
+  CF_NEW    // "새로운 로스터리" — 협업 필터링 신규 추천
+  CF_REPEAT // "또 사고 싶은 로스터리" — CF 재구매 추천
+  POPULAR   // "실시간 인기 로스터리"
+  CUSTOM    // 관리자가 직접 큐레이션한 섹션
 }
 
 enum PriceRange {
