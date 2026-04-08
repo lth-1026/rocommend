@@ -25,7 +25,12 @@ export default async function NewBeanPage({ params }: Props) {
         <h1 className="text-2xl font-bold text-text">새 원두 등록</h1>
       </div>
       <div className="rounded-xl border border-border bg-surface p-6">
-        <BeanForm roasteries={[]} fixedRoasteryId={id} redirectTo={`/admin/roasteries/${id}`} />
+        <BeanForm
+          roasteries={[]}
+          fixedRoasteryId={id}
+          redirectTo={`/admin/roasteries/${id}`}
+          channels={roastery.channels.map((c) => ({ id: c.id, channelKey: c.channelKey }))}
+        />
       </div>
     </div>
   )

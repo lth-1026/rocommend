@@ -6,10 +6,16 @@ import { toast } from 'sonner'
 import { createBean, updateBean } from '@/actions/admin'
 import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
+import { CHANNEL_DEFS } from '@/types/roastery'
 
 interface Roastery {
   id: string
   name: string
+}
+
+interface ChannelInfo {
+  id: string
+  channelKey: string
 }
 
 interface BeanFormProps {
@@ -17,6 +23,7 @@ interface BeanFormProps {
   beanId?: string
   fixedRoasteryId?: string
   redirectTo?: string
+  channels?: ChannelInfo[]
   initialData?: {
     roasteryId: string
     name: string
@@ -25,6 +32,7 @@ interface BeanFormProps {
     decaf: boolean
     cupNotes: string[]
     imageUrl: string
+    prices?: { channelId: string; price: number }[]
   }
 }
 
@@ -40,6 +48,7 @@ export function BeanForm({
   beanId,
   fixedRoasteryId,
   redirectTo,
+  channels = [],
   initialData,
 }: BeanFormProps) {
   const router = useRouter()
@@ -56,13 +65,41 @@ export function BeanForm({
   const [cupNotes, setCupNotes] = useState<string[]>(initialData?.cupNotes ?? [])
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? '')
 
+  // 채널별 가격: channelId → price string (빈 문자열 = 미입력)
+  const [prices, setPrices] = useState<Record<string, string>>(() => {
+    const map: Record<string, string> = {}
+    for (const ch of channels) {
+      const existing = initialData?.prices?.find((p) => p.channelId === ch.id)
+      map[ch.id] = existing ? String(existing.price) : ''
+    }
+    return map
+  })
+
   const isEdit = !!beanId
+
+  function handlePriceChange(channelId: string, value: string) {
+    setPrices((prev) => ({ ...prev, [channelId]: value }))
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
 
-    const input = { roasteryId, name, origins, roastingLevel, decaf, cupNotes, imageUrl }
+    const priceList = channels.map((ch) => ({
+      channelId: ch.id,
+      price: prices[ch.id] !== '' ? Number(prices[ch.id]) : null,
+    }))
+
+    const input = {
+      roasteryId,
+      name,
+      origins,
+      roastingLevel,
+      decaf,
+      cupNotes,
+      imageUrl,
+      prices: priceList,
+    }
 
     startTransition(async () => {
       const result = isEdit ? await updateBean(beanId, input) : await createBean(input)
@@ -150,6 +187,32 @@ export function BeanForm({
         onChange={setCupNotes}
         placeholder="예: 자몽, 카카오, 흑설탕"
       />
+
+      {/* 채널별 가격 */}
+      {channels.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-text">채널별 가격 (200g 기준, 원)</label>
+          <ul className="flex flex-col gap-2">
+            {channels.map((ch) => {
+              const def = CHANNEL_DEFS.find((d) => d.key === ch.channelKey)
+              const label = def?.label ?? ch.channelKey
+              return (
+                <li key={ch.id} className="flex items-center gap-2">
+                  <span className="w-36 shrink-0 text-sm text-text-sub">{label}</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={prices[ch.id] ?? ''}
+                    onChange={(e) => handlePriceChange(ch.id, e.target.value)}
+                    className="w-36 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
+                    placeholder="예: 18000"
+                  />
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
 
       {/* 이미지 업로드 */}
       <ImageUpload
