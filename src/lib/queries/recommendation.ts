@@ -65,6 +65,62 @@ export async function getPopularRoasteries(
     .slice(0, 7)
 }
 
+export interface FeaturedSectionData {
+  id: string
+  title: string
+  roasteries: RoasteryWithStats[]
+}
+
+export async function getFeaturedSections(): Promise<FeaturedSectionData[]> {
+  const [sections, avgRatings] = await Promise.all([
+    prisma.featuredSection.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+      select: {
+        id: true,
+        title: true,
+        roasteries: {
+          orderBy: { order: 'asc' },
+          select: {
+            roastery: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                tags: {
+                  select: {
+                    isPrimary: true,
+                    tag: { select: { id: true, name: true, category: true } },
+                  },
+                },
+                priceRange: true,
+                decaf: true,
+                imageUrl: true,
+                website: true,
+                _count: { select: { ratings: true } },
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.rating.groupBy({ by: ['roasteryId'], _avg: { score: true } }),
+  ])
+
+  const avgMap = new Map(avgRatings.map((r) => [r.roasteryId, r._avg.score]))
+
+  return sections.map((s) => ({
+    id: s.id,
+    title: s.title,
+    roasteries: s.roasteries.map(({ roastery: r }) => ({
+      ...r,
+      tags: flattenTags(r.tags),
+      ratingCount: r._count.ratings,
+      avgRating: avgMap.get(r.id) ?? null,
+    })),
+  }))
+}
+
 export interface StoredRecommendation {
   roasteryId: string
   cfScore: number

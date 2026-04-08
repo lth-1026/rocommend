@@ -1,12 +1,16 @@
 import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
 import { getRecommendations } from '@/lib/recommender'
+import { getFeaturedSections } from '@/lib/queries/recommendation'
 import { HomeFeedClient } from '@/components/home/HomeFeedClient'
 import { FeedSkeleton } from '@/components/home/FeedSkeleton'
 
 async function HomeFeed({ userId }: { userId?: string }) {
-  const result = await getRecommendations(userId)
-  return <HomeFeedClient result={result} />
+  const [result, featuredSections] = await Promise.all([
+    getRecommendations(userId),
+    getFeaturedSections(),
+  ])
+  return <HomeFeedClient result={result} featuredSections={featuredSections} />
 }
 
 export default async function HomePage() {

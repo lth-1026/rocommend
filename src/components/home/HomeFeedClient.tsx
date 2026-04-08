@@ -7,12 +7,14 @@ import { RecommendSection } from './RecommendSection'
 import { PopularSection } from './PopularSection'
 import { logClientEvent } from '@/actions/events'
 import type { RecommendationResult } from '@/lib/recommender'
+import type { FeaturedSectionData } from '@/lib/queries/recommendation'
 
 interface HomeFeedClientProps {
   result: RecommendationResult
+  featuredSections: FeaturedSectionData[]
 }
 
-export function HomeFeedClient({ result }: HomeFeedClientProps) {
+export function HomeFeedClient({ result, featuredSections }: HomeFeedClientProps) {
   const [decafOn, setDecafOn] = useState(false)
   const [, startTransition] = useTransition()
   const router = useRouter()
@@ -38,6 +40,14 @@ export function HomeFeedClient({ result }: HomeFeedClientProps) {
           items={result.newItems.map((i) => i.roastery)}
           onCardClick={handleCardClick}
         />
+        {featuredSections.map((s) => (
+          <PopularSection
+            key={s.id}
+            title={s.title}
+            items={s.roasteries}
+            onCardClick={handleCardClick}
+          />
+        ))}
       </div>
     )
   }
@@ -75,6 +85,14 @@ export function HomeFeedClient({ result }: HomeFeedClientProps) {
             items={filteredRepeat}
             onCardClick={handleCardClick}
           />
+          {featuredSections.map((s) => (
+            <PopularSection
+              key={s.id}
+              title={s.title}
+              items={s.roasteries}
+              onCardClick={handleCardClick}
+            />
+          ))}
         </div>
       )}
     </div>
