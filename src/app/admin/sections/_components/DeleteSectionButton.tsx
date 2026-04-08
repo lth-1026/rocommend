@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { deleteSection } from '@/actions/admin'
 
 export function DeleteSectionButton({ sectionId }: { sectionId: string }) {
@@ -13,10 +14,11 @@ export function DeleteSectionButton({ sectionId }: { sectionId: string }) {
     startTransition(async () => {
       const result = await deleteSection(sectionId)
       if (result.success) {
+        toast.success('섹션이 삭제되었습니다.')
         router.push('/admin/sections')
         router.refresh()
       } else {
-        alert(result.error)
+        toast.error(result.error)
       }
     })
   }

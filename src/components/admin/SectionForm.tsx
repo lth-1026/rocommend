@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { createSection, updateSection } from '@/actions/admin'
 
 interface RoasteryOption {
@@ -64,8 +65,10 @@ export function SectionForm({ sectionId, initialData, roasteries }: SectionFormP
 
       if (!result.success) {
         setError(result.error)
+        toast.error(result.error)
         return
       }
+      toast.success(isEdit ? '섹션이 수정되었습니다.' : '섹션이 생성되었습니다.')
       router.push('/admin/sections')
       router.refresh()
     })

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { createBean, updateBean } from '@/actions/admin'
 import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
@@ -68,9 +69,11 @@ export function BeanForm({
 
       if (!result.success) {
         setError(result.error)
+        toast.error(result.error)
         return
       }
 
+      toast.success(isEdit ? '원두가 수정되었습니다.' : '원두가 등록되었습니다.')
       router.push(redirectTo ?? '/admin/beans')
       router.refresh()
     })
