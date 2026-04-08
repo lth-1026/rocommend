@@ -56,6 +56,7 @@ model Roastery {
   beans                 Bean[]
   recommendations       Recommendation[]
   channels              RoasteryChannel[]
+  featuredIn            FeaturedSectionRoastery[]
 
   @@index([priceRange])
   @@index([decaf])
@@ -172,6 +173,27 @@ model Bookmark {
 
   @@unique([userId, roasteryId])
   @@index([userId])
+  @@index([roasteryId])
+}
+
+model FeaturedSection {
+  id         String                    @id @default(cuid())
+  title      String
+  order      Int                       @default(0)
+  isActive   Boolean                   @default(true)
+  roasteries FeaturedSectionRoastery[]
+  createdAt  DateTime                  @default(now())
+  updatedAt  DateTime                  @updatedAt
+}
+
+model FeaturedSectionRoastery {
+  sectionId  String
+  roasteryId String
+  order      Int             @default(0)
+  section    FeaturedSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  roastery   Roastery        @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+
+  @@id([sectionId, roasteryId])
   @@index([roasteryId])
 }
 
