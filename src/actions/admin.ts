@@ -388,6 +388,7 @@ export async function getAdminSections() {
     select: {
       id: true,
       title: true,
+      type: true,
       order: true,
       isActive: true,
       createdAt: true,
@@ -406,6 +407,7 @@ export async function getAdminSection(id: string) {
     select: {
       id: true,
       title: true,
+      type: true,
       order: true,
       isActive: true,
       roasteries: {
@@ -465,7 +467,14 @@ export async function updateSection(
   if (!input.title.trim()) {
     return { success: false, error: '섹션 제목은 필수입니다', code: 'VALIDATION' }
   }
-  if (input.roasteryIds.length > 7) {
+
+  const existing = await prisma.featuredSection.findUnique({
+    where: { id },
+    select: { type: true },
+  })
+  const isSystem = existing?.type !== 'CUSTOM'
+
+  if (!isSystem && input.roasteryIds.length > 7) {
     return {
       success: false,
       error: '로스터리는 최대 7개까지 선택할 수 있습니다',
@@ -480,10 +489,13 @@ export async function updateSection(
         title: input.title.trim(),
         order: input.order,
         isActive: input.isActive,
-        roasteries: {
-          deleteMany: {},
-          create: input.roasteryIds.map((roasteryId, i) => ({ roasteryId, order: i })),
-        },
+        // 시스템 섹션은 로스터리 목록을 변경하지 않음
+        ...(!isSystem && {
+          roasteries: {
+            deleteMany: {},
+            create: input.roasteryIds.map((roasteryId, i) => ({ roasteryId, order: i })),
+          },
+        }),
       },
       select: { id: true },
     })
@@ -497,6 +509,14 @@ export async function deleteSection(id: string): Promise<ActionResult<void>> {
   const check = await requireAdmin()
   if ('error' in check) {
     return { success: false, error: check.error, code: check.code }
+  }
+
+  const existing = await prisma.featuredSection.findUnique({
+    where: { id },
+    select: { type: true },
+  })
+  if (existing?.type !== 'CUSTOM') {
+    return { success: false, error: '시스템 섹션은 삭제할 수 없습니다', code: 'VALIDATION' }
   }
 
   try {

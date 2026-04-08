@@ -6,9 +6,19 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { reorderSections } from '@/actions/admin'
 
+type SectionType = 'CF_NEW' | 'CF_REPEAT' | 'POPULAR' | 'CUSTOM'
+
+const SECTION_TYPE_LABELS: Record<SectionType, string> = {
+  CF_NEW: 'CF 신규',
+  CF_REPEAT: 'CF 재구매',
+  POPULAR: '인기',
+  CUSTOM: '큐레이션',
+}
+
 interface SectionItem {
   id: string
   title: string
+  type: SectionType
   order: number
   isActive: boolean
   _count: { roasteries: number }
@@ -82,6 +92,7 @@ export function SectionList({ initialSections }: { initialSections: SectionItem[
             <tr>
               <th className="w-8 px-3 py-3" />
               <th className="px-4 py-3 text-left font-medium text-text-sub">제목</th>
+              <th className="px-4 py-3 text-left font-medium text-text-sub">타입</th>
               <th className="px-4 py-3 text-left font-medium text-text-sub">로스터리 수</th>
               <th className="px-4 py-3 text-left font-medium text-text-sub">상태</th>
               <th className="px-4 py-3" />
@@ -99,7 +110,20 @@ export function SectionList({ initialSections }: { initialSections: SectionItem[
               >
                 <td className="px-3 py-3 text-text-sub text-center select-none">⠿</td>
                 <td className="px-4 py-3 font-medium text-text">{s.title}</td>
-                <td className="px-4 py-3 text-text-sub">{s._count.roasteries}개</td>
+                <td className="px-4 py-3">
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                      s.type === 'CUSTOM'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    {SECTION_TYPE_LABELS[s.type]}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-text-sub">
+                  {s.type === 'CUSTOM' ? `${s._count.roasteries}개` : '—'}
+                </td>
                 <td className="px-4 py-3">
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${

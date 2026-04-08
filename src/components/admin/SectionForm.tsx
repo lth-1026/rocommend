@@ -13,6 +13,7 @@ interface RoasteryOption {
 
 interface SectionFormProps {
   sectionId?: string
+  isSystem?: boolean // 시스템 섹션: 로스터리 선택 불가
   initialData?: {
     title: string
     order: number
@@ -24,7 +25,12 @@ interface SectionFormProps {
 
 const MAX_ROASTERIES = 7
 
-export function SectionForm({ sectionId, initialData, roasteries }: SectionFormProps) {
+export function SectionForm({
+  sectionId,
+  isSystem = false,
+  initialData,
+  roasteries,
+}: SectionFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -120,78 +126,84 @@ export function SectionForm({ sectionId, initialData, roasteries }: SectionFormP
         </div>
       </div>
 
-      {/* 로스터리 선택 */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-text">
-            로스터리 선택{' '}
-            <span className="text-text-sub">
-              ({selectedIds.length}/{MAX_ROASTERIES})
-            </span>
-          </label>
-        </div>
-
-        {/* 선택된 로스터리 */}
-        {selectedRoasteries.length > 0 && (
-          <div className="flex flex-wrap gap-2 rounded-lg border border-border bg-bg p-3">
-            {selectedRoasteries.map((r) => (
-              <span
-                key={r.id}
-                className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary"
-              >
-                {r.name}
-                <button
-                  type="button"
-                  onClick={() => removeSelected(r.id)}
-                  className="text-primary/60 hover:text-primary"
-                  aria-label={`${r.name} 선택 해제`}
-                >
-                  ×
-                </button>
+      {/* 로스터리 선택 — 시스템 섹션은 비노출 */}
+      {isSystem ? (
+        <p className="rounded-lg bg-bg px-4 py-3 text-sm text-text-sub">
+          시스템 섹션은 로스터리를 직접 선택하지 않습니다.
+        </p>
+      ) : (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-text">
+              로스터리 선택{' '}
+              <span className="text-text-sub">
+                ({selectedIds.length}/{MAX_ROASTERIES})
               </span>
-            ))}
+            </label>
           </div>
-        )}
 
-        {/* 검색 + 목록 */}
-        {selectedIds.length < MAX_ROASTERIES && (
-          <div className="rounded-lg border border-border bg-bg">
-            <div className="border-b border-border p-2">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="로스터리 검색..."
-                className="w-full bg-transparent px-2 py-1 text-sm text-text placeholder:text-text-sub focus:outline-none"
-              />
+          {/* 선택된 로스터리 */}
+          {selectedRoasteries.length > 0 && (
+            <div className="flex flex-wrap gap-2 rounded-lg border border-border bg-bg p-3">
+              {selectedRoasteries.map((r) => (
+                <span
+                  key={r.id}
+                  className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary"
+                >
+                  {r.name}
+                  <button
+                    type="button"
+                    onClick={() => removeSelected(r.id)}
+                    className="text-primary/60 hover:text-primary"
+                    aria-label={`${r.name} 선택 해제`}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
             </div>
-            <ul className="max-h-48 overflow-y-auto">
-              {filtered.length === 0 ? (
-                <li className="px-4 py-3 text-sm text-text-sub">검색 결과 없음</li>
-              ) : (
-                filtered.map((r) => (
-                  <li key={r.id}>
-                    <button
-                      type="button"
-                      onClick={() => toggleSelect(r.id)}
-                      className="flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-surface"
-                    >
-                      <span className="text-text">{r.name}</span>
-                      {r.primaryRegion && (
-                        <span className="text-xs text-text-sub">{r.primaryRegion}</span>
-                      )}
-                    </button>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        )}
+          )}
 
-        {selectedIds.length >= MAX_ROASTERIES && (
-          <p className="text-xs text-text-sub">최대 {MAX_ROASTERIES}개까지 선택할 수 있습니다.</p>
-        )}
-      </div>
+          {/* 검색 + 목록 */}
+          {selectedIds.length < MAX_ROASTERIES && (
+            <div className="rounded-lg border border-border bg-bg">
+              <div className="border-b border-border p-2">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="로스터리 검색..."
+                  className="w-full bg-transparent px-2 py-1 text-sm text-text placeholder:text-text-sub focus:outline-none"
+                />
+              </div>
+              <ul className="max-h-48 overflow-y-auto">
+                {filtered.length === 0 ? (
+                  <li className="px-4 py-3 text-sm text-text-sub">검색 결과 없음</li>
+                ) : (
+                  filtered.map((r) => (
+                    <li key={r.id}>
+                      <button
+                        type="button"
+                        onClick={() => toggleSelect(r.id)}
+                        className="flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-surface"
+                      >
+                        <span className="text-text">{r.name}</span>
+                        {r.primaryRegion && (
+                          <span className="text-xs text-text-sub">{r.primaryRegion}</span>
+                        )}
+                      </button>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          )}
+
+          {selectedIds.length >= MAX_ROASTERIES && (
+            <p className="text-xs text-text-sub">최대 {MAX_ROASTERIES}개까지 선택할 수 있습니다.</p>
+          )}
+        </div>
+      )}
 
       {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
 

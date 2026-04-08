@@ -5,16 +5,25 @@ import { useRouter } from 'next/navigation'
 import { DecafToggle } from './DecafToggle'
 import { RecommendSection } from './RecommendSection'
 import { PopularSection } from './PopularSection'
+import { LoginCTASection } from './LoginCTASection'
 import { logClientEvent } from '@/actions/events'
-import type { RecommendationResult } from '@/lib/recommender'
+import type { RecommendationResult, RecommendationItem } from '@/lib/recommender'
 import type { FeaturedSectionData } from '@/lib/queries/recommendation'
+import type { RoasteryWithStats } from '@/types/roastery'
 
 interface HomeFeedClientProps {
   result: RecommendationResult
-  featuredSections: FeaturedSectionData[]
+  sections: FeaturedSectionData[]
+  popularItems: RoasteryWithStats[]
+  isLoggedIn: boolean
 }
 
-export function HomeFeedClient({ result, featuredSections }: HomeFeedClientProps) {
+export function HomeFeedClient({
+  result,
+  sections,
+  popularItems,
+  isLoggedIn,
+}: HomeFeedClientProps) {
   const [decafOn, setDecafOn] = useState(false)
   const [, startTransition] = useTransition()
   const router = useRouter()
@@ -32,69 +41,78 @@ export function HomeFeedClient({ result, featuredSections }: HomeFeedClientProps
     router.push(`/roasteries/${roasteryId}`)
   }
 
-  // 폴백 (인기 로스터리)
-  if (result.source === 'fallback') {
-    return (
-      <div className="flex flex-col gap-8">
-        <PopularSection
-          items={result.newItems.map((i) => i.roastery)}
-          onCardClick={handleCardClick}
-        />
-        {featuredSections.map((s) => (
-          <PopularSection
-            key={s.id}
-            title={s.title}
-            items={s.roasteries}
-            onCardClick={handleCardClick}
-          />
-        ))}
-      </div>
-    )
-  }
+  const cfNewItems: RecommendationItem[] =
+    result.source === 'cf'
+      ? decafOn
+        ? result.newItems.filter((i) => i.roastery.decaf)
+        : result.newItems
+      : []
 
-  // CF 활성 — 디카페인 필터 적용
-  const filteredNew = decafOn ? result.newItems.filter((i) => i.roastery.decaf) : result.newItems
-  const filteredRepeat = decafOn
-    ? result.repeatItems.filter((i) => i.roastery.decaf)
-    : result.repeatItems
+  const cfRepeatItems: RecommendationItem[] =
+    result.source === 'cf'
+      ? decafOn
+        ? result.repeatItems.filter((i) => i.roastery.decaf)
+        : result.repeatItems
+      : []
 
-  const showDecafToggle = result.newItems.length > 0 || result.repeatItems.length > 0
-  const bothEmpty = filteredNew.length === 0 && filteredRepeat.length === 0
+  const hasCFSections = sections.some((s) => s.type === 'CF_NEW' || s.type === 'CF_REPEAT')
+  const showDecafToggle = hasCFSections && result.source === 'cf' && isLoggedIn
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       {showDecafToggle && (
         <div className="page-wrapper flex items-center">
           <DecafToggle decafOn={decafOn} onToggle={() => setDecafOn((v) => !v)} />
         </div>
       )}
 
-      {bothEmpty && decafOn ? (
-        <p className="py-12 text-center text-sm text-muted-foreground">
-          현재 디카페인 원두를 보유한 추천 로스터리가 없습니다.
-        </p>
-      ) : (
-        <div className="flex flex-col gap-8">
-          <RecommendSection
-            title="새로운 로스터리"
-            items={filteredNew}
-            onCardClick={handleCardClick}
-          />
-          <RecommendSection
-            title="또 사고 싶은 로스터리"
-            items={filteredRepeat}
-            onCardClick={handleCardClick}
-          />
-          {featuredSections.map((s) => (
-            <PopularSection
-              key={s.id}
-              title={s.title}
-              items={s.roasteries}
-              onCardClick={handleCardClick}
-            />
-          ))}
-        </div>
-      )}
+      {sections.map((section) => {
+        switch (section.type) {
+          case 'CF_NEW':
+            if (!isLoggedIn) return <LoginCTASection key={section.id} title={section.title} />
+            if (result.source === 'fallback') return null
+            return (
+              <RecommendSection
+                key={section.id}
+                title={section.title}
+                items={cfNewItems}
+                onCardClick={handleCardClick}
+              />
+            )
+
+          case 'CF_REPEAT':
+            if (!isLoggedIn) return <LoginCTASection key={section.id} title={section.title} />
+            if (result.source === 'fallback') return null
+            return (
+              <RecommendSection
+                key={section.id}
+                title={section.title}
+                items={cfRepeatItems}
+                onCardClick={handleCardClick}
+              />
+            )
+
+          case 'POPULAR':
+            return (
+              <PopularSection
+                key={section.id}
+                title={section.title}
+                items={popularItems}
+                onCardClick={handleCardClick}
+              />
+            )
+
+          case 'CUSTOM':
+            return (
+              <PopularSection
+                key={section.id}
+                title={section.title}
+                items={section.roasteries}
+                onCardClick={handleCardClick}
+              />
+            )
+        }
+      })}
     </div>
   )
 }

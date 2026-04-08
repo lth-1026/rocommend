@@ -21,6 +21,7 @@ export default async function EditSectionPage({ params }: Props) {
     primaryRegion: getRegions(r.tags)[0] ?? null,
   }))
 
+  const isSystem = section.type !== 'CUSTOM'
   const initialData = {
     title: section.title,
     order: section.order,
@@ -36,11 +37,21 @@ export default async function EditSectionPage({ params }: Props) {
             ← 목록
           </Link>
           <h1 className="text-2xl font-bold text-text">섹션 수정</h1>
+          {isSystem && (
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+              시스템
+            </span>
+          )}
         </div>
-        <DeleteSectionButton sectionId={id} />
+        {!isSystem && <DeleteSectionButton sectionId={id} />}
       </div>
       <div className="rounded-xl border border-border bg-surface p-6">
-        <SectionForm sectionId={id} initialData={initialData} roasteries={options} />
+        <SectionForm
+          sectionId={id}
+          isSystem={isSystem}
+          initialData={initialData}
+          roasteries={options}
+        />
       </div>
     </div>
   )

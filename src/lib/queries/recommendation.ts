@@ -3,6 +3,9 @@ import type { RawRating } from '@/lib/recommender/types'
 import type { RoasteryWithStats } from '@/types/roastery'
 import type { PriceRange } from '@/types/roastery'
 import { flattenTags } from '@/types/roastery'
+import type { SectionType } from '@prisma/client'
+
+export type { SectionType }
 
 export async function getAllRatings(): Promise<RawRating[]> {
   return prisma.rating.findMany({
@@ -68,6 +71,7 @@ export async function getPopularRoasteries(
 export interface FeaturedSectionData {
   id: string
   title: string
+  type: SectionType
   roasteries: RoasteryWithStats[]
 }
 
@@ -79,6 +83,7 @@ export async function getFeaturedSections(): Promise<FeaturedSectionData[]> {
       select: {
         id: true,
         title: true,
+        type: true,
         roasteries: {
           orderBy: { order: 'asc' },
           select: {
@@ -112,6 +117,7 @@ export async function getFeaturedSections(): Promise<FeaturedSectionData[]> {
   return sections.map((s) => ({
     id: s.id,
     title: s.title,
+    type: s.type,
     roasteries: s.roasteries.map(({ roastery: r }) => ({
       ...r,
       tags: flattenTags(r.tags),
