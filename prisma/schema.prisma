@@ -56,6 +56,7 @@ model Roastery {
   beans                 Bean[]
   recommendations       Recommendation[]
   channels              RoasteryChannel[]
+  featuredIn            FeaturedSectionRoastery[]
 
   @@index([priceRange])
   @@index([decaf])
@@ -175,6 +176,28 @@ model Bookmark {
   @@index([roasteryId])
 }
 
+model FeaturedSection {
+  id         String                    @id @default(cuid())
+  title      String
+  type       SectionType               @default(CUSTOM)
+  order      Int                       @default(0)
+  isActive   Boolean                   @default(true)
+  roasteries FeaturedSectionRoastery[]
+  createdAt  DateTime                  @default(now())
+  updatedAt  DateTime                  @updatedAt
+}
+
+model FeaturedSectionRoastery {
+  sectionId  String
+  roasteryId String
+  order      Int             @default(0)
+  section    FeaturedSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  roastery   Roastery        @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+
+  @@id([sectionId, roasteryId])
+  @@index([roasteryId])
+}
+
 model EventLog {
   id        String   @id @default(cuid())
   userId    String?
@@ -228,6 +251,13 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+enum SectionType {
+  CF_NEW    // "새로운 로스터리" — 협업 필터링 신규 추천
+  CF_REPEAT // "또 사고 싶은 로스터리" — CF 재구매 추천
+  POPULAR   // "실시간 인기 로스터리"
+  CUSTOM    // 관리자가 직접 큐레이션한 섹션
 }
 
 enum PriceRange {

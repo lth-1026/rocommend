@@ -1162,6 +1162,20 @@ async function main() {
   console.log(
     `Seed complete: ${roasteryCount} roasteries, ${beanCount} beans, ${priceCount} channel prices`
   )
+
+  // ── 시스템 섹션 초기화 (idempotent) ──────────────────────────────────────
+  const systemSections = [
+    { type: 'CF_NEW' as const, title: '나를 위한 추천', order: 0 },
+    { type: 'CF_REPEAT' as const, title: '또 사고 싶은 로스터리', order: 1 },
+    { type: 'POPULAR' as const, title: '실시간 인기 로스터리', order: 2 },
+  ]
+  for (const s of systemSections) {
+    const existing = await prisma.featuredSection.findFirst({ where: { type: s.type } })
+    if (!existing) {
+      await prisma.featuredSection.create({ data: { ...s, isActive: true } })
+      console.log(`Created system section: ${s.title}`)
+    }
+  }
 }
 
 main()

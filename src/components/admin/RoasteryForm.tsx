@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { createRoastery, updateRoastery } from '@/actions/admin'
 import type { ChannelInput } from '@/actions/admin'
 import { TagInput } from './TagInput'
@@ -88,11 +89,12 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
 
       if (!result.success) {
         setError(result.error)
+        toast.error(result.error)
         return
       }
 
+      toast.success(isEdit ? '로스터리가 수정되었습니다.' : '로스터리가 등록되었습니다.')
       router.push('/admin/roasteries')
-      router.refresh()
     })
   }
 

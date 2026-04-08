@@ -351,3 +351,196 @@ export async function getAdminBeans() {
     orderBy: { createdAt: 'desc' },
   })
 }
+
+// ── 특정 로스터리의 원두 목록 (admin 전용) ───────────────
+export async function getAdminRoasteryBeans(roasteryId: string) {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/home')
+
+  return prisma.bean.findMany({
+    where: { roasteryId },
+    select: {
+      id: true,
+      name: true,
+      roastingLevel: true,
+      decaf: true,
+      origins: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+}
+
+// ── 추천 섹션 ────────────────────────────────────────────
+
+export interface CreateSectionInput {
+  title: string
+  order: number
+  isActive: boolean
+  roasteryIds: string[] // 최대 7개
+}
+
+export async function getAdminSections() {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/home')
+
+  return prisma.featuredSection.findMany({
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      order: true,
+      isActive: true,
+      createdAt: true,
+      _count: { select: { roasteries: true } },
+    },
+    orderBy: { order: 'asc' },
+  })
+}
+
+export async function getAdminSection(id: string) {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/home')
+
+  return prisma.featuredSection.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      order: true,
+      isActive: true,
+      roasteries: {
+        select: { roasteryId: true, order: true },
+        orderBy: { order: 'asc' },
+      },
+    },
+  })
+}
+
+export async function createSection(
+  input: CreateSectionInput
+): Promise<ActionResult<{ id: string }>> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  if (!input.title.trim()) {
+    return { success: false, error: '섹션 제목은 필수입니다', code: 'VALIDATION' }
+  }
+  if (input.roasteryIds.length > 7) {
+    return {
+      success: false,
+      error: '로스터리는 최대 7개까지 선택할 수 있습니다',
+      code: 'VALIDATION',
+    }
+  }
+
+  try {
+    const section = await prisma.featuredSection.create({
+      data: {
+        title: input.title.trim(),
+        order: input.order,
+        isActive: input.isActive,
+        roasteries: {
+          create: input.roasteryIds.map((roasteryId, i) => ({ roasteryId, order: i })),
+        },
+      },
+      select: { id: true },
+    })
+    return { success: true, data: { id: section.id } }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function updateSection(
+  id: string,
+  input: CreateSectionInput
+): Promise<ActionResult<{ id: string }>> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  if (!input.title.trim()) {
+    return { success: false, error: '섹션 제목은 필수입니다', code: 'VALIDATION' }
+  }
+
+  const existing = await prisma.featuredSection.findUnique({
+    where: { id },
+    select: { type: true },
+  })
+  const isSystem = existing?.type !== 'CUSTOM'
+
+  if (!isSystem && input.roasteryIds.length > 7) {
+    return {
+      success: false,
+      error: '로스터리는 최대 7개까지 선택할 수 있습니다',
+      code: 'VALIDATION',
+    }
+  }
+
+  try {
+    const section = await prisma.featuredSection.update({
+      where: { id },
+      data: {
+        title: input.title.trim(),
+        order: input.order,
+        isActive: input.isActive,
+        // 시스템 섹션은 로스터리 목록을 변경하지 않음
+        ...(!isSystem && {
+          roasteries: {
+            deleteMany: {},
+            create: input.roasteryIds.map((roasteryId, i) => ({ roasteryId, order: i })),
+          },
+        }),
+      },
+      select: { id: true },
+    })
+    return { success: true, data: { id: section.id } }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function deleteSection(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  const existing = await prisma.featuredSection.findUnique({
+    where: { id },
+    select: { type: true },
+  })
+  if (existing?.type !== 'CUSTOM') {
+    return { success: false, error: '시스템 섹션은 삭제할 수 없습니다', code: 'VALIDATION' }
+  }
+
+  try {
+    await prisma.featuredSection.delete({ where: { id } })
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '삭제 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function reorderSections(orderedIds: string[]): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  try {
+    await Promise.all(
+      orderedIds.map((id, i) =>
+        prisma.featuredSection.update({ where: { id }, data: { order: i } })
+      )
+    )
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '순서 저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
