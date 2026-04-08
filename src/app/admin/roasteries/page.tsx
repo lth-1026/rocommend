@@ -41,7 +41,14 @@ export default async function AdminRoasteriesPage() {
             <tbody className="divide-y divide-border bg-surface">
               {roasteries.map((r) => (
                 <tr key={r.id} className="hover:bg-surface-sub transition-colors">
-                  <td className="px-4 py-3 font-medium text-text">{r.name}</td>
+                  <td className="px-4 py-3 font-medium text-text">
+                    <Link
+                      href={`/admin/roasteries/${r.id}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {r.name}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3 text-text-sub">
                     {r.tags.find((t) => t.category === 'REGION')?.name ?? '—'}
                   </td>

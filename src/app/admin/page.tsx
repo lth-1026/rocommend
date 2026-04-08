@@ -10,14 +10,7 @@ export default function AdminDashboardPage() {
           className="rounded-xl border border-border bg-surface p-6 hover:border-primary transition-colors"
         >
           <h2 className="mb-1 text-lg font-semibold text-text">로스터리 관리</h2>
-          <p className="text-sm text-text-sub">로스터리 목록 조회 및 신규 등록</p>
-        </Link>
-        <Link
-          href="/admin/beans"
-          className="rounded-xl border border-border bg-surface p-6 hover:border-primary transition-colors"
-        >
-          <h2 className="mb-1 text-lg font-semibold text-text">원두 관리</h2>
-          <p className="text-sm text-text-sub">원두 목록 조회 및 신규 등록</p>
+          <p className="text-sm text-text-sub">로스터리 목록 조회, 신규 등록 및 원두 관리</p>
         </Link>
       </div>
     </div>

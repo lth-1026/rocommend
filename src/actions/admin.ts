@@ -351,3 +351,22 @@ export async function getAdminBeans() {
     orderBy: { createdAt: 'desc' },
   })
 }
+
+// ── 특정 로스터리의 원두 목록 (admin 전용) ───────────────
+export async function getAdminRoasteryBeans(roasteryId: string) {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/home')
+
+  return prisma.bean.findMany({
+    where: { roasteryId },
+    select: {
+      id: true,
+      name: true,
+      roastingLevel: true,
+      decaf: true,
+      origins: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+}
