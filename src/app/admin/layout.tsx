@@ -18,9 +18,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin/roasteries" className="text-sm text-text-sub hover:text-text">
               로스터리
             </Link>
-            <Link href="/admin/beans" className="text-sm text-text-sub hover:text-text">
-              원두
-            </Link>
           </nav>
           <Link href="/home" className="text-xs text-text-sub hover:text-text">
             ← 서비스로 돌아가기
