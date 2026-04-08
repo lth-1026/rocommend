@@ -75,7 +75,6 @@ export function BeanForm({
 
       toast.success(isEdit ? '원두가 수정되었습니다.' : '원두가 등록되었습니다.')
       router.push(redirectTo ?? '/admin/beans')
-      router.refresh()
     })
   }
 

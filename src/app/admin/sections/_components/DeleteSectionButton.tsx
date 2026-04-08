@@ -16,7 +16,6 @@ export function DeleteSectionButton({ sectionId }: { sectionId: string }) {
       if (result.success) {
         toast.success('섹션이 삭제되었습니다.')
         router.push('/admin/sections')
-        router.refresh()
       } else {
         toast.error(result.error)
       }

@@ -76,7 +76,6 @@ export function SectionForm({
       }
       toast.success(isEdit ? '섹션이 수정되었습니다.' : '섹션이 생성되었습니다.')
       router.push('/admin/sections')
-      router.refresh()
     })
   }
 

@@ -95,7 +95,6 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
 
       toast.success(isEdit ? '로스터리가 수정되었습니다.' : '로스터리가 등록되었습니다.')
       router.push('/admin/roasteries')
-      router.refresh()
     })
   }
 
