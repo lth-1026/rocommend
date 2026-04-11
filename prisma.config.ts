@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { defineConfig, env } from 'prisma/config'
+import { defineConfig } from 'prisma/config'
 
 // Next.js는 .env.local을 사용; Prisma CLI는 직접 읽지 못하므로 명시적으로 로드
 dotenv.config({ path: '.env.local' })
@@ -11,6 +11,6 @@ export default defineConfig({
     seed: 'tsx prisma/seed.ts',
   },
   datasource: {
-    url: env('DATABASE_URL'),
+    url: process.env.DIRECT_URL || process.env.DATABASE_URL || '',
   },
 })
