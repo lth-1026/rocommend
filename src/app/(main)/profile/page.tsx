@@ -6,7 +6,6 @@ import { getProfileSummary } from '@/lib/queries/profile'
 import { ProfileCard } from '@/components/profile/ProfileCard'
 import { ActivitySummary } from '@/components/profile/ActivitySummary'
 import { LogoutButton } from '@/components/profile/LogoutButton'
-import { ThemeToggle } from '@/components/profile/ThemeToggle'
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -38,8 +37,6 @@ export default async function ProfilePage() {
       >
         계정 관리
       </Link>
-
-      <ThemeToggle />
 
       <LogoutButton />
     </div>

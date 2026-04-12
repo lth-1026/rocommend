@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import Image from 'next/image'
+import { MoreVertical } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -11,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
+import { ThemeToggle } from '@/components/profile/ThemeToggle'
 import { cn } from '@/lib/utils'
 
 const authNavLinks = [
@@ -22,7 +24,6 @@ const authNavLinks = [
 const guestNavLinks = [
   { href: '/home', label: '홈' },
   { href: '/roasteries', label: '로스터리' },
-  { href: '/settings', label: '설정' },
 ]
 
 export function Header({ className }: { className?: string }) {
@@ -62,8 +63,9 @@ export function Header({ className }: { className?: string }) {
           ))}
         </nav>
 
-        {/* 아바타 드롭다운 / 로그인 버튼 */}
+        {/* 우측 영역 */}
         {session?.user ? (
+          /* 로그인: 아바타 드롭다운 */
           <DropdownMenu>
             <DropdownMenuTrigger className="flex size-8 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-border focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               {session.user.image ? (
@@ -81,12 +83,16 @@ export function Header({ className }: { className?: string }) {
                 </span>
               )}
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuItem>
                 <Link href="/profile" className="w-full">
                   프로필
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-1.5">
+                <ThemeToggle />
+              </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"
@@ -97,12 +103,25 @@ export function Header({ className }: { className?: string }) {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <Link
-            href="/login"
-            className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
-          >
-            로그인
-          </Link>
+          /* 비로그인: ⋮ 드롭다운 + 로그인 링크 */
+          <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex size-8 cursor-pointer items-center justify-center rounded-md text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <MoreVertical className="size-5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <div className="px-2 py-1.5">
+                  <ThemeToggle />
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Link
+              href="/login"
+              className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
+            >
+              로그인
+            </Link>
+          </div>
         )}
       </div>
     </header>
