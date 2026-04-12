@@ -1,12 +1,12 @@
 'use server'
 
 import { after } from 'next/server'
-import { auth } from '@/lib/auth'
+import { auth, unstable_update } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 import { onboardingSchema } from '@/lib/schemas/onboarding'
 import { computeAndSaveCF } from '@/lib/recommender'
 import { redirect } from 'next/navigation'
-import { unstable_update } from '@/lib/auth'
 import type { OnboardingAnswers } from '@/types/onboarding'
 import type { ActionResult } from '@/types/action'
 
@@ -66,7 +66,16 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
         },
       })
     })
-  } catch {
+  } catch (err) {
+    console.error('[submitOnboarding] transaction failed:', err)
+    // FK 위반 = JWT의 userId가 DB User 테이블에 없음 (세션 불일치)
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003') {
+      return {
+        success: false,
+        error: '세션이 만료되었습니다. 다시 로그인해주세요.',
+        code: 'UNAUTHORIZED',
+      }
+    }
     return {
       success: false,
       error: '저장 중 오류가 발생했습니다. 다시 시도해주세요.',

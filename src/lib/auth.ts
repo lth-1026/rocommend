@@ -38,11 +38,13 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
       if (user?.role) token.role = user.role
       // 최초 로그인, 세션 갱신, 또는 토큰에 onboardingVersion이 없을 때 DB 조회
       if (trigger === 'signIn' || trigger === 'update' || !('onboardingVersion' in token)) {
-        const onboarding = await prisma.onboarding.findUnique({
-          where: { userId: token.sub! },
-          select: { version: true },
+        // User 존재 여부 검증 — race condition(동시 소셜 로그인)으로 User row 미생성 시 토큰 무효화
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub! },
+          select: { id: true, onboarding: { select: { version: true } } },
         })
-        token.onboardingVersion = onboarding?.version ?? null
+        if (!dbUser) return null // 토큰 무효화 → NextAuth가 세션 종료 처리
+        token.onboardingVersion = dbUser.onboarding?.version ?? null
       }
       return token
     },
