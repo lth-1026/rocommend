@@ -11,7 +11,11 @@ const options: { value: Theme; label: string; Icon: React.ElementType }[] = [
 ]
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, mounted } = useTheme()
+
+  if (!mounted) {
+    return <div className="h-10 w-full rounded-lg bg-border" />
+  }
 
   return (
     <div className="flex w-full overflow-hidden rounded-lg border border-border bg-surface">
@@ -19,15 +23,15 @@ export function ThemeToggle() {
         <button
           key={value}
           onClick={() => setTheme(value)}
+          aria-label={label}
           className={cn(
-            'flex flex-1 cursor-pointer items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-colors',
+            'flex flex-1 cursor-pointer items-center justify-center py-2.5 transition-colors',
             theme === value
               ? 'bg-action text-action-text'
               : 'text-text-disabled hover:bg-border hover:text-text-primary'
           )}
         >
           <Icon className="size-4" />
-          <span>{label}</span>
         </button>
       ))}
     </div>
