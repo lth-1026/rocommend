@@ -8,6 +8,7 @@ type ResolvedTheme = 'light' | 'dark'
 interface ThemeContextValue {
   theme: Theme
   resolvedTheme: ResolvedTheme
+  mounted: boolean
   setTheme: (theme: Theme) => void
 }
 
@@ -23,15 +24,16 @@ function resolveTheme(theme: Theme): ResolvedTheme {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('light')
+  const [{ theme, mounted }, setState] = useState<{ theme: Theme; mounted: boolean }>({
+    theme: 'light',
+    mounted: false,
+  })
 
   // 마운트 후 localStorage와 동기화 (FOUC는 layout.tsx 인라인 스크립트가 처리)
   useEffect(() => {
     const stored = localStorage.getItem('theme') as Theme | null
-    if (stored && stored !== theme) {
-      setThemeState(stored)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setState({ theme: stored ?? 'light', mounted: true })
   }, [])
 
   // system 모드일 때 미디어 쿼리 변화 감지
@@ -47,7 +49,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme])
 
   const setTheme = (next: Theme) => {
-    setThemeState(next)
+    setState((prev) => ({ ...prev, theme: next }))
     localStorage.setItem('theme', next)
     document.documentElement.setAttribute('data-theme', resolveTheme(next))
   }
@@ -55,7 +57,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const resolvedTheme: ResolvedTheme = typeof window !== 'undefined' ? resolveTheme(theme) : 'light'
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, resolvedTheme, mounted, setTheme }}>
       {children}
     </ThemeContext.Provider>
   )
