@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { signOut } from 'next-auth/react'
 import { toast } from 'sonner'
 import { ProgressBar } from './ProgressBar'
 import { Q1BrewingMethod } from './steps/Q1BrewingMethod'
@@ -46,9 +47,14 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
     setIsLoading(true)
     const result = await submitOnboarding(answers)
     // 성공 시 서버가 redirect('/home')를 호출 → 이 코드에 도달하지 않음
-    // 실패 시 서버가 ActionResult를 반환 → 에러 토스트 표시
+    // 실패 시 서버가 ActionResult를 반환 → 에러 처리
     if (result && !result.success) {
       toast.error(result.error)
+      // FK 위반 (userId가 DB에 없음) → 세션 만료 → 로그아웃 후 /login
+      if (result.code === 'UNAUTHORIZED') {
+        await signOut({ callbackUrl: '/login' })
+        return
+      }
       setIsLoading(false)
     }
   }
