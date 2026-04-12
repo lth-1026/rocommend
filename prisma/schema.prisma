@@ -21,6 +21,7 @@ model User {
   ratings         Rating[]
   bookmarks       Bookmark[]
   recommendations Recommendation[]
+  feedbacks       Feedback[]
 }
 
 model Onboarding {
@@ -274,4 +275,23 @@ enum TagCategory {
 enum Role {
   USER
   ADMIN
+}
+
+model Feedback {
+  id        String         @id @default(cuid())
+  content   String
+  category  String?
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    FeedbackStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum FeedbackStatus {
+  PENDING
+  READ
 }
