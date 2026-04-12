@@ -1,23 +1,39 @@
 'use client'
 
-import { Moon, Sun } from 'lucide-react'
-import { useTheme } from '@/components/layout/ThemeProvider'
+import { Sun, Moon, Monitor } from 'lucide-react'
+import { useTheme, type Theme } from '@/components/layout/ThemeProvider'
+import { cn } from '@/lib/utils'
+
+const options: { value: Theme; label: string; Icon: React.ElementType }[] = [
+  { value: 'light', label: '라이트', Icon: Sun },
+  { value: 'dark', label: '다크', Icon: Moon },
+  { value: 'system', label: '시스템', Icon: Monitor },
+]
 
 export function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme()
-  const isDark = theme === 'dark'
+  const { theme, setTheme, mounted } = useTheme()
+
+  if (!mounted) {
+    return <div className="h-10 w-full rounded-lg bg-border" />
+  }
 
   return (
-    <button
-      onClick={toggleTheme}
-      className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-border bg-surface px-4 py-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg"
-    >
-      <span>{isDark ? '다크 모드' : '라이트 모드'}</span>
-      {isDark ? (
-        <Moon className="size-4 text-text-secondary" />
-      ) : (
-        <Sun className="size-4 text-text-secondary" />
-      )}
-    </button>
+    <div className="flex w-full overflow-hidden rounded-lg border border-border bg-surface">
+      {options.map(({ value, label, Icon }) => (
+        <button
+          key={value}
+          onClick={() => setTheme(value)}
+          aria-label={label}
+          className={cn(
+            'flex flex-1 cursor-pointer items-center justify-center py-2.5 transition-colors',
+            theme === value
+              ? 'bg-action text-action-text'
+              : 'text-text-disabled hover:bg-border hover:text-text-primary'
+          )}
+        >
+          <Icon className="size-4" />
+        </button>
+      ))}
+    </div>
   )
 }
