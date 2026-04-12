@@ -22,8 +22,8 @@ export function ThemeToggle() {
           className={cn(
             'flex flex-1 cursor-pointer items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-colors',
             theme === value
-              ? 'bg-bg text-text-primary'
-              : 'text-text-disabled hover:text-text-secondary'
+              ? 'bg-action text-action-text'
+              : 'text-text-disabled hover:bg-border hover:text-text-primary'
           )}
         >
           <Icon className="size-4" />

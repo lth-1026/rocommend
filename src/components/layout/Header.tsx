@@ -103,8 +103,14 @@ export function Header({ className }: { className?: string }) {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          /* 비로그인: ⋮ 드롭다운 + 로그인 링크 */
+          /* 비로그인: 로그인 링크 + ⋮ 드롭다운 */
           <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
+            >
+              로그인
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger className="flex size-8 cursor-pointer items-center justify-center rounded-md text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <MoreVertical className="size-5" />
@@ -115,12 +121,6 @@ export function Header({ className }: { className?: string }) {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link
-              href="/login"
-              className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
-            >
-              로그인
-            </Link>
           </div>
         )}
       </div>
