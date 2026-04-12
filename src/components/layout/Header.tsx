@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/profile/ThemeToggle'
+import { FeedbackButton } from '@/components/feedback/FeedbackButton'
 import { cn } from '@/lib/utils'
 
 const authNavLinks = [
@@ -93,6 +94,9 @@ export function Header({ className }: { className?: string }) {
               <div className="px-2 py-1.5">
                 <ThemeToggle />
               </div>
+              <div className="px-2 py-0.5">
+                <FeedbackButton />
+              </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"
@@ -112,6 +116,9 @@ export function Header({ className }: { className?: string }) {
               <DropdownMenuContent align="end" className="w-52">
                 <div className="px-2 py-1.5">
                   <ThemeToggle />
+                </div>
+                <div className="px-2 py-0.5">
+                  <FeedbackButton />
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
