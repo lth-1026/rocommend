@@ -13,15 +13,22 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 
-const navLinks = [
+const authNavLinks = [
   { href: '/home', label: '홈' },
   { href: '/roasteries', label: '로스터리' },
   { href: '/bookmarks', label: '즐겨찾기' },
 ]
 
+const guestNavLinks = [
+  { href: '/home', label: '홈' },
+  { href: '/roasteries', label: '로스터리' },
+  { href: '/settings', label: '설정' },
+]
+
 export function Header({ className }: { className?: string }) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const navLinks = session?.user ? authNavLinks : guestNavLinks
 
   return (
     <header className={cn('sticky top-0 z-40 w-full border-b border-border bg-surface', className)}>
