@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import { LoginButton } from '@/components/auth/LoginButton'
 import { ErrorAlert } from '@/components/auth/ErrorAlert'
+import { BackLink } from '@/components/auth/BackLink'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 interface Props {
   searchParams: Promise<{ error?: string; provider?: string }>
@@ -10,6 +16,7 @@ export default async function LoginPage({ searchParams }: Props) {
 
   return (
     <div className="w-full max-w-sm space-y-8">
+      <BackLink />
       {/* 로고 + 슬로건 */}
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-bold text-text-primary">Rocommend</h1>

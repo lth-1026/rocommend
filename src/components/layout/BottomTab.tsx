@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Home, Coffee, Bookmark, User, LogIn } from 'lucide-react'
+import { Home, Coffee, Bookmark, User, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const authTabs = [
@@ -16,7 +16,7 @@ const authTabs = [
 const guestTabs = [
   { href: '/home', label: '홈', Icon: Home },
   { href: '/roasteries', label: '로스터리', Icon: Coffee },
-  { href: '/login', label: '로그인', Icon: LogIn },
+  { href: '/settings', label: '설정', Icon: Settings },
 ]
 
 export function BottomTab({ className }: { className?: string }) {
