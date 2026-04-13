@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { ThemeToggle } from '@/components/profile/ThemeToggle'
+import { FeedbackButton } from '@/components/feedback/FeedbackButton'
 
 export default async function SettingsPage() {
   const session = await auth()
@@ -12,6 +13,11 @@ export default async function SettingsPage() {
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-text-secondary">테마</h2>
         <ThemeToggle />
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium text-text-secondary">피드백</h2>
+        <FeedbackButton />
       </section>
 
       {!session?.user && (
