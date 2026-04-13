@@ -19,6 +19,13 @@ export default function AdminDashboardPage() {
           <h2 className="mb-1 text-lg font-semibold text-text">추천 섹션 관리</h2>
           <p className="text-sm text-text-sub">추천 페이지 섹션 생성 및 로스터리 큐레이션</p>
         </Link>
+        <Link
+          href="/admin/settings"
+          className="rounded-xl border border-border bg-surface p-6 hover:border-primary transition-colors"
+        >
+          <h2 className="mb-1 text-lg font-semibold text-text">설정</h2>
+          <p className="text-sm text-text-sub">피드백 이메일 수신자 등 서비스 설정 관리</p>
+        </Link>
       </div>
     </div>
   )

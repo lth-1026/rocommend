@@ -545,6 +545,43 @@ export async function deleteSection(id: string): Promise<ActionResult<void>> {
   }
 }
 
+// ── 피드백 이메일 수신자 설정 ────────────────────────────
+
+export async function getAdminUsers() {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/home')
+
+  return prisma.user.findMany({
+    where: { role: 'ADMIN' },
+    select: { id: true, name: true, email: true, receiveFeedbackEmail: true },
+    orderBy: { createdAt: 'asc' },
+  })
+}
+
+export async function toggleFeedbackEmail(userId: string): Promise<ActionResult> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId, role: 'ADMIN' },
+      select: { receiveFeedbackEmail: true },
+    })
+    if (!user) {
+      return { success: false, error: '존재하지 않는 어드민입니다', code: 'VALIDATION' }
+    }
+    await prisma.user.update({
+      where: { id: userId },
+      data: { receiveFeedbackEmail: !user.receiveFeedbackEmail },
+    })
+    return { success: true }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
 export async function reorderSections(orderedIds: string[]): Promise<ActionResult<void>> {
   const check = await requireAdmin()
   if ('error' in check) {

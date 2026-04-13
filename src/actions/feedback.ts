@@ -37,22 +37,30 @@ export async function submitFeedback(input: {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
   }
 
-  const recipientEmail = process.env.FEEDBACK_RECIPIENT_EMAIL
-  if (recipientEmail && process.env.RESEND_API_KEY) {
+  // 수신 설정된 어드민들에게 이메일 발송
+  if (process.env.RESEND_API_KEY) {
     try {
-      await resend.emails.send({
-        from: 'roco <onboarding@resend.dev>',
-        to: recipientEmail,
-        subject: `[roco] 새로운 의견이 도착했어요${category ? ` — ${category}` : ''}`,
-        html: [
-          `<p><strong>보낸 사람</strong>: ${session.user.name ?? '(이름 없음)'} (${session.user.email ?? '이메일 없음'})</p>`,
-          category ? `<p><strong>카테고리</strong>: ${category}</p>` : '',
-          `<p><strong>내용</strong>:</p>`,
-          `<blockquote style="border-left:3px solid #ccc;margin:0;padding:0 1em;color:#555">${content.replace(/\n/g, '<br/>')}</blockquote>`,
-        ]
-          .filter(Boolean)
-          .join('\n'),
+      const recipients = await prisma.user.findMany({
+        where: { role: 'ADMIN', receiveFeedbackEmail: true },
+        select: { email: true },
       })
+      const emails = recipients.map((r) => r.email).filter((e): e is string => !!e)
+
+      if (emails.length > 0) {
+        await resend.emails.send({
+          from: 'roco <onboarding@resend.dev>',
+          to: emails,
+          subject: `[roco] 새로운 의견이 도착했어요${category ? ` — ${category}` : ''}`,
+          html: [
+            `<p><strong>보낸 사람</strong>: ${session.user.name ?? '(이름 없음)'} (${session.user.email ?? '이메일 없음'})</p>`,
+            category ? `<p><strong>카테고리</strong>: ${category}</p>` : '',
+            `<p><strong>내용</strong>:</p>`,
+            `<blockquote style="border-left:3px solid #ccc;margin:0;padding:0 1em;color:#555">${content.replace(/\n/g, '<br/>')}</blockquote>`,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+        })
+      }
     } catch {
       // 이메일 실패는 무시 — DB 저장이 우선
     }
