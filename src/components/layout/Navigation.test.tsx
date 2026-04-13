@@ -19,6 +19,11 @@ vi.mock('next/image', () => ({
   default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
 }))
 
+// FeedbackButton은 서버 액션·next-auth 내부를 로드하므로 렌더링 테스트에서는 stub 처리
+vi.mock('@/components/feedback/FeedbackButton', () => ({
+  FeedbackButton: () => null,
+}))
+
 describe('Navigation', () => {
   // C-25: lg 미만 화면 — BottomTab 표시, Header 숨김
   it('Header는 lg 미만에서 hidden 클래스를 갖는다', () => {

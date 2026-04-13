@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import type { ActionResult } from '@/types/action'
 import type { PriceRange } from '@prisma/client'
 import { flattenTags } from '@/types/roastery'
@@ -202,29 +203,44 @@ export async function updateRoastery(
   try {
     const tagIds = await upsertTags(input.regions, input.tags)
 
-    const roastery = await prisma.roastery.update({
-      where: { id },
-      data: {
-        name: input.name.trim(),
-        description: input.description.trim() || null,
-        address: input.address.trim() || null,
-        priceRange: input.priceRange,
-        decaf: input.decaf,
-        imageUrl: input.imageUrl.trim() || null,
-        isOnboardingCandidate: input.isOnboardingCandidate,
-        tags: {
-          deleteMany: {},
-          create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })),
+    const newChannels = input.channels.filter((c) => c.channelKey && c.url.trim())
+    const newChannelKeys = newChannels.map((c) => c.channelKey)
+
+    const [roastery] = await prisma.$transaction([
+      prisma.roastery.update({
+        where: { id },
+        data: {
+          name: input.name.trim(),
+          description: input.description.trim() || null,
+          address: input.address.trim() || null,
+          priceRange: input.priceRange,
+          decaf: input.decaf,
+          imageUrl: input.imageUrl.trim() || null,
+          isOnboardingCandidate: input.isOnboardingCandidate,
+          tags: {
+            deleteMany: {},
+            create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })),
+          },
         },
-        channels: {
-          deleteMany: {},
-          create: input.channels
-            .filter((c) => c.channelKey && c.url.trim())
-            .map((c) => ({ channelKey: c.channelKey, url: c.url.trim() })),
-        },
-      },
-      select: { id: true },
-    })
+        select: { id: true },
+      }),
+      // 제거된 채널만 삭제 (BeanChannelPrice cascade 방지를 위해 upsert 방식 사용)
+      prisma.roasteryChannel.deleteMany({
+        where: { roasteryId: id, channelKey: { notIn: newChannelKeys } },
+      }),
+    ])
+
+    // 채널 upsert: 기존 채널은 ID 보존(→ BeanChannelPrice 유지), 신규 채널은 생성
+    await Promise.all(
+      newChannels.map((c) =>
+        prisma.roasteryChannel.upsert({
+          where: { roasteryId_channelKey: { roasteryId: id, channelKey: c.channelKey } },
+          update: { url: c.url.trim() },
+          create: { roasteryId: id, channelKey: c.channelKey, url: c.url.trim() },
+        })
+      )
+    )
+
     return { success: true, data: { id: roastery.id } }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
@@ -542,6 +558,44 @@ export async function deleteSection(id: string): Promise<ActionResult<void>> {
     return { success: true, data: undefined }
   } catch {
     return { success: false, error: '삭제 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+// ── 피드백 이메일 수신자 설정 ────────────────────────────
+
+export async function getAdminUsers() {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/home')
+
+  return prisma.user.findMany({
+    where: { role: 'ADMIN' },
+    select: { id: true, name: true, email: true, receiveFeedbackEmail: true },
+    orderBy: { createdAt: 'asc' },
+  })
+}
+
+export async function toggleFeedbackEmail(userId: string): Promise<ActionResult> {
+  const check = await requireAdmin()
+  if ('error' in check) {
+    return { success: false, error: check.error, code: check.code }
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId, role: 'ADMIN' },
+      select: { receiveFeedbackEmail: true },
+    })
+    if (!user) {
+      return { success: false, error: '존재하지 않는 어드민입니다', code: 'VALIDATION' }
+    }
+    await prisma.user.update({
+      where: { id: userId },
+      data: { receiveFeedbackEmail: !user.receiveFeedbackEmail },
+    })
+    revalidatePath('/admin/settings')
+    return { success: true }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
   }
 }
 
