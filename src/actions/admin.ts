@@ -203,29 +203,44 @@ export async function updateRoastery(
   try {
     const tagIds = await upsertTags(input.regions, input.tags)
 
-    const roastery = await prisma.roastery.update({
-      where: { id },
-      data: {
-        name: input.name.trim(),
-        description: input.description.trim() || null,
-        address: input.address.trim() || null,
-        priceRange: input.priceRange,
-        decaf: input.decaf,
-        imageUrl: input.imageUrl.trim() || null,
-        isOnboardingCandidate: input.isOnboardingCandidate,
-        tags: {
-          deleteMany: {},
-          create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })),
+    const newChannels = input.channels.filter((c) => c.channelKey && c.url.trim())
+    const newChannelKeys = newChannels.map((c) => c.channelKey)
+
+    const [roastery] = await prisma.$transaction([
+      prisma.roastery.update({
+        where: { id },
+        data: {
+          name: input.name.trim(),
+          description: input.description.trim() || null,
+          address: input.address.trim() || null,
+          priceRange: input.priceRange,
+          decaf: input.decaf,
+          imageUrl: input.imageUrl.trim() || null,
+          isOnboardingCandidate: input.isOnboardingCandidate,
+          tags: {
+            deleteMany: {},
+            create: tagIds.map(({ id: tagId, isPrimary }) => ({ tagId, isPrimary })),
+          },
         },
-        channels: {
-          deleteMany: {},
-          create: input.channels
-            .filter((c) => c.channelKey && c.url.trim())
-            .map((c) => ({ channelKey: c.channelKey, url: c.url.trim() })),
-        },
-      },
-      select: { id: true },
-    })
+        select: { id: true },
+      }),
+      // 제거된 채널만 삭제 (BeanChannelPrice cascade 방지를 위해 upsert 방식 사용)
+      prisma.roasteryChannel.deleteMany({
+        where: { roasteryId: id, channelKey: { notIn: newChannelKeys } },
+      }),
+    ])
+
+    // 채널 upsert: 기존 채널은 ID 보존(→ BeanChannelPrice 유지), 신규 채널은 생성
+    await Promise.all(
+      newChannels.map((c) =>
+        prisma.roasteryChannel.upsert({
+          where: { roasteryId_channelKey: { roasteryId: id, channelKey: c.channelKey } },
+          update: { url: c.url.trim() },
+          create: { roasteryId: id, channelKey: c.channelKey, url: c.url.trim() },
+        })
+      )
+    )
+
     return { success: true, data: { id: roastery.id } }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
