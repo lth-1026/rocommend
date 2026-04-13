@@ -6,6 +6,8 @@ import { getProfileSummary } from '@/lib/queries/profile'
 import { ProfileCard } from '@/components/profile/ProfileCard'
 import { ActivitySummary } from '@/components/profile/ActivitySummary'
 import { LogoutButton } from '@/components/profile/LogoutButton'
+import { ThemeToggle } from '@/components/profile/ThemeToggle'
+import { FeedbackButton } from '@/components/feedback/FeedbackButton'
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -30,6 +32,16 @@ export default async function ProfilePage() {
       />
 
       <ActivitySummary ratingCount={summary.ratingCount} bookmarkCount={summary.bookmarkCount} />
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium text-text-secondary">테마</h2>
+        <ThemeToggle />
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium text-text-secondary">피드백</h2>
+        <FeedbackButton />
+      </section>
 
       <Link
         href="/account"
