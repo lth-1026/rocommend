@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import type { ActionResult } from '@/types/action'
 import type { PriceRange } from '@prisma/client'
 import { flattenTags } from '@/types/roastery'
@@ -576,6 +577,7 @@ export async function toggleFeedbackEmail(userId: string): Promise<ActionResult>
       where: { id: userId },
       data: { receiveFeedbackEmail: !user.receiveFeedbackEmail },
     })
+    revalidatePath('/admin/settings')
     return { success: true }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
