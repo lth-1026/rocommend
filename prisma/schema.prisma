@@ -129,10 +129,24 @@ model BeanChannelPrice {
   beanId    String
   channelId String
   price     Int              // 원 단위 (e.g. 16000)
+  sourceUrl String?          // 개별 상품 페이지 URL (가격 추적용)
   bean      Bean            @relation(fields: [beanId], references: [id], onDelete: Cascade)
   channel   RoasteryChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  snapshots BeanChannelPriceSnapshot[]
 
   @@id([beanId, channelId])
+}
+
+model BeanChannelPriceSnapshot {
+  id        String          @id @default(cuid())
+  beanId    String
+  channelId String
+  price     Int             // 원 단위
+  snappedAt DateTime        @default(now())
+  beanPrice BeanChannelPrice @relation(fields: [beanId, channelId], references: [beanId, channelId], onDelete: Cascade)
+
+  @@index([beanId, channelId])
+  @@index([snappedAt])
 }
 
 model Rating {
