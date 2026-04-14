@@ -1,14 +1,17 @@
 /**
- * 로스터리 사이트에서 시그니처 원두를 추출해 DB에 추가하는 반자동 에이전트
+ * 로스터리 사이트에서 시그니처 원두를 추출해 DB에 추가/업데이트하는 반자동 에이전트
  *
- * 실행: pnpm tsx scripts/add-beans.ts --roastery <로스터리ID> --url <샵URL> [--channel naver]
+ * - 신규 원두: Bean + BeanChannelPrice(sourceUrl, price) 생성
+ * - 기존 원두: sourceUrl이 없으면 업데이트, 있으면 스킵
+ *
+ * 실행: pnpm tsx scripts/update-beans.ts --roastery <로스터리ID> --url <샵URL> [--channel naver]
  *
  * 필수 환경변수:
  *   ANTHROPIC_API_KEY  — Claude Vision API
  *   DATABASE_URL       — Supabase 연결 URL
  *
  * 예시:
- *   pnpm tsx scripts/add-beans.ts \
+ *   pnpm tsx scripts/update-beans.ts \
  *     --roastery cm1234abcd \
  *     --url https://smartstore.naver.com/bluebottle \
  *     --channel naver
@@ -141,29 +144,54 @@ function confirm(question: string): Promise<boolean> {
   })
 }
 
-// ── DB 저장 ───────────────────────────────────────────────
+// ── DB 저장/업데이트 ──────────────────────────────────────
 
-async function saveBeans(
+async function upsertBeans(
   prisma: PrismaClient,
   roasteryId: string,
   channelId: string,
   beans: ExtractedBean[],
 ) {
-  let saved = 0
+  let created = 0
+  let updated = 0
   let skipped = 0
 
   for (const bean of beans) {
-    // 이미 존재하는 원두 스킵 (이름 + 로스터리 기준)
     const existing = await prisma.bean.findFirst({
       where: { roasteryId, name: bean.name },
+      include: {
+        channelPrices: {
+          where: { channelId },
+          select: { sourceUrl: true },
+        },
+      },
     })
 
     if (existing) {
-      console.log(`  ⏭  이미 존재: ${bean.name}`)
-      skipped++
+      const channelPrice = existing.channelPrices[0]
+
+      // sourceUrl이 없고 추출된 sourceUrl이 있으면 업데이트
+      if (!channelPrice?.sourceUrl && bean.sourceUrl) {
+        await prisma.beanChannelPrice.upsert({
+          where: { beanId_channelId: { beanId: existing.id, channelId } },
+          update: { sourceUrl: bean.sourceUrl },
+          create: {
+            beanId: existing.id,
+            channelId,
+            price: bean.price ?? 0,
+            sourceUrl: bean.sourceUrl,
+          },
+        })
+        console.log(`  🔗 sourceUrl 업데이트: ${bean.name}`)
+        updated++
+      } else {
+        console.log(`  ⏭  스킵: ${bean.name} (sourceUrl 이미 있음)`)
+        skipped++
+      }
       continue
     }
 
+    // 신규 원두 생성
     await prisma.bean.create({
       data: {
         roasteryId,
@@ -185,11 +213,11 @@ async function saveBeans(
       },
     })
 
-    console.log(`  ✅ 저장: ${bean.name} (${bean.price?.toLocaleString() ?? '가격 없음'}원)`)
-    saved++
+    console.log(`  ✅ 신규 추가: ${bean.name} (${bean.price?.toLocaleString() ?? '가격 없음'}원)`)
+    created++
   }
 
-  return { saved, skipped }
+  return { created, updated, skipped }
 }
 
 // ── 메인 ─────────────────────────────────────────────────
@@ -198,14 +226,13 @@ async function main() {
   const { roasteryId, url, channelKey } = parseArgs()
 
   if (!roasteryId || !url) {
-    console.error('사용법: pnpm tsx scripts/add-beans.ts --roastery <ID> --url <URL> [--channel naver]')
+    console.error('사용법: pnpm tsx scripts/update-beans.ts --roastery <ID> --url <URL> [--channel naver]')
     process.exit(1)
   }
 
   const prisma = createPrisma()
 
   try {
-    // 로스터리 + 채널 확인
     const roastery = await prisma.roastery.findUnique({ where: { id: roasteryId } })
     if (!roastery) {
       console.error(`로스터리를 찾을 수 없습니다: ${roasteryId}`)
@@ -221,27 +248,24 @@ async function main() {
       process.exit(1)
     }
 
-    console.log(`\n=== 원두 추가 에이전트 ===`)
+    console.log(`\n=== 원두 업데이트 에이전트 ===`)
     console.log(`로스터리: ${roastery.name}`)
     console.log(`채널: ${channelKey}`)
     console.log(`URL: ${url}\n`)
 
-    // Playwright로 페이지 열기
     console.log('[1/3] 페이지 로딩 중...')
     const browser = await chromium.launch({ headless: true })
     const page = await browser.newPage()
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 })
-    await page.waitForTimeout(2000) // 추가 렌더링 대기
+    await page.waitForTimeout(2000)
 
-    // 전체 페이지 스크린샷
     const screenshot = await page.screenshot({ fullPage: true, type: 'png' })
     await browser.close()
 
     const screenshotBase64 = screenshot.toString('base64')
     console.log('[2/3] Claude Vision으로 원두 추출 중...')
 
-    // Claude Vision으로 추출
     let beans: ExtractedBean[]
     try {
       beans = await extractBeansFromPage(screenshotBase64)
@@ -250,7 +274,6 @@ async function main() {
       process.exit(1)
     }
 
-    // 추출 결과 출력
     console.log(`\n추출된 원두 ${beans.length}개:\n`)
     beans.forEach((bean, i) => {
       console.log(`  ${i + 1}. ${bean.name}`)
@@ -262,15 +285,14 @@ async function main() {
       console.log('')
     })
 
-    // 사용자 확인
-    const ok = await confirm('[3/3] 이 원두들을 DB에 저장할까요? (y/n) ')
+    const ok = await confirm('[3/3] DB에 반영할까요? (y/n) ')
     if (!ok) {
       console.log('취소됨.')
       return
     }
 
-    const { saved, skipped } = await saveBeans(prisma, roasteryId, channel.id, beans)
-    console.log(`\n완료: ${saved}개 저장, ${skipped}개 스킵`)
+    const { created, updated, skipped } = await upsertBeans(prisma, roasteryId, channel.id, beans)
+    console.log(`\n완료: ${created}개 신규, ${updated}개 업데이트, ${skipped}개 스킵`)
   } finally {
     await prisma.$disconnect()
   }
