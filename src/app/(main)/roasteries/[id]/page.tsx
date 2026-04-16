@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getRoasteryById } from '@/lib/queries/roastery'
@@ -7,6 +8,29 @@ import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 
 interface RoasteryDetailPageProps {
   params: Promise<{ id: string }>
+}
+
+export async function generateMetadata({ params }: RoasteryDetailPageProps): Promise<Metadata> {
+  const roastery = await getRoasteryById((await params).id)
+  if (!roastery) return {}
+
+  const tagNames = roastery.tags.map((t) => t.name).join(', ')
+  const description =
+    roastery.description ?? `${roastery.name} 로스터리 정보와 추천 원두를 확인하세요. ${tagNames}`
+
+  return {
+    title: roastery.name,
+    description,
+    alternates: {
+      canonical: `/roasteries/${roastery.id}`,
+    },
+    openGraph: {
+      title: roastery.name,
+      description,
+      images: roastery.imageUrl ? [{ url: roastery.imageUrl }] : [],
+      type: 'website',
+    },
+  }
 }
 
 export default async function RoasteryDetailPage({ params }: RoasteryDetailPageProps) {
@@ -20,18 +44,42 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
     ? await Promise.all([getUserRating(userId, id), getBookmarkStatus(userId, id)])
     : [null, false]
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: roastery.name,
+    ...(roastery.description && { description: roastery.description }),
+    ...(roastery.imageUrl && { image: roastery.imageUrl }),
+    ...(roastery.website && { url: roastery.website }),
+    ...(roastery.avgRating !== null && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: roastery.avgRating.toFixed(1),
+        reviewCount: roastery.ratingCount,
+        bestRating: '5',
+        worstRating: '1',
+      },
+    }),
+  }
+
   return (
-    <div className="page-wrapper py-8">
-      <RoasteryDetail
-        roastery={roastery}
-        isLoggedIn={!!userId}
-        userRating={
-          userRating
-            ? { score: userRating.score, comment: userRating.comment ?? undefined }
-            : undefined
-        }
-        isBookmarked={isBookmarked}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-    </div>
+      <div className="page-wrapper py-8">
+        <RoasteryDetail
+          roastery={roastery}
+          isLoggedIn={!!userId}
+          userRating={
+            userRating
+              ? { score: userRating.score, comment: userRating.comment ?? undefined }
+              : undefined
+          }
+          isBookmarked={isBookmarked}
+        />
+      </div>
+    </>
   )
 }
