@@ -18,7 +18,9 @@ export default async function MainLayout({ children }: { children: React.ReactNo
     <div className="flex min-h-screen flex-col bg-bg">
       <Navigation />
       {/* 모바일: BottomTab 높이(64px)만큼 하단 패딩 */}
-      <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+      <main className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
+        {children}
+      </main>
     </div>
   )
 }
