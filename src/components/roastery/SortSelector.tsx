@@ -32,7 +32,7 @@ export function SortSelector({ sort }: SortSelectorProps) {
       onChange={(e) => handleChange(e.target.value as SortOption)}
       disabled={isPending}
       aria-label="정렬 기준"
-      className="rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+      className="rounded-md border border-border bg-background px-3 py-1.5 text-[16px] leading-snug text-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
     >
       {SORT_OPTIONS.map((opt) => (
         <option key={opt.value} value={opt.value}>
