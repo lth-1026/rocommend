@@ -8,8 +8,17 @@ import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Rocommend',
-  description: '취향에 맞는 스페셜티 커피 로스터리 추천',
+  metadataBase: new URL('https://rocommend.com'),
+  title: {
+    default: 'Rocommend',
+    template: '%s | Rocommend',
+  },
+  description: '취향에 맞는 스페셜티 커피 로스터리 추천 서비스',
+  openGraph: {
+    siteName: 'Rocommend',
+    locale: 'ko_KR',
+    type: 'website',
+  },
 }
 
 export default async function RootLayout({
