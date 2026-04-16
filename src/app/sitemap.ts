@@ -5,12 +5,11 @@ const BASE_URL = 'https://rocommend.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const roasteries = await prisma.roastery.findMany({
-    select: { id: true, updatedAt: true },
+    select: { id: true },
   })
 
   const roasteryEntries: MetadataRoute.Sitemap = roasteries.map((r) => ({
     url: `${BASE_URL}/roasteries/${r.id}`,
-    lastModified: r.updatedAt,
     changeFrequency: 'weekly',
     priority: 0.8,
   }))
