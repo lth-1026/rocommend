@@ -5,6 +5,7 @@ import { getRoasteryById } from '@/lib/queries/roastery'
 import { getUserRating } from '@/lib/queries/rating'
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
+import { ROASTING_LEVEL_LABELS } from '@/types/roastery'
 
 interface RoasteryDetailPageProps {
   params: Promise<{ id: string }>
@@ -44,6 +45,35 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
     ? await Promise.all([getUserRating(userId, id), getBookmarkStatus(userId, id)])
     : [null, false]
 
+  // 원두별 최저가 채널 → Offer 스키마
+  const beanOffers = roastery.beans.map((bean) => {
+    const cheapest = bean.channelPrices
+      .filter((c) => c.price !== null)
+      .sort((a, b) => a.price! - b.price!)[0]
+
+    const descParts = [
+      ROASTING_LEVEL_LABELS[bean.roastingLevel] ?? bean.roastingLevel,
+      bean.origins.join(', '),
+      bean.cupNotes.join(', '),
+    ].filter(Boolean)
+
+    return {
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Product',
+        name: bean.name,
+        ...(descParts.length > 0 && { description: descParts.join(' · ') }),
+        ...(bean.imageUrl && { image: bean.imageUrl }),
+      },
+      ...(cheapest && {
+        price: cheapest.price,
+        priceCurrency: 'KRW',
+        url: cheapest.url,
+        seller: { '@type': 'Organization', name: cheapest.label },
+      }),
+    }
+  })
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
@@ -58,6 +88,13 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
         reviewCount: roastery.ratingCount,
         bestRating: '5',
         worstRating: '1',
+      },
+    }),
+    ...(beanOffers.length > 0 && {
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: '원두 목록',
+        itemListElement: beanOffers,
       },
     }),
   }
