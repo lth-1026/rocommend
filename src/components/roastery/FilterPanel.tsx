@@ -115,7 +115,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           onKeyDown={(e) => {
             if (e.key === 'Enter') navigate({ q: inputValue.trim() })
           }}
-          className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-[16px] leading-snug text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           aria-label="로스터리 이름 검색"
         />
         <Sheet>
@@ -124,7 +124,10 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
             필터
             {isFiltered && <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />}
           </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+          <SheetContent
+            side="bottom"
+            className="max-h-[80dvh] overflow-y-auto pb-[env(safe-area-inset-bottom,0px)]"
+          >
             <SheetHeader>
               <SheetTitle>필터</SheetTitle>
             </SheetHeader>
