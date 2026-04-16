@@ -47,7 +47,7 @@ export function SortSelector({ sort }: SortSelectorProps) {
         onClick={() => setOpen((v) => !v)}
         disabled={isPending}
         aria-label="정렬 기준"
-        className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent/10 disabled:opacity-50"
+        className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent/10 disabled:opacity-50"
       >
         {currentLabel}
         <ChevronDown
