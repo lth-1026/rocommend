@@ -1,5 +1,14 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
+
+export const metadata: Metadata = {
+  title: '로스터리',
+  description: '한국 스페셜티 커피 로스터리를 취향에 맞게 찾아보세요.',
+  alternates: {
+    canonical: '/roasteries',
+  },
+}
 import { getRoasteries } from '@/lib/queries/roastery'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
