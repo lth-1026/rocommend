@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 import { getRoasteries } from '@/lib/queries/roastery'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
+import { RequestRoasteryButton } from '@/components/roastery/RequestRoasteryButton'
 import { toArray } from '@/lib/utils'
 import { PRICE_OPTIONS } from '@/types/roastery'
 import type { SortOption, FilterParams, PriceRange } from '@/types/roastery'
@@ -48,12 +49,18 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
       </Suspense>
 
       {roasteries.length === 0 ? (
-        <div className="py-20 flex flex-col items-center gap-2 text-center">
+        <div className="py-20 flex flex-col items-center gap-3 text-center">
           <p className="text-base font-medium">조건에 맞는 로스터리가 없어요.</p>
           <p className="text-sm text-muted-foreground">필터를 조정하거나 검색어를 바꿔보세요.</p>
+          <RequestRoasteryButton />
         </div>
       ) : (
-        <RoasteryGrid roasteries={roasteries} activeRegions={filter.regions} />
+        <>
+          <RoasteryGrid roasteries={roasteries} activeRegions={filter.regions} />
+          <div className="flex justify-center pt-4 pb-2">
+            <RequestRoasteryButton />
+          </div>
+        </>
       )}
     </div>
   )
