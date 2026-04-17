@@ -28,45 +28,46 @@ export function RoasteryDetail({
     <div className="flex flex-col gap-8">
       <BackButton />
 
-      {/* 헤더 이미지 */}
-      {roastery.imageUrl && (
-        <div className="relative aspect-[16/7] w-full overflow-hidden rounded-2xl">
-          <Image
-            src={roastery.imageUrl}
-            alt={roastery.name}
-            fill
-            className="object-cover"
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1440px) 90vw, 1300px"
-            unoptimized={roastery.imageUrl.startsWith('/')}
-          />
-        </div>
-      )}
-
       {/* 기본 정보 */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold">{roastery.name}</h1>
-          <div className="flex flex-col gap-0.5">
-            {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
-            {roastery.address && (
-              <p className="text-xs text-muted-foreground/70">{roastery.address}</p>
-            )}
-          </div>
-          {roastery.description && (
-            <p className="text-sm text-foreground leading-relaxed max-w-prose">
-              {roastery.description}
-            </p>
-          )}
-          {charTags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {charTags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
+        <div className="flex gap-4">
+          {/* 프로필 이미지 */}
+          {roastery.imageUrl && (
+            <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
+              <Image
+                src={roastery.imageUrl}
+                alt={roastery.name}
+                fill
+                className="object-cover"
+                priority
+                sizes="80px"
+                unoptimized={roastery.imageUrl.startsWith('/')}
+              />
             </div>
           )}
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-semibold">{roastery.name}</h1>
+            <div className="flex flex-col gap-0.5">
+              {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
+              {roastery.address && (
+                <p className="text-xs text-muted-foreground/70">{roastery.address}</p>
+              )}
+            </div>
+            {roastery.description && (
+              <p className="text-sm text-foreground leading-relaxed max-w-prose">
+                {roastery.description}
+              </p>
+            )}
+            {charTags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {charTags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col gap-3 shrink-0">
