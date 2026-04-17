@@ -170,8 +170,20 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
 
   if (!roastery) return null
 
-  // 로스터리 기본 채널 (가격 없음)
-  const baseChannels = flattenChannels(roastery.channels)
+  // 채널별 최저가 집계 (전체 원두 기준)
+  const minPriceByChannelId = new Map<string, number>()
+  for (const bean of roastery.beans) {
+    for (const bp of bean.channelPrices) {
+      const prev = minPriceByChannelId.get(bp.channel.id)
+      if (prev === undefined || bp.price < prev) {
+        minPriceByChannelId.set(bp.channel.id, bp.price)
+      }
+    }
+  }
+  const baseChannels = flattenChannels(
+    roastery.channels,
+    minPriceByChannelId.size > 0 ? minPriceByChannelId : undefined
+  )
 
   // 원두별 채널 가격
   const beans: RoasteryDetail['beans'] = roastery.beans.map((bean) => {
