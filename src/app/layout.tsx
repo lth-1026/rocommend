@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { auth } from '@/lib/auth'
@@ -7,9 +7,22 @@ import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
+export const viewport: Viewport = {
+  viewportFit: 'cover',
+}
+
 export const metadata: Metadata = {
-  title: 'Rocommend',
-  description: '취향에 맞는 스페셜티 커피 로스터리 추천',
+  metadataBase: new URL('https://rocommend.com'),
+  title: {
+    default: 'Rocommend',
+    template: '%s | Rocommend',
+  },
+  description: '취향에 맞는 스페셜티 커피 로스터리 추천 서비스',
+  openGraph: {
+    siteName: 'Rocommend',
+    locale: 'ko_KR',
+    type: 'website',
+  },
 }
 
 export default async function RootLayout({

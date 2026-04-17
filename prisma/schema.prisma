@@ -1,64 +1,65 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+}
+
 model User {
-  id              String           @id @default(cuid())
-  email           String?          @unique
-  emailVerified   DateTime?
-  name            String?
-  image           String?
-  role                 Role             @default(USER)
-  preferences          Json?            // { onboardingVersion: number, inferredProfile: object }
-  receiveFeedbackEmail Boolean          @default(false)
+  id                   String           @id @default(cuid())
+  email                String?          @unique
+  name                 String?
+  image                String?
   createdAt            DateTime         @default(now())
-  accounts        Account[]
-  sessions        Session[]
-  onboarding      Onboarding?
-  ratings         Rating[]
-  bookmarks       Bookmark[]
-  recommendations Recommendation[]
-  feedbacks       Feedback[]
+  preferences          Json?
+  emailVerified        DateTime?
+  role                 Role             @default(USER)
+  receiveFeedbackEmail Boolean          @default(false)
+  accounts             Account[]
+  bookmarks            Bookmark[]
+  feedbacks            Feedback[]
+  roasteryRequests     RoasteryRequest[]
+  onboarding           Onboarding?
+  ratings              Rating[]
+  recommendations      Recommendation[]
+  sessions             Session[]
 }
 
 model Onboarding {
   id          String   @id @default(cuid())
   userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  version     Int      @default(3)
-  q1          String[] // 브루잉방법 (복수)
-  q2          String   // 구매성향
-  q3          String[] // 선호가격대 (복수, "크게 신경 안 써요" 상호 배타)
-  q4          String   // 구매빈도 (FIRST_TIME이면 q5 스킵)
-  q5          String[] // 선호로스터리 ID (q4=FIRST_TIME이면 빈 배열)
+  q1          String[]
+  q2          String
+  q3          String[]
+  q4          String
+  q5          String[]
   completedAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  version     Int      @default(3)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model Roastery {
-  id                    String           @id @default(cuid())
+  id                    String                    @id @default(cuid())
   name                  String
   description           String?
-  address               String?
   priceRange            PriceRange
-  decaf                 Boolean          @default(false)
+  decaf                 Boolean                   @default(false)
   imageUrl              String?
-  website               String?          // deprecated — RoasteryChannel로 마이그레이션 예정
-  isOnboardingCandidate Boolean          @default(false) // Q5 목록 노출 여부
-  createdAt             DateTime         @default(now())
-  tags                  RoasteryTag[]
-  ratings               Rating[]
-  bookmarks             Bookmark[]
+  website               String?
+  createdAt             DateTime                  @default(now())
+  isOnboardingCandidate Boolean                   @default(false)
+  address               String?
   beans                 Bean[]
+  bookmarks             Bookmark[]
+  featuredIn            FeaturedSectionRoastery[]
+  ratings               Rating[]
   recommendations       Recommendation[]
   channels              RoasteryChannel[]
-  featuredIn            FeaturedSectionRoastery[]
+  tags                  RoasteryTag[]
 
   @@index([priceRange])
   @@index([decaf])
@@ -90,10 +91,10 @@ model Bean {
   id            String             @id @default(cuid())
   roasteryId    String
   name          String
-  origins       String[]           // 원산지 (복수)
-  roastingLevel String             // LIGHT | MEDIUM | MEDIUM_DARK | DARK
+  origins       String[]
+  roastingLevel String
   decaf         Boolean            @default(false)
-  cupNotes      String[]           // e.g. ["자몽", "카카오", "흑설탕"]
+  cupNotes      String[]
   imageUrl      String?
   createdAt     DateTime           @default(now())
   roastery      Roastery           @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
@@ -104,66 +105,55 @@ model Bean {
 
 model ChannelDefinition {
   id       String            @id @default(cuid())
-  key      String            @unique  // "naver" | "website" | "cm29" | "unspecialty" | ...
-  label    String            // "네이버 스마트스토어" | "자사몰" | ...
+  key      String            @unique
+  label    String
   logoUrl  String?
-  order    Int               @default(0) // 가격 없는 채널의 fallback 정렬
+  order    Int               @default(0)
   channels RoasteryChannel[]
 }
 
 model RoasteryChannel {
-  id         String            @id @default(cuid())
+  id         String             @id @default(cuid())
   roasteryId String
   channelKey String
   url        String
-  createdAt  DateTime          @default(now())
-  roastery   Roastery          @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
-  definition ChannelDefinition @relation(fields: [channelKey], references: [key])
+  createdAt  DateTime           @default(now())
   beanPrices BeanChannelPrice[]
+  definition ChannelDefinition  @relation(fields: [channelKey], references: [key])
+  roastery   Roastery           @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
 
   @@unique([roasteryId, channelKey])
   @@index([roasteryId])
 }
 
 model BeanChannelPrice {
-  beanId    String
-  channelId String
-  price     Int              // 원 단위 (e.g. 16000)
-  sourceUrl String?          // 개별 상품 페이지 URL (가격 추적용)
-  bean      Bean            @relation(fields: [beanId], references: [id], onDelete: Cascade)
-  channel   RoasteryChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  snapshots BeanChannelPriceSnapshot[]
+  beanId                   String
+  channelId                String
+  price                    Int
+  sourceUrl                String?
+  sizeGrams                Int?
+  bean                     Bean                       @relation(fields: [beanId], references: [id], onDelete: Cascade)
+  channel                  RoasteryChannel            @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  BeanChannelPriceSnapshot BeanChannelPriceSnapshot[]
 
   @@id([beanId, channelId])
-}
-
-model BeanChannelPriceSnapshot {
-  id        String          @id @default(cuid())
-  beanId    String
-  channelId String
-  price     Int             // 원 단위
-  snappedAt DateTime        @default(now())
-  beanPrice BeanChannelPrice @relation(fields: [beanId, channelId], references: [beanId, channelId], onDelete: Cascade)
-
-  @@index([beanId, channelId])
-  @@index([snappedAt])
 }
 
 model Rating {
   id         String   @id @default(cuid())
   userId     String
   roasteryId String
-  score      Int      @db.SmallInt // 1–5. 애플리케이션 레이어에서도 검증 필요
+  score      Int      @db.SmallInt
   comment    String?
-  source     String?  // "onboarding" | null (직접 평가)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source     String?
   roastery   Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roasteryId])
-  @@index([userId])     // "내 평가 목록" 조회
-  @@index([roasteryId]) // "이 로스터리의 평가" 조회 + CF 계산
+  @@index([userId])
+  @@index([roasteryId])
 }
 
 model Recommendation {
@@ -172,8 +162,8 @@ model Recommendation {
   roasteryId String
   score      Float
   updatedAt  DateTime @updatedAt
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   roastery   Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roasteryId])
   @@index([userId])
@@ -184,8 +174,8 @@ model Bookmark {
   userId     String
   roasteryId String
   createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   roastery   Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roasteryId])
   @@index([userId])
@@ -195,20 +185,20 @@ model Bookmark {
 model FeaturedSection {
   id         String                    @id @default(cuid())
   title      String
-  type       SectionType               @default(CUSTOM)
   order      Int                       @default(0)
   isActive   Boolean                   @default(true)
-  roasteries FeaturedSectionRoastery[]
   createdAt  DateTime                  @default(now())
   updatedAt  DateTime                  @updatedAt
+  type       SectionType               @default(CUSTOM)
+  roasteries FeaturedSectionRoastery[]
 }
 
 model FeaturedSectionRoastery {
   sectionId  String
   roasteryId String
   order      Int             @default(0)
-  section    FeaturedSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   roastery   Roastery        @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  section    FeaturedSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@id([sectionId, roasteryId])
   @@index([roasteryId])
@@ -217,7 +207,7 @@ model FeaturedSectionRoastery {
 model EventLog {
   id        String   @id @default(cuid())
   userId    String?
-  event     String   // rating_submitted | recommendation_clicked | purchase_link_clicked | onboarding_completed
+  event     String
   payload   Json?
   createdAt DateTime @default(now())
 
@@ -226,36 +216,31 @@ model EventLog {
   @@index([createdAt])
 }
 
-// ── NextAuth 필수 모델 ──────────────────────────────
-
 model Account {
   id                       String  @id @default(cuid())
   userId                   String
   type                     String
-  provider                 String  // "google" | "kakao" | "naver"
+  provider                 String
   providerAccountId        String
   refresh_token            String?
   access_token             String?
   expires_at               Int?
-  token_type               String?
-  scope                    String?
+  refresh_token_expires_at Int?
   id_token                 String?
+  scope                    String?
   session_state            String?
-  refresh_token_expires_at Int?    // Kakao/Naver refresh token 만료 추적용
+  token_type               String?
   user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
 }
 
-// NextAuth database 세션 전략 필수 모델.
-// 세션 강제 만료(로그아웃, 계정 정지)가 필요해 database 전략 유지.
-// Vercel 서버리스에서 연결 수 초과 방지를 위해 Prisma Accelerate 필수.
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
-  expires      DateTime // 90일 후 만료
+  expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -269,22 +254,48 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Feedback {
+  id        String         @id @default(cuid())
+  content   String
+  category  String?
+  userId    String
+  status    FeedbackStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BeanChannelPriceSnapshot {
+  id               String           @id
+  beanId           String
+  channelId        String
+  price            Int
+  snappedAt        DateTime         @default(now())
+  BeanChannelPrice BeanChannelPrice @relation(fields: [beanId, channelId], references: [beanId, channelId], onDelete: Cascade)
+
+  @@index([beanId, channelId])
+  @@index([snappedAt])
+}
+
 enum SectionType {
-  CF_NEW    // "새로운 로스터리" — 협업 필터링 신규 추천
-  CF_REPEAT // "또 사고 싶은 로스터리" — CF 재구매 추천
-  POPULAR   // "실시간 인기 로스터리"
-  CUSTOM    // 관리자가 직접 큐레이션한 섹션
+  CF_NEW
+  CF_REPEAT
+  POPULAR
+  CUSTOM
 }
 
 enum PriceRange {
-  LOW  // 200g 기준 20,000원 미만
-  MID  // 20,000–35,000원
-  HIGH // 35,000원 초과
+  LOW
+  MID
+  HIGH
 }
 
 enum TagCategory {
-  REGION         // 한국 광역자치단체 (서울, 부산 등)
-  CHARACTERISTIC // 로스터리 특성 (싱글오리진, 블렌드 등)
+  REGION
+  CHARACTERISTIC
 }
 
 enum Role {
@@ -292,21 +303,25 @@ enum Role {
   ADMIN
 }
 
-model Feedback {
-  id        String         @id @default(cuid())
-  content   String
-  category  String?
+enum FeedbackStatus {
+  PENDING
+  READ
+}
+
+model RoasteryRequest {
+  id        String                @id @default(cuid())
+  name      String
   userId    String
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status    FeedbackStatus @default(PENDING)
-  createdAt DateTime       @default(now())
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    RoasteryRequestStatus @default(PENDING)
+  createdAt DateTime              @default(now())
 
   @@index([userId])
   @@index([status])
   @@index([createdAt])
 }
 
-enum FeedbackStatus {
+enum RoasteryRequestStatus {
   PENDING
   READ
 }
