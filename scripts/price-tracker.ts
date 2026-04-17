@@ -148,6 +148,7 @@ async function main() {
         // 스냅샷 저장 (항상)
         await prisma.beanChannelPriceSnapshot.create({
           data: {
+            id: crypto.randomUUID(),
             beanId: bp.beanId,
             channelId: bp.channelId,
             price: newPrice,
