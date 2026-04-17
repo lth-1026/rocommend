@@ -51,12 +51,12 @@ export function PurchaseSection({ roasteryId, channels }: PurchaseSectionProps) 
   }
 
   return (
-    <div className="relative">
-      {/* 드롭다운 트리거 */}
+    <div className="flex flex-col rounded-xl border border-border bg-surface overflow-hidden">
+      {/* 트리거 */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex min-h-[44px] w-full cursor-pointer items-center justify-between rounded-xl border border-border bg-surface px-4 transition-colors hover:bg-muted"
+        className="flex min-h-[44px] w-full cursor-pointer items-center justify-between px-4 transition-colors hover:bg-muted"
       >
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{primary.label}</span>
@@ -72,44 +72,42 @@ export function PurchaseSection({ roasteryId, channels }: PurchaseSectionProps) 
         />
       </button>
 
-      {/* 드롭다운 목록 */}
+      {/* 확장 목록 */}
       {open && (
-        <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-10 rounded-xl border border-border bg-surface shadow-md">
-          <ul className="flex flex-col p-1">
-            {sorted.map((ch, i) => (
-              <li key={ch.channelId}>
-                <a
-                  href={ch.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    handleClick(ch.channelKey)
-                    setOpen(false)
-                  }}
-                  className="flex min-h-[44px] cursor-pointer items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-muted"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">{ch.label}</span>
-                    {i === 0 && (
-                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                        최저가
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 text-sm">
-                    {ch.price !== null ? (
-                      <span className={i === 0 ? 'font-medium' : 'text-muted-foreground'}>
-                        {formatPrice(ch.price)}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground text-xs">→</span>
-                    )}
-                  </div>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="flex flex-col border-t border-border px-1 pb-1">
+          {sorted.map((ch, i) => (
+            <li key={ch.channelId}>
+              <a
+                href={ch.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  handleClick(ch.channelKey)
+                  setOpen(false)
+                }}
+                className="flex min-h-[44px] cursor-pointer items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-muted"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">{ch.label}</span>
+                  {i === 0 && (
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                      최저가
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 text-sm">
+                  {ch.price !== null ? (
+                    <span className={i === 0 ? 'font-medium' : 'text-muted-foreground'}>
+                      {formatPrice(ch.price)}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground text-xs">→</span>
+                  )}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   )
