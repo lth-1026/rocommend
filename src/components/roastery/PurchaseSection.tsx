@@ -36,7 +36,11 @@ export function PurchaseSection({ roasteryId, channels }: PurchaseSectionProps) 
             >
               <div className="flex items-center gap-2">
                 <span className="text-sm">{ch.label}</span>
-                {i === 0 && <span className="text-xs text-muted-foreground">최저가</span>}
+                {i === 0 && (
+                  <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
+                    최저가
+                  </span>
+                )}
               </div>
               <span className="text-sm text-muted-foreground">
                 {ch.price !== null ? formatPrice(ch.price) : '→'}
