@@ -34,7 +34,7 @@ export function PurchaseSection({ roasteryId, channels }: PurchaseSectionProps) 
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => handleClick(primary.channelKey)}
-        className="flex items-center justify-between gap-3 rounded-lg bg-primary px-4 py-3 text-primary-foreground transition-opacity hover:opacity-90"
+        className="flex items-center justify-between gap-3 rounded-lg bg-primary px-3 py-2 text-primary-foreground transition-opacity hover:opacity-90"
       >
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{primary.label}</span>
