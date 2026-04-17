@@ -1,3 +1,3 @@
--- AlterTable
-ALTER TABLE "BeanChannelPrice" ADD COLUMN "sizeGrams" INTEGER;
-ALTER TABLE "BeanChannelPrice" ADD COLUMN "sourceUrl" TEXT;
+-- AlterTable (idempotent)
+ALTER TABLE "BeanChannelPrice" ADD COLUMN IF NOT EXISTS "sizeGrams" INTEGER;
+ALTER TABLE "BeanChannelPrice" ADD COLUMN IF NOT EXISTS "sourceUrl" TEXT;
