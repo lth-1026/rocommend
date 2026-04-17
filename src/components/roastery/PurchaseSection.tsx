@@ -35,14 +35,10 @@ export function PurchaseSection({ roasteryId, channels }: PurchaseSectionProps) 
               className="flex min-h-[44px] cursor-pointer items-center justify-between px-4 py-2 transition-colors hover:bg-muted"
             >
               <div className="flex items-center gap-2">
-                <span className={`text-sm ${i === 0 ? 'font-medium' : ''}`}>{ch.label}</span>
-                {i === 0 && (
-                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    최저가
-                  </span>
-                )}
+                <span className="text-sm">{ch.label}</span>
+                {i === 0 && <span className="text-xs text-muted-foreground">최저가</span>}
               </div>
-              <span className={`text-sm ${i === 0 ? 'font-medium' : 'text-muted-foreground'}`}>
+              <span className="text-sm text-muted-foreground">
                 {ch.price !== null ? formatPrice(ch.price) : '→'}
               </span>
             </a>
