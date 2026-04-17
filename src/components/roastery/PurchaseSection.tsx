@@ -23,7 +23,7 @@ export function PurchaseSection({ roasteryId, channels }: PurchaseSectionProps) 
   }
 
   return (
-    <div className="flex flex-col rounded-xl border border-border bg-surface overflow-hidden">
+    <div className="flex flex-col rounded-xl border border-border overflow-hidden">
       <ul className="flex flex-col">
         {sorted.map((ch, i) => (
           <li key={ch.channelId} className={i > 0 ? 'border-t border-border' : ''}>
