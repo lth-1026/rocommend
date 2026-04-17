@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { auth } from '@/lib/auth'
 import { SessionProvider } from '@/components/layout/SessionProvider'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
@@ -49,6 +50,9 @@ export default async function RootLayout({
             <Toaster position="top-center" richColors />
             <Analytics />
             <SpeedInsights />
+            {process.env.NEXT_PUBLIC_GA_ID && (
+              <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+            )}
           </ThemeProvider>
         </SessionProvider>
       </body>
