@@ -265,4 +265,10 @@ body {
   html {
     @apply font-sans;
   }
+  button,
+  a,
+  [role="button"],
+  [role="link"] {
+    cursor: pointer;
+  }
 }
