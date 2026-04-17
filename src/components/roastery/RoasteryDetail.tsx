@@ -29,11 +29,11 @@ export function RoasteryDetail({
       <BackButton />
 
       {/* 기본 정보 */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex gap-4">
-          {/* 프로필 이미지 */}
-          {roastery.imageUrl && (
-            <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
+      <div className="flex flex-col gap-2">
+        {/* 이미지 + 이름 행 */}
+        <div className="flex gap-4 items-start">
+          <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted">
+            {roastery.imageUrl && (
               <Image
                 src={roastery.imageUrl}
                 alt={roastery.name}
@@ -43,47 +43,23 @@ export function RoasteryDetail({
                 sizes="80px"
                 unoptimized={roastery.imageUrl.startsWith('/')}
               />
-            </div>
-          )}
-          <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-semibold">{roastery.name}</h1>
-            <div className="flex flex-col gap-0.5">
-              {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
-              {roastery.address && (
-                <p className="text-xs text-muted-foreground/70">{roastery.address}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h1 className="text-2xl font-semibold leading-tight">{roastery.name}</h1>
+              {isLoggedIn && (
+                <BookmarkButton roasteryId={roastery.id} initialIsBookmarked={isBookmarked} />
               )}
             </div>
-            {roastery.description && (
-              <p className="text-sm text-foreground leading-relaxed max-w-prose">
-                {roastery.description}
-              </p>
-            )}
-            {charTags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {charTags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <RatingDisplay
+                  avgRating={roastery.avgRating}
+                  ratingCount={roastery.ratingCount}
+                  size="lg"
+                />
               </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3 shrink-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="outline">{PRICE_RANGE_LABELS[roastery.priceRange]}</Badge>
-            {roastery.decaf && <Badge variant="secondary">디카페인</Badge>}
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            <RatingDisplay
-              avgRating={roastery.avgRating}
-              ratingCount={roastery.ratingCount}
-              size="lg"
-            />
-          </div>
-          {isLoggedIn && (
-            <div className="flex items-center gap-2">
               <RatingButton
                 roasteryId={roastery.id}
                 roasteryName={roastery.name}
@@ -91,17 +67,37 @@ export function RoasteryDetail({
                 existingScore={userRating?.score}
                 existingComment={userRating?.comment}
               />
-              <BookmarkButton roasteryId={roastery.id} initialIsBookmarked={isBookmarked} />
             </div>
-          )}
-          {!isLoggedIn && (
-            <RatingButton
-              roasteryId={roastery.id}
-              roasteryName={roastery.name}
-              isLoggedIn={false}
-            />
+          </div>
+        </div>
+
+        {/* 지역 + 주소 */}
+        <div className="flex flex-col gap-0.5">
+          {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
+          {roastery.address && (
+            <p className="text-xs text-muted-foreground/70">{roastery.address}</p>
           )}
         </div>
+
+        {/* 설명 */}
+        {roastery.description && (
+          <p className="text-sm text-foreground leading-relaxed max-w-prose">
+            {roastery.description}
+          </p>
+        )}
+
+        {/* 가격 뱃지 + 디카페인 + 특성 태그 통합 */}
+        {(charTags.length > 0 || roastery.decaf || roastery.priceRange) && (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            <Badge variant="outline">{PRICE_RANGE_LABELS[roastery.priceRange]}</Badge>
+            {roastery.decaf && <Badge variant="secondary">디카페인</Badge>}
+            {charTags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 구매하기 + 원두 라인업 */}
