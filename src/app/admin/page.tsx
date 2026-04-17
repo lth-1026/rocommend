@@ -20,6 +20,13 @@ export default function AdminDashboardPage() {
           <p className="text-sm text-text-sub">추천 페이지 섹션 생성 및 로스터리 큐레이션</p>
         </Link>
         <Link
+          href="/admin/roastery-requests"
+          className="rounded-xl border border-border bg-surface p-6 hover:border-primary transition-colors"
+        >
+          <h2 className="mb-1 text-lg font-semibold text-text">로스터리 추가 요청</h2>
+          <p className="text-sm text-text-sub">사용자가 요청한 로스터리 목록 확인 및 처리</p>
+        </Link>
+        <Link
           href="/admin/settings"
           className="rounded-xl border border-border bg-surface p-6 hover:border-primary transition-colors"
         >
