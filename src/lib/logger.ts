@@ -1,20 +1,31 @@
-import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import pino from 'pino'
 
-export async function logEvent(
-  event: string,
-  payload?: Record<string, unknown>,
-  userId?: string
-): Promise<void> {
-  try {
-    await prisma.eventLog.create({
-      data: {
-        event,
-        payload: payload ? (payload as Prisma.InputJsonValue) : Prisma.JsonNull,
-        userId: userId ?? null,
-      },
-    })
-  } catch (err) {
-    console.error('[logEvent] failed:', err)
+const isDev = process.env.NODE_ENV === 'development'
+const axiomToken = process.env.AXIOM_TOKEN
+const axiomDataset = process.env.AXIOM_DATASET
+
+function buildTransport() {
+  // 개발: 컬러 출력
+  if (isDev) {
+    return {
+      target: 'pino-pretty',
+      options: { colorize: true, translateTime: 'HH:MM:ss', ignore: 'pid,hostname' },
+    }
   }
+
+  // 프로덕션: Axiom 토큰이 있으면 Axiom으로 전송
+  if (axiomToken && axiomDataset) {
+    return {
+      target: '@axiomhq/pino',
+      options: { token: axiomToken, dataset: axiomDataset },
+    }
+  }
+
+  // fallback: stdout JSON (Vercel Log Drain이 수집)
+  return undefined
 }
+
+export const logger = pino({
+  level: isDev ? 'debug' : 'info',
+  transport: buildTransport(),
+})
