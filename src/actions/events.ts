@@ -11,7 +11,11 @@ export async function logClientEvent(input: {
   const session = await auth()
   const userId = session?.user?.id ?? undefined
 
-  logger.info({ event: input.event, userId: userId ?? 'anonymous', ...input.payload })
+  try {
+    logger.info({ event: input.event, userId: userId ?? 'anonymous', ...input.payload })
+  } catch {
+    // 로깅 실패는 사용자 플로우에 영향을 주지 않음
+  }
 
   return { success: true }
 }
