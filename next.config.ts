@@ -1,4 +1,5 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
   images: {
@@ -20,6 +21,21 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '4mb',
     },
   },
-};
+}
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Sentry 프로젝트 설정
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // Source Map을 Sentry에 업로드하고 번들에서 제거 (보안)
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+
+  // 빌드 로그 숨김
+  silent: !process.env.CI,
+
+  // 빌드 시 Sentry Auth Token 없으면 경고만 출력하고 계속 진행
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+})

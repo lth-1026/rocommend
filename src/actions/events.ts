@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
-import { logEvent } from '@/lib/logger'
+import { logger } from '@/lib/logger'
 import type { ActionResult } from '@/types/action'
 
 export async function logClientEvent(input: {
@@ -11,8 +11,11 @@ export async function logClientEvent(input: {
   const session = await auth()
   const userId = session?.user?.id ?? undefined
 
-  await logEvent(input.event, input.payload, userId)
-  console.log('[logClientEvent]', input.event, { userId: userId ?? 'anonymous' })
+  try {
+    logger.info({ event: input.event, userId: userId ?? 'anonymous', ...input.payload })
+  } catch {
+    // 로깅 실패는 사용자 플로우에 영향을 주지 않음
+  }
 
   return { success: true }
 }
