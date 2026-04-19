@@ -1,20 +1,3 @@
-import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { Logger } from 'next-axiom'
 
-export async function logEvent(
-  event: string,
-  payload?: Record<string, unknown>,
-  userId?: string
-): Promise<void> {
-  try {
-    await prisma.eventLog.create({
-      data: {
-        event,
-        payload: payload ? (payload as Prisma.InputJsonValue) : Prisma.JsonNull,
-        userId: userId ?? null,
-      },
-    })
-  } catch (err) {
-    console.error('[logEvent] failed:', err)
-  }
-}
+export const logger = new Logger({ source: 'server' })
