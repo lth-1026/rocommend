@@ -12,7 +12,8 @@ export async function logClientEvent(input: {
   const userId = session?.user?.id ?? undefined
 
   try {
-    logger.info({ event: input.event, userId: userId ?? 'anonymous', ...input.payload })
+    logger.info(input.event, { userId: userId ?? 'anonymous', ...input.payload })
+    await logger.flush()
   } catch {
     // 로깅 실패는 사용자 플로우에 영향을 주지 않음
   }
