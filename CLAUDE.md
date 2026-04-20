@@ -40,7 +40,7 @@ pnpm prisma db seed        # 시드 재실행
 - `develop` — 통합 브랜치. **직접 커밋 절대 금지**
 - `feat/{kebab-case}` — 기능 개발 → develop으로 PR (Squash merge)
 - `fix/{kebab-case}` — 버그 수정 → develop으로 PR (Squash merge)
-- `release/{version}` — 배포 준비 → main은 PR (Merge commit), develop은 로컬 merge 후 push (version 충돌 수동 해결)
+- `release/{version}` — 배포 준비 → main은 PR (Merge commit), develop은 **반드시 `git merge main`으로 동기화** (별도 버전 bump 커밋 금지 — 히스토리 분기로 다음 release에서 package.json 충돌 발생)
 - `hotfix/{kebab-case}` — 프로덕션 긴급 수정 → main + develop으로 PR (Merge commit)
 
 ## 커밋
