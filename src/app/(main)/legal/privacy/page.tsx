@@ -131,7 +131,7 @@ export default function PrivacyPage() {
         <Section title="9. 개인정보 보호책임자">
           <p>이용자의 개인정보 관련 문의, 불만 처리, 피해 구제 등을 위해 아래와 같이 지정합니다.</p>
           <ul>
-            <li>성명: [담당자명]</li>
+            <li>성명: 이태호</li>
             <li>직책: 개인정보 보호책임자</li>
             <li>이메일: {CONTACT_EMAIL}</li>
           </ul>
