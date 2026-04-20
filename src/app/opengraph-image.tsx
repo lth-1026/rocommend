@@ -7,18 +7,13 @@ export const contentType = 'image/png'
 
 async function loadFont(): Promise<ArrayBuffer | null> {
   try {
-    // WOFF2 지원 UA로 Google Fonts CSS 요청 → font URL 파싱
+    // TTF 형식 요청 (Satori 호환) — 구형 UA로 Google Fonts에서 TTF 수신
     const css = await fetch(
-      `https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700&text=${encodeURIComponent('Rocommend스페셜티커피로스터리추천')}`,
-      {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        },
-      }
+      `https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700&text=${encodeURIComponent('스페셜티커피로스터리추천')}`,
+      { headers: { 'User-Agent': 'Mozilla/4.0' } }
     ).then((r) => r.text())
 
-    const fontUrl = css.match(/src: url\((.+?)\) format\('woff2'\)/)?.[1]
+    const fontUrl = css.match(/src: url\((.+?)\) format\('(?:opentype|truetype)'\)/)?.[1]
     if (!fontUrl) return null
     return fetch(fontUrl).then((r) => r.arrayBuffer())
   } catch {
@@ -40,7 +35,7 @@ export default async function Image() {
         alignItems: 'center',
         justifyContent: 'center',
         gap: 0,
-        fontFamily: fontData ? 'Noto Sans KR' : 'sans-serif',
+        fontFamily: fontData ? 'Noto Sans KR' : 'serif',
       }}
     >
       {/* 로고 */}
@@ -71,17 +66,19 @@ export default async function Image() {
         Rocommend
       </div>
 
-      {/* 설명 */}
-      <div
-        style={{
-          marginTop: 20,
-          fontSize: 34,
-          color: '#6B6560',
-          letterSpacing: '-0.5px',
-        }}
-      >
-        스페셜티 커피 로스터리 추천
-      </div>
+      {/* 설명 — 폰트 로드 성공 시에만 한국어 표시 */}
+      {fontData && (
+        <div
+          style={{
+            marginTop: 20,
+            fontSize: 34,
+            color: '#6B6560',
+            letterSpacing: '-0.5px',
+          }}
+        >
+          스페셜티 커피 로스터리 추천
+        </div>
+      )}
     </div>,
     {
       ...size,
