@@ -1,3 +1,5 @@
+import { readFile } from 'fs/promises'
+import { join } from 'path'
 import { ImageResponse } from 'next/og'
 
 export const alt = 'Rocommend — 스페셜티 커피 로스터리 추천'
@@ -6,9 +8,8 @@ export const contentType = 'image/png'
 
 async function loadFont(): Promise<ArrayBuffer | null> {
   try {
-    return fetch(new URL('./fonts/Pretendard-Bold.ttf', import.meta.url)).then((r) =>
-      r.arrayBuffer()
-    )
+    const buf = await readFile(join(process.cwd(), 'src/app/fonts/Pretendard-Bold.ttf'))
+    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer
   } catch {
     return null
   }
