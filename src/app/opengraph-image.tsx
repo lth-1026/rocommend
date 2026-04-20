@@ -7,9 +7,9 @@ export const contentType = 'image/png'
 
 async function loadFont(): Promise<ArrayBuffer | null> {
   try {
-    return fetch(
-      'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/Pretendard-Bold.ttf'
-    ).then((r) => r.arrayBuffer())
+    return fetch(new URL('./fonts/Pretendard-Bold.ttf', import.meta.url)).then((r) =>
+      r.arrayBuffer()
+    )
   } catch {
     return null
   }
@@ -57,7 +57,7 @@ export default async function Image() {
           lineHeight: 1,
         }}
       >
-        Rocommend
+        roco
       </div>
 
       {/* 설명 — 폰트 로드 성공 시에만 한국어 표시 */}
