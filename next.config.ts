@@ -81,6 +81,9 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '4mb',
     },
+    outputFileTracingIncludes: {
+      '/opengraph-image': ['./src/app/fonts/Pretendard-Bold.ttf'],
+    },
   },
 }
 
