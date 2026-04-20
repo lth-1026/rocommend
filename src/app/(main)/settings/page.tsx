@@ -20,6 +20,54 @@ export default async function SettingsPage() {
         <FeedbackButton />
       </section>
 
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium text-text-secondary">법적 고지</h2>
+        <div className="flex flex-col rounded-xl bg-surface overflow-hidden">
+          <Link
+            href="/legal/privacy"
+            className="flex items-center justify-between px-4 py-3 text-sm text-text-primary hover:bg-bg transition-colors border-b border-border"
+          >
+            <span>개인정보처리방침</span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              className="text-text-secondary"
+            >
+              <path
+                d="M6 4l4 4-4 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Link>
+          <Link
+            href="/legal/terms"
+            className="flex items-center justify-between px-4 py-3 text-sm text-text-primary hover:bg-bg transition-colors"
+          >
+            <span>이용약관</span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              className="text-text-secondary"
+            >
+              <path
+                d="M6 4l4 4-4 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Link>
+        </div>
+      </section>
+
       {!session?.user && (
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-medium text-text-secondary">계정</h2>
