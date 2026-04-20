@@ -77,6 +77,9 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '*.public.blob.vercel-storage.com', pathname: '/**' },
     ],
   },
+  outputFileTracingIncludes: {
+    '/opengraph-image': ['./src/app/fonts/Pretendard-Bold.ttf'],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '4mb',
