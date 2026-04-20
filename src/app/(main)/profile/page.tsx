@@ -91,13 +91,6 @@ export default async function ProfilePage() {
         </div>
       </section>
 
-      <Link
-        href="/account"
-        className="w-full cursor-pointer rounded-lg border border-border bg-surface px-4 py-3 text-center text-sm font-medium text-text-primary transition-colors hover:bg-bg"
-      >
-        계정 관리
-      </Link>
-
       <LogoutButton />
     </div>
   )
