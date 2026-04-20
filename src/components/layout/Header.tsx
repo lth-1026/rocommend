@@ -136,12 +136,12 @@ export function Header({ className }: { className?: string }) {
                     <FeedbackButton onOpenModal={() => setFeedbackOpen(true)} />
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem>
                     <Link href="/legal/privacy" className="w-full">
                       개인정보처리방침
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem>
                     <Link href="/legal/terms" className="w-full">
                       이용약관
                     </Link>
