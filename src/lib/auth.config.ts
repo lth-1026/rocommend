@@ -18,7 +18,6 @@ const PUBLIC_PATHS = [
   '/api/auth',
   '/api/test',
   '/roasteries',
-  '/home',
   '/settings',
   '/legal', // 개인정보처리방침·이용약관 — 비로그인 접근 허용
   '/opengraph-image', // OG 이미지 — SNS 크롤러 접근 허용
@@ -52,7 +51,7 @@ export const authConfig: NextAuthConfig = {
       // 어드민 전용 경로
       if (pathname.startsWith('/admin')) {
         if (!isLoggedIn) return Response.redirect(new URL('/login', nextUrl))
-        if (!isAdmin) return Response.redirect(new URL('/home', nextUrl))
+        if (!isAdmin) return Response.redirect(new URL('/', nextUrl))
         return true
       }
 
@@ -62,9 +61,9 @@ export const authConfig: NextAuthConfig = {
         return Response.redirect(new URL('/login', nextUrl))
       }
 
-      // AUTH-COMPLETE가 /login → /home
+      // AUTH-COMPLETE가 /login → /
       if (pathname.startsWith('/login') && isOnboardingComplete)
-        return Response.redirect(new URL('/home', nextUrl))
+        return Response.redirect(new URL('/', nextUrl))
 
       // AUTH-INCOMPLETE: /onboarding·/api 외 모든 경로 → /onboarding
       if (

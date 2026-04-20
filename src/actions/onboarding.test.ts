@@ -105,9 +105,9 @@ describe('submitOnboarding', () => {
   })
 
   // 성공 케이스: redirect 호출 확인
-  it('성공 시 /home으로 redirect된다', async () => {
+  it('성공 시 /로 redirect된다', async () => {
     mockAuth.mockResolvedValue({ user: { id: 'user-1' } })
     await submitOnboarding(validData)
-    expect(mockRedirect).toHaveBeenCalledWith('/home')
+    expect(mockRedirect).toHaveBeenCalledWith('/')
   })
 })

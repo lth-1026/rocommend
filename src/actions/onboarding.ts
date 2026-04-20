@@ -103,5 +103,5 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
   await unstable_update({})
 
   // 서버에서 직접 리다이렉트 → 클라이언트 Router Cache를 우회
-  redirect('/home')
+  redirect('/')
 }

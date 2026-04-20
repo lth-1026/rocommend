@@ -46,7 +46,7 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
   async function handleSubmit(answers: OnboardingAnswers) {
     setIsLoading(true)
     const result = await submitOnboarding(answers)
-    // 성공 시 서버가 redirect('/home')를 호출 → 이 코드에 도달하지 않음
+    // 성공 시 서버가 redirect('/')를 호출 → 이 코드에 도달하지 않음
     // 실패 시 서버가 ActionResult를 반환 → 에러 처리
     if (result && !result.success) {
       toast.error(result.error)

@@ -46,7 +46,7 @@ export async function upsertRating(input: {
   }
 
   revalidatePath(`/roasteries/${roasteryId}`)
-  revalidatePath('/home')
+  revalidatePath('/')
   revalidatePath('/bookmarks')
 
   // 응답 후 비동기 CF 재계산 (userId는 after() 외부에서 캡처)
@@ -80,7 +80,7 @@ export async function deleteRating(input: { roasteryId: string }): Promise<Actio
   }
 
   revalidatePath(`/roasteries/${roasteryId}`)
-  revalidatePath('/home')
+  revalidatePath('/')
   revalidatePath('/bookmarks')
 
   // 응답 후 비동기 CF 재계산
