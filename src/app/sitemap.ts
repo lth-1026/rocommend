@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 
-const BASE_URL = 'https://rocommend.com'
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://rocommend.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const roasteries = await prisma.roastery.findMany({
@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: `${BASE_URL}/home`,
+      url: `${BASE_URL}/`,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
