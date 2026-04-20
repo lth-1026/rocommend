@@ -7,6 +7,10 @@ import '@/types/auth'
 // Edge Runtime 호환 설정 (Prisma adapter 없음)
 // proxy.ts에서 import — Node.js 모듈 사용 불가
 
+// 공개 경로 관리 규칙:
+// - 새 페이지가 비로그인 접근 가능해야 하면 여기에 추가
+// - 그 외 경로는 자동으로 로그인 필요 (authorized 콜백에서 /login 리다이렉트)
+// - 어드민 전용은 별도 처리 (아래 /admin 블록)
 const PUBLIC_PATHS = [
   '/',
   '/login',
@@ -16,6 +20,7 @@ const PUBLIC_PATHS = [
   '/roasteries',
   '/home',
   '/settings',
+  '/legal', // 개인정보처리방침·이용약관 — 비로그인 접근 허용
 ]
 
 function isPublicPath(pathname: string) {
