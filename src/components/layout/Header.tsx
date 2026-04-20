@@ -135,6 +135,17 @@ export function Header({ className }: { className?: string }) {
                   <div className="px-2 py-0.5">
                     <FeedbackButton onOpenModal={() => setFeedbackOpen(true)} />
                   </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/legal/privacy" className="w-full">
+                      개인정보처리방침
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/legal/terms" className="w-full">
+                      이용약관
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <Link
