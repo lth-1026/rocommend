@@ -4,7 +4,7 @@ export const metadata: Metadata = {
   title: '이용약관',
 }
 
-const EFFECTIVE_DATE = '2025년 1월 1일'
+const EFFECTIVE_DATE = '2026년 4월 20일'
 const SERVICE_NAME = 'Rocommend'
 const COMPANY_NAME = '[사업자명]'
 const CONTACT_EMAIL = 'support@rocommend.kr'
