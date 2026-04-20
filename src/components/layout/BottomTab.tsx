@@ -7,14 +7,14 @@ import { Home, Coffee, Bookmark, User, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const authTabs = [
-  { href: '/home', label: '홈', Icon: Home },
+  { href: '/', label: '홈', Icon: Home },
   { href: '/roasteries', label: '로스터리', Icon: Coffee },
   { href: '/bookmarks', label: '즐겨찾기', Icon: Bookmark },
   { href: '/profile', label: '프로필', Icon: User },
 ]
 
 const guestTabs = [
-  { href: '/home', label: '홈', Icon: Home },
+  { href: '/', label: '홈', Icon: Home },
   { href: '/roasteries', label: '로스터리', Icon: Coffee },
   { href: '/settings', label: '설정', Icon: Settings },
 ]
@@ -34,7 +34,7 @@ export function BottomTab({ className }: { className?: string }) {
     >
       <ul className="flex h-16 w-full">
         {tabs.map(({ href, label, Icon }) => {
-          const isActive = pathname.startsWith(href)
+          const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
           return (
             <li key={href} className="flex flex-1 items-center justify-center">
               <Link

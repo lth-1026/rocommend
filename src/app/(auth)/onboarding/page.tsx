@@ -10,7 +10,7 @@ export default async function OnboardingPage() {
     where: { userId: session!.user.id },
     select: { id: true },
   })
-  if (existing) redirect('/home')
+  if (existing) redirect('/')
 
   const roasteries = await prisma.roastery.findMany({
     where: { isOnboardingCandidate: true },

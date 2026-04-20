@@ -4,7 +4,7 @@ import { Navigation } from './Navigation'
 
 // next/navigation 모킹
 vi.mock('next/navigation', () => ({
-  usePathname: () => '/home',
+  usePathname: () => '/',
 }))
 
 // next-auth/react 모킹

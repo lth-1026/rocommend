@@ -61,9 +61,9 @@ describe('authorized callback', () => {
     expect(result).toBe(true)
   })
 
-  // U-44: AUTH-INCOMPLETE + /home → /onboarding 리디렉트
-  it('U-44: AUTH-INCOMPLETE 유저가 /home 접근 시 /onboarding으로 리디렉트된다', async () => {
-    const result = await authorized({ auth: incompleteUser(), request: { nextUrl: url('/home') } })
+  // U-44: AUTH-INCOMPLETE + / → /onboarding 리디렉트
+  it('U-44: AUTH-INCOMPLETE 유저가 / 접근 시 /onboarding으로 리디렉트된다', async () => {
+    const result = await authorized({ auth: incompleteUser(), request: { nextUrl: url('/') } })
     expect(result).toBeInstanceOf(Response)
     const response = result as Response
     expect(response.headers.get('location')).toContain('/onboarding')
@@ -78,18 +78,18 @@ describe('authorized callback', () => {
     expect(result).toBe(true)
   })
 
-  // U-46: AUTH-COMPLETE + /home → 통과
-  it('U-46: AUTH-COMPLETE 유저가 /home 접근 시 통과된다', async () => {
-    const result = await authorized({ auth: completeUser(), request: { nextUrl: url('/home') } })
+  // U-46: AUTH-COMPLETE + / → 통과
+  it('U-46: AUTH-COMPLETE 유저가 / 접근 시 통과된다', async () => {
+    const result = await authorized({ auth: completeUser(), request: { nextUrl: url('/') } })
     expect(result).toBe(true)
   })
 
-  // U-47: AUTH-COMPLETE + /login → /home 리디렉트
-  it('U-47: AUTH-COMPLETE 유저가 /login 접근 시 /home으로 리디렉트된다', async () => {
+  // U-47: AUTH-COMPLETE + /login → / 리디렉트
+  it('U-47: AUTH-COMPLETE 유저가 /login 접근 시 /로 리디렉트된다', async () => {
     const result = await authorized({ auth: completeUser(), request: { nextUrl: url('/login') } })
     expect(result).toBeInstanceOf(Response)
     const response = result as Response
-    expect(response.headers.get('location')).toContain('/home')
+    expect(response.headers.get('location')).toContain('/')
   })
 
   // U-48: ADMIN + /admin → 통과
@@ -101,12 +101,12 @@ describe('authorized callback', () => {
     expect(result).toBe(true)
   })
 
-  // U-49: 비어드민 + /admin → /home 리디렉트
-  it('U-49: 일반 유저가 /admin 접근 시 /home으로 리디렉트된다', async () => {
+  // U-49: 비어드민 + /admin → / 리디렉트
+  it('U-49: 일반 유저가 /admin 접근 시 /로 리디렉트된다', async () => {
     const result = await authorized({ auth: completeUser(), request: { nextUrl: url('/admin') } })
     expect(result).toBeInstanceOf(Response)
     const response = result as Response
-    expect(response.headers.get('location')).toContain('/home')
+    expect(response.headers.get('location')).toContain('/')
   })
 
   // 비로그인 + /admin → /login 리디렉트

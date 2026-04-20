@@ -10,7 +10,7 @@ interface Props {
 
 export default async function NewBeanPage({ params }: Props) {
   const session = await auth()
-  if (session?.user?.role !== 'ADMIN') redirect('/home')
+  if (session?.user?.role !== 'ADMIN') redirect('/')
 
   const { id } = await params
   const roastery = await getAdminRoastery(id)

@@ -20,13 +20,13 @@ import { FeedbackForm } from '@/components/feedback/FeedbackForm'
 import { cn } from '@/lib/utils'
 
 const authNavLinks = [
-  { href: '/home', label: '홈' },
+  { href: '/', label: '홈' },
   { href: '/roasteries', label: '로스터리' },
   { href: '/bookmarks', label: '즐겨찾기' },
 ]
 
 const guestNavLinks = [
-  { href: '/home', label: '홈' },
+  { href: '/', label: '홈' },
   { href: '/roasteries', label: '로스터리' },
 ]
 
@@ -43,7 +43,7 @@ export function Header({ className }: { className?: string }) {
       >
         <div className="page-wrapper flex h-14 items-center justify-between">
           {/* 로고 */}
-          <Link href="/home" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Image
               src="/brand/logo.svg"
               alt="roco"
@@ -69,7 +69,9 @@ export function Header({ className }: { className?: string }) {
                 href={href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-text-primary',
-                  pathname.startsWith(href) ? 'text-text-primary' : 'text-text-secondary'
+                  (href === '/' ? pathname === '/' : pathname.startsWith(href))
+                    ? 'text-text-primary'
+                    : 'text-text-secondary'
                 )}
               >
                 {label}

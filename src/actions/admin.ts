@@ -295,7 +295,7 @@ export async function updateBean(
 // ── 로스터리 단건 조회 (admin 전용) ─────────────────────
 export async function getAdminRoastery(id: string) {
   const check = await requireAdmin()
-  if ('error' in check) redirect('/home')
+  if ('error' in check) redirect('/')
 
   const raw = await prisma.roastery.findUnique({
     where: { id },
@@ -324,7 +324,7 @@ export async function getAdminRoastery(id: string) {
 // ── 원두 단건 조회 (admin 전용) ──────────────────────────
 export async function getAdminBean(id: string) {
   const check = await requireAdmin()
-  if ('error' in check) redirect('/home')
+  if ('error' in check) redirect('/')
 
   return prisma.bean.findUnique({
     where: { id },
@@ -347,7 +347,7 @@ export async function getAdminBean(id: string) {
 // ── 로스터리 목록 (admin 전용) ──────────────────────────
 export async function getAdminRoasteries() {
   const check = await requireAdmin()
-  if ('error' in check) redirect('/home')
+  if ('error' in check) redirect('/')
 
   const rows = await prisma.roastery.findMany({
     select: {
@@ -370,7 +370,7 @@ export async function getAdminRoasteries() {
 // ── 원두 목록 (admin 전용) ──────────────────────────────
 export async function getAdminBeans() {
   const check = await requireAdmin()
-  if ('error' in check) redirect('/home')
+  if ('error' in check) redirect('/')
 
   return prisma.bean.findMany({
     select: {
@@ -389,7 +389,7 @@ export async function getAdminBeans() {
 // ── 특정 로스터리의 원두 목록 (admin 전용) ───────────────
 export async function getAdminRoasteryBeans(roasteryId: string) {
   const check = await requireAdmin()
-  if ('error' in check) redirect('/home')
+  if ('error' in check) redirect('/')
 
   return prisma.bean.findMany({
     where: { roasteryId },
@@ -416,7 +416,7 @@ export interface CreateSectionInput {
 
 export async function getAdminSections() {
   const check = await requireAdmin()
-  if ('error' in check) redirect('/home')
+  if ('error' in check) redirect('/')
 
   return prisma.featuredSection.findMany({
     select: {
@@ -434,7 +434,7 @@ export async function getAdminSections() {
 
 export async function getAdminSection(id: string) {
   const check = await requireAdmin()
-  if ('error' in check) redirect('/home')
+  if ('error' in check) redirect('/')
 
   return prisma.featuredSection.findUnique({
     where: { id },
@@ -565,7 +565,7 @@ export async function deleteSection(id: string): Promise<ActionResult<void>> {
 
 export async function getAdminUsers() {
   const check = await requireAdmin()
-  if ('error' in check) redirect('/home')
+  if ('error' in check) redirect('/')
 
   return prisma.user.findMany({
     where: { role: 'ADMIN' },
