@@ -21,6 +21,7 @@ const PUBLIC_PATHS = [
   '/home',
   '/settings',
   '/legal', // 개인정보처리방침·이용약관 — 비로그인 접근 허용
+  '/opengraph-image', // OG 이미지 — SNS 크롤러 접근 허용
 ]
 
 function isPublicPath(pathname: string) {
