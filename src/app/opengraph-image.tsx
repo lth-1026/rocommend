@@ -7,15 +7,9 @@ export const contentType = 'image/png'
 
 async function loadFont(): Promise<ArrayBuffer | null> {
   try {
-    // TTF 형식 요청 (Satori 호환) — 구형 UA로 Google Fonts에서 TTF 수신
-    const css = await fetch(
-      `https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700&text=${encodeURIComponent('스페셜티커피로스터리추천')}`,
-      { headers: { 'User-Agent': 'Mozilla/4.0' } }
-    ).then((r) => r.text())
-
-    const fontUrl = css.match(/src: url\((.+?)\) format\('(?:opentype|truetype)'\)/)?.[1]
-    if (!fontUrl) return null
-    return fetch(fontUrl).then((r) => r.arrayBuffer())
+    return fetch(
+      'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/Pretendard-Bold.ttf'
+    ).then((r) => r.arrayBuffer())
   } catch {
     return null
   }
@@ -35,7 +29,7 @@ export default async function Image() {
         alignItems: 'center',
         justifyContent: 'center',
         gap: 0,
-        fontFamily: fontData ? 'Noto Sans KR' : 'serif',
+        fontFamily: fontData ? 'Pretendard' : 'serif',
       }}
     >
       {/* 로고 */}
@@ -76,7 +70,7 @@ export default async function Image() {
             letterSpacing: '-0.5px',
           }}
         >
-          스페셜티 커피 로스터리 추천
+          커피 로스터리 추천
         </div>
       )}
     </div>,
@@ -86,7 +80,7 @@ export default async function Image() {
         ? {
             fonts: [
               {
-                name: 'Noto Sans KR',
+                name: 'Pretendard',
                 data: fontData,
                 style: 'normal',
                 weight: 700,
