@@ -10,7 +10,7 @@ interface Props {
 
 export default async function EditBeanPage({ params }: Props) {
   const session = await auth()
-  if (session?.user?.role !== 'ADMIN') redirect('/home')
+  if (session?.user?.role !== 'ADMIN') redirect('/')
 
   const { id, beanId } = await params
   const [roastery, bean] = await Promise.all([getAdminRoastery(id), getAdminBean(beanId)])

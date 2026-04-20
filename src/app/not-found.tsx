@@ -6,7 +6,7 @@ export default function NotFound() {
       <p className="text-text-secondary text-sm">404</p>
       <h1 className="text-2xl font-semibold">페이지를 찾을 수 없습니다</h1>
       <Link
-        href="/home"
+        href="/"
         className="text-sm text-text-secondary underline underline-offset-4 hover:text-text-primary"
       >
         홈으로 돌아가기

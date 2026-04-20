@@ -5,7 +5,7 @@ import Link from 'next/link'
 // Defense-in-depth: 미들웨어 외 서버 컴포넌트에서 role 재검증
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
-  if (session?.user?.role !== 'ADMIN') redirect('/home')
+  if (session?.user?.role !== 'ADMIN') redirect('/')
 
   return (
     <div className="min-h-screen bg-bg">
@@ -25,7 +25,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               설정
             </Link>
           </nav>
-          <Link href="/home" className="text-xs text-text-sub hover:text-text">
+          <Link href="/" className="text-xs text-text-sub hover:text-text">
             ← 서비스로 돌아가기
           </Link>
         </div>

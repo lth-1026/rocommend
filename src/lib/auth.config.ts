@@ -7,6 +7,10 @@ import '@/types/auth'
 // Edge Runtime 호환 설정 (Prisma adapter 없음)
 // proxy.ts에서 import — Node.js 모듈 사용 불가
 
+// 공개 경로 관리 규칙:
+// - 새 페이지가 비로그인 접근 가능해야 하면 여기에 추가
+// - 그 외 경로는 자동으로 로그인 필요 (authorized 콜백에서 /login 리다이렉트)
+// - 어드민 전용은 별도 처리 (아래 /admin 블록)
 const PUBLIC_PATHS = [
   '/',
   '/login',
@@ -14,8 +18,9 @@ const PUBLIC_PATHS = [
   '/api/auth',
   '/api/test',
   '/roasteries',
-  '/home',
   '/settings',
+  '/legal', // 개인정보처리방침·이용약관 — 비로그인 접근 허용
+  '/opengraph-image', // OG 이미지 — SNS 크롤러 접근 허용
 ]
 
 function isPublicPath(pathname: string) {
@@ -46,7 +51,7 @@ export const authConfig: NextAuthConfig = {
       // 어드민 전용 경로
       if (pathname.startsWith('/admin')) {
         if (!isLoggedIn) return Response.redirect(new URL('/login', nextUrl))
-        if (!isAdmin) return Response.redirect(new URL('/home', nextUrl))
+        if (!isAdmin) return Response.redirect(new URL('/', nextUrl))
         return true
       }
 
@@ -56,9 +61,9 @@ export const authConfig: NextAuthConfig = {
         return Response.redirect(new URL('/login', nextUrl))
       }
 
-      // AUTH-COMPLETE가 /login → /home
+      // AUTH-COMPLETE가 /login → /
       if (pathname.startsWith('/login') && isOnboardingComplete)
-        return Response.redirect(new URL('/home', nextUrl))
+        return Response.redirect(new URL('/', nextUrl))
 
       // AUTH-INCOMPLETE: /onboarding·/api 외 모든 경로 → /onboarding
       if (
