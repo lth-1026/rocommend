@@ -16,9 +16,10 @@ test('E-14: 정렬 선택 시 URL에 sort 파라미터가 반영된다', async (
   await loginComplete(page)
   await page.goto('/roasteries')
 
-  const sortSelect = page.getByRole('combobox', { name: '정렬 기준' })
-  await expect(sortSelect).toBeEnabled()
-  await sortSelect.selectOption('name')
+  const sortButton = page.getByRole('button', { name: '정렬 기준' }).first()
+  await expect(sortButton).toBeEnabled()
+  await sortButton.click()
+  await page.getByRole('button', { name: '이름순' }).click()
 
   await expect(page).toHaveURL(/sort=name/)
 })
