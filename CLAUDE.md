@@ -56,3 +56,14 @@ pnpm prisma db seed        # 시드 재실행
 - prefix: `feat` / `fix` / `chore` / `docs` / `style` / `refactor` / `test` / `perf` / `ci` / `build` / `revert`
 - 본문: 한국어, `-` 목록
 - Co-Authored-By 포함
+
+## 릴리즈 절차 ("배포하자" 트리거)
+사용자가 "배포하자"를 요청하면 아래 순서를 실행한다.
+
+> **전제 조건**: 릴리즈할 모든 feat/fix 브랜치가 develop에 merge된 상태여야 한다.
+
+1. **미merge 브랜치 확인** — develop에 반영 안 된 작업이 있으면 먼저 PR 생성 후 merge 요청.
+2. **Release PR 확인** — `gh pr list --base main` 으로 release-please가 만든 Release PR이 있는지 확인.
+   - 없으면: GitHub Actions > Release Please > `workflow_dispatch` 로 수동 트리거
+3. **Release PR 머지** — PR 내용(버전 bump, CHANGELOG) 확인 후 **Merge commit** 으로 main에 머지 → GitHub Release 자동 생성 + Vercel 자동 배포
+4. **develop 백머지** — `git switch develop && git merge main && git push`
