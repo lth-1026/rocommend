@@ -5,6 +5,8 @@ export interface BookmarkWithRoastery {
   roasteryId: string
   roastery: RoasteryWithStats
   myRating: number | null
+  isClosed: boolean
+  isUnavailable: boolean
 }
 
 export type BookmarkSort = 'name' | 'myRating'

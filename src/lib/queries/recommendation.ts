@@ -22,6 +22,9 @@ export async function getPopularRoasteries(
   preferredPriceRanges?: PriceRange[]
 ): Promise<RoasteryWithStats[]> {
   const where = {
+    deletedAt: null,
+    hidden: false,
+    closedAt: null,
     ...(userId && { ratings: { none: { userId } } }),
     ...(preferredPriceRanges?.length && { priceRange: { in: preferredPriceRanges } }),
   }
@@ -85,6 +88,7 @@ export async function getFeaturedSections(): Promise<FeaturedSectionData[]> {
         title: true,
         type: true,
         roasteries: {
+          where: { roastery: { deletedAt: null, hidden: false, closedAt: null } },
           orderBy: { order: 'asc' },
           select: {
             roastery: {
@@ -137,7 +141,7 @@ export interface StoredRecommendation {
 export async function getStoredRecommendations(userId: string): Promise<StoredRecommendation[]> {
   const [recs, avgRatings, userRatings] = await Promise.all([
     prisma.recommendation.findMany({
-      where: { userId },
+      where: { userId, roastery: { deletedAt: null, hidden: false, closedAt: null } },
       include: {
         roastery: {
           select: {

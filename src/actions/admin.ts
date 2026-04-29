@@ -292,6 +292,121 @@ export async function updateBean(
   }
 }
 
+// ── 로스터리 상태 변경 ───────────────────────────────────
+
+export async function softDeleteRoastery(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+  try {
+    await prisma.roastery.update({
+      where: { id },
+      data: { deletedAt: new Date(), isOnboardingCandidate: false },
+    })
+    revalidatePath('/admin/roasteries')
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '삭제 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function restoreRoastery(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+  try {
+    await prisma.roastery.update({ where: { id }, data: { deletedAt: null } })
+    revalidatePath('/admin/roasteries')
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '복원 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function toggleHideRoastery(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+  try {
+    const current = await prisma.roastery.findUnique({ where: { id }, select: { hidden: true } })
+    if (!current)
+      return { success: false, error: '존재하지 않는 로스터리입니다', code: 'VALIDATION' }
+    const hide = !current.hidden
+    await prisma.roastery.update({
+      where: { id },
+      data: { hidden: hide, ...(hide && { isOnboardingCandidate: false }) },
+    })
+    revalidatePath('/admin/roasteries')
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function closeRoastery(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+  try {
+    await prisma.roastery.update({
+      where: { id },
+      data: { closedAt: new Date(), isOnboardingCandidate: false },
+    })
+    revalidatePath('/admin/roasteries')
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function reopenRoastery(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+  try {
+    await prisma.roastery.update({ where: { id }, data: { closedAt: null } })
+    revalidatePath('/admin/roasteries')
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+// ── 원두 상태 변경 ───────────────────────────────────────
+
+export async function softDeleteBean(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+  try {
+    await prisma.bean.update({ where: { id }, data: { deletedAt: new Date() } })
+    revalidatePath('/admin/roasteries')
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '삭제 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function restoreBean(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+  try {
+    await prisma.bean.update({ where: { id }, data: { deletedAt: null } })
+    revalidatePath('/admin/roasteries')
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '복원 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function toggleHideBean(id: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+  try {
+    const current = await prisma.bean.findUnique({ where: { id }, select: { hidden: true } })
+    if (!current) return { success: false, error: '존재하지 않는 원두입니다', code: 'VALIDATION' }
+    await prisma.bean.update({ where: { id }, data: { hidden: !current.hidden } })
+    revalidatePath('/admin/roasteries')
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
 // ── 로스터리 단건 조회 (admin 전용) ─────────────────────
 export async function getAdminRoastery(id: string) {
   const check = await requireAdmin()
@@ -311,6 +426,9 @@ export async function getAdminRoastery(id: string) {
       decaf: true,
       imageUrl: true,
       isOnboardingCandidate: true,
+      closedAt: true,
+      hidden: true,
+      deletedAt: true,
       channels: {
         select: { id: true, channelKey: true, url: true },
         orderBy: { createdAt: 'asc' },
@@ -360,6 +478,9 @@ export async function getAdminRoasteries() {
       decaf: true,
       isOnboardingCandidate: true,
       createdAt: true,
+      closedAt: true,
+      hidden: true,
+      deletedAt: true,
       _count: { select: { beans: true } },
     },
     orderBy: { createdAt: 'desc' },
@@ -380,6 +501,8 @@ export async function getAdminBeans() {
       decaf: true,
       origins: true,
       createdAt: true,
+      hidden: true,
+      deletedAt: true,
       roastery: { select: { id: true, name: true } },
     },
     orderBy: { createdAt: 'desc' },
@@ -400,6 +523,8 @@ export async function getAdminRoasteryBeans(roasteryId: string) {
       decaf: true,
       origins: true,
       createdAt: true,
+      hidden: true,
+      deletedAt: true,
     },
     orderBy: { createdAt: 'desc' },
   })

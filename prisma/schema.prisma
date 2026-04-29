@@ -53,6 +53,9 @@ model Roastery {
   createdAt             DateTime                  @default(now())
   isOnboardingCandidate Boolean                   @default(false)
   address               String?
+  closedAt              DateTime?
+  hidden                Boolean                   @default(false)
+  deletedAt             DateTime?
   beans                 Bean[]
   bookmarks             Bookmark[]
   featuredIn            FeaturedSectionRoastery[]
@@ -64,6 +67,7 @@ model Roastery {
   @@index([priceRange])
   @@index([decaf])
   @@index([name])
+  @@index([deletedAt])
 }
 
 model Tag {
@@ -97,10 +101,13 @@ model Bean {
   cupNotes      String[]
   imageUrl      String?
   createdAt     DateTime           @default(now())
+  hidden        Boolean            @default(false)
+  deletedAt     DateTime?
   roastery      Roastery           @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
   channelPrices BeanChannelPrice[]
 
   @@index([roasteryId])
+  @@index([deletedAt])
 }
 
 model ChannelDefinition {
