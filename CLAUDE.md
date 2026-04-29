@@ -31,7 +31,7 @@ pnpm prisma db seed        # 시드 재실행
 - Server Component에 불필요한 `'use client'` 추가 금지
 - `src/middleware.ts` 생성 금지 → Next.js 16은 `src/proxy.ts`
 
-## 브랜치 전략 (Git Flow)
+## 브랜치 전략 (Git Flow + release-please)
 > **⚠️ 모든 작업은 반드시 브랜치를 먼저 만든 뒤 시작한다.**
 > `main`과 `develop`에 직접 커밋하면 절대 안 된다.
 > 작업 시작 전 `git checkout -b feat/...` 또는 `git checkout -b fix/...` 실행 필수.
@@ -40,10 +40,30 @@ pnpm prisma db seed        # 시드 재실행
 - `develop` — 통합 브랜치. **직접 커밋 절대 금지**
 - `feat/{kebab-case}` — 기능 개발 → develop으로 PR (Squash merge)
 - `fix/{kebab-case}` — 버그 수정 → develop으로 PR (Squash merge)
-- `release/{version}` — 배포 준비 → main은 PR (Merge commit), develop은 **반드시 `git merge main`으로 동기화** (별도 버전 bump 커밋 금지 — 히스토리 분기로 다음 release에서 package.json 충돌 발생)
 - `hotfix/{kebab-case}` — 프로덕션 긴급 수정 → main + develop으로 PR (Merge commit)
+
+### 릴리즈 흐름 (release-please 자동화)
+`release/*` 브랜치는 release-please의 **Release PR**로 대체된다.
+
+1. `feat/*` / `fix/*` → `develop` (Squash merge) — 평소 개발 흐름
+2. develop에 커밋이 쌓이면 release-please가 자동으로 **Release PR** 생성
+   - 버전 bump (`package.json`), `CHANGELOG.md` 자동 갱신
+   - PR 타이틀 예시: `chore(main): release 0.7.0`
+3. Release PR 검토 후 `main`에 머지 (Merge commit) → GitHub Release 자동 생성 + Vercel 자동 배포
+4. `main` → `develop` 백머지 (버전 bump 동기화): `git switch develop && git merge main && git push`
 
 ## 커밋
 - prefix: `feat` / `fix` / `chore` / `docs` / `style` / `refactor` / `test` / `perf` / `ci` / `build` / `revert`
 - 본문: 한국어, `-` 목록
 - Co-Authored-By 포함
+
+## 릴리즈 절차 ("배포하자" 트리거)
+사용자가 "배포하자"를 요청하면 아래 순서를 실행한다.
+
+> **전제 조건**: 릴리즈할 모든 feat/fix 브랜치가 develop에 merge된 상태여야 한다.
+
+1. **미merge 브랜치 확인** — develop에 반영 안 된 작업이 있으면 먼저 PR 생성 후 merge 요청.
+2. **Release PR 확인** — `gh pr list --base main` 으로 release-please가 만든 Release PR이 있는지 확인.
+   - 없으면: GitHub Actions > Release Please > `workflow_dispatch` 로 수동 트리거
+3. **Release PR 머지** — PR 내용(버전 bump, CHANGELOG) 확인 후 **Merge commit** 으로 main에 머지 → GitHub Release 자동 생성 + Vercel 자동 배포
+4. **develop 백머지** — `git switch develop && git merge main && git push`
