@@ -44,6 +44,9 @@ export async function getRoasteries(
   }
 
   const where: Prisma.RoasteryWhereInput = {
+    deletedAt: null,
+    hidden: false,
+    closedAt: null,
     ...(filter.price.length > 0 && { priceRange: { in: filter.price } }),
     ...(filter.decaf && { decaf: true }),
     ...(filter.q && { name: { contains: filter.q, mode: 'insensitive' as const } }),
@@ -127,12 +130,13 @@ function flattenChannels(
 export async function getRoasteryById(id: string): Promise<RoasteryDetail | null> {
   const [roastery, avgRating] = await Promise.all([
     prisma.roastery.findUnique({
-      where: { id },
+      where: { id, deletedAt: null, hidden: false },
       select: {
         id: true,
         name: true,
         description: true,
         address: true,
+        closedAt: true,
         tags: TAG_SELECT,
         priceRange: true,
         decaf: true,
@@ -142,6 +146,7 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
           ...CHANNEL_SELECT,
         },
         beans: {
+          where: { deletedAt: null, hidden: false },
           select: {
             id: true,
             name: true,
@@ -202,6 +207,7 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
 
   return {
     ...roastery,
+    closedAt: roastery.closedAt,
     tags: flattenTags(roastery.tags),
     ratingCount: roastery._count.ratings,
     avgRating: avgRating._avg.score ?? null,

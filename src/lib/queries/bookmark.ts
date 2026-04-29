@@ -35,6 +35,9 @@ export async function getBookmarks(
             decaf: true,
             imageUrl: true,
             website: true,
+            closedAt: true,
+            deletedAt: true,
+            hidden: true,
             _count: { select: { ratings: true } },
           },
         },
@@ -64,6 +67,8 @@ export async function getBookmarks(
       avgRating: avgMap.get(b.roasteryId) ?? null,
     },
     myRating: myRatingMap.get(b.roasteryId) ?? null,
+    isClosed: b.roastery.closedAt !== null,
+    isUnavailable: b.roastery.deletedAt !== null || b.roastery.hidden,
   }))
 
   if (sort === 'myRating') {
