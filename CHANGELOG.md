@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0](https://github.com/lth-1026/rocommend/compare/rocommend-init-0.7.0...rocommend-init-0.8.0) (2026-04-29)
+
+
+### Features
+
+* 로스터리/원두 소프트 삭제·숨기기·폐업 기능 ([#103](https://github.com/lth-1026/rocommend/issues/103)) ([1f81b04](https://github.com/lth-1026/rocommend/commit/1f81b040ca266bc58432c4f99f1ba8d495cc47ff))
+* 로스터리/원두 소프트 삭제·숨기기·폐업 기능 배포 ([2627537](https://github.com/lth-1026/rocommend/commit/26275379ac836cd35eb5205b3d3bb8b95f4f2c9b))
+
 ## [0.7.0](https://github.com/lth-1026/rocommend/compare/rocommend-init-0.6.12...rocommend-init-0.7.0) (2026-04-29)
 
 
