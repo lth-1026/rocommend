@@ -1,6 +1,6 @@
 {
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "target-branch": "main",
   "include-v-in-tag": false,
   "changelog-sections": [
     { "type": "feat", "section": "Features" },
@@ -11,8 +11,6 @@
     { "type": "docs", "section": "Documentation", "hidden": true }
   ],
   "packages": {
-    ".": {
-      "package-name": "rocommend"
-    }
+    ".": {}
   }
 }
