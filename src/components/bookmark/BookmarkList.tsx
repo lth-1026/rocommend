@@ -51,34 +51,60 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
       {/* 목록 */}
       <ul className="flex flex-col divide-y divide-border">
         {sorted.map((item) => (
-          <li key={item.id} className="flex items-center gap-4 py-4">
-            <Link
-              href={`/roasteries/${item.roasteryId}`}
-              className="flex flex-1 flex-col gap-1 min-w-0"
-            >
-              <span className="font-medium truncate">{item.roastery.name}</span>
-              <span className="text-sm text-muted-foreground">
-                <RegionDisplay regions={getRegions(item.roastery.tags)} />
-              </span>
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="outline" className="text-xs">
-                  {PRICE_RANGE_LABELS[item.roastery.priceRange]}
-                </Badge>
-                {item.roastery.decaf && (
-                  <Badge variant="secondary" className="text-xs">
-                    디카페인
-                  </Badge>
-                )}
+          <li
+            key={item.id}
+            className={`flex items-center gap-4 py-4 ${item.isUnavailable ? 'opacity-50' : ''}`}
+          >
+            {item.isUnavailable ? (
+              <div className="flex flex-1 flex-col gap-1 min-w-0">
+                <span className="font-medium truncate text-muted-foreground">
+                  {item.roastery.name}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  더 이상 이용할 수 없는 로스터리입니다
+                </span>
               </div>
-            </Link>
+            ) : (
+              <Link
+                href={`/roasteries/${item.roasteryId}`}
+                className="flex flex-1 flex-col gap-1 min-w-0"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-medium truncate">{item.roastery.name}</span>
+                  {item.isClosed && (
+                    <Badge
+                      variant="outline"
+                      className="text-xs shrink-0 text-amber-700 border-amber-300 bg-amber-50"
+                    >
+                      폐업
+                    </Badge>
+                  )}
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  <RegionDisplay regions={getRegions(item.roastery.tags)} />
+                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge variant="outline" className="text-xs">
+                    {PRICE_RANGE_LABELS[item.roastery.priceRange]}
+                  </Badge>
+                  {item.roastery.decaf && (
+                    <Badge variant="secondary" className="text-xs">
+                      디카페인
+                    </Badge>
+                  )}
+                </div>
+              </Link>
+            )}
 
             <div className="flex items-center gap-3 shrink-0">
-              <div className="text-sm flex items-center gap-1">
-                <RatingDisplay
-                  avgRating={item.roastery.avgRating}
-                  ratingCount={item.roastery.ratingCount}
-                />
-              </div>
+              {!item.isUnavailable && (
+                <div className="text-sm flex items-center gap-1">
+                  <RatingDisplay
+                    avgRating={item.roastery.avgRating}
+                    ratingCount={item.roastery.ratingCount}
+                  />
+                </div>
+              )}
               {item.myRating !== null && (
                 <span className="text-xs text-muted-foreground">내 평가 {item.myRating}점</span>
               )}

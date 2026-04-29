@@ -47,7 +47,17 @@ export function RoasteryDetail({
           </div>
           <div className="flex flex-col gap-1.5 flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h1 className="text-2xl font-semibold leading-tight">{roastery.name}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl font-semibold leading-tight">{roastery.name}</h1>
+                {roastery.closedAt && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs text-amber-700 border-amber-300 bg-amber-50"
+                  >
+                    폐업
+                  </Badge>
+                )}
+              </div>
               {isLoggedIn && (
                 <BookmarkButton roasteryId={roastery.id} initialIsBookmarked={isBookmarked} />
               )}

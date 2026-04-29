@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getAdminRoasteries } from '@/actions/admin'
+import { RoasteryStatusButtons } from '@/components/admin/RoasteryStatusButtons'
 
 const PRICE_RANGE_LABEL: Record<string, string> = {
   LOW: '2만원 미만',
@@ -35,37 +36,79 @@ export default async function AdminRoasteriesPage() {
                 <th className="px-4 py-3 text-left font-medium text-text-sub">디카페인</th>
                 <th className="px-4 py-3 text-left font-medium text-text-sub">원두 수</th>
                 <th className="px-4 py-3 text-left font-medium text-text-sub">Q5 노출</th>
+                <th className="px-4 py-3 text-left font-medium text-text-sub">상태</th>
                 <th className="px-4 py-3 text-left font-medium text-text-sub"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border bg-surface">
-              {roasteries.map((r) => (
-                <tr key={r.id} className="hover:bg-surface-sub transition-colors">
-                  <td className="px-4 py-3 font-medium text-text">
-                    <Link
-                      href={`/admin/roasteries/${r.id}`}
-                      className="hover:text-primary transition-colors"
-                    >
-                      {r.name}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-text-sub">
-                    {r.tags.find((t) => t.category === 'REGION')?.name ?? '—'}
-                  </td>
-                  <td className="px-4 py-3 text-text-sub">{PRICE_RANGE_LABEL[r.priceRange]}</td>
-                  <td className="px-4 py-3 text-text-sub">{r.decaf ? 'O' : '—'}</td>
-                  <td className="px-4 py-3 text-text-sub">{r._count.beans}</td>
-                  <td className="px-4 py-3 text-text-sub">{r.isOnboardingCandidate ? 'O' : '—'}</td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/admin/roasteries/${r.id}/edit`}
-                      className="text-xs text-text-sub hover:text-text transition-colors"
-                    >
-                      수정
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {roasteries.map((r) => {
+                const isDeleted = r.deletedAt !== null
+                const isClosed = r.closedAt !== null
+                const isHidden = r.hidden
+
+                return (
+                  <tr
+                    key={r.id}
+                    className={`transition-colors ${isDeleted ? 'opacity-50' : 'hover:bg-surface-sub'}`}
+                  >
+                    <td className="px-4 py-3 font-medium text-text">
+                      <Link
+                        href={`/admin/roasteries/${r.id}`}
+                        className="hover:text-primary transition-colors"
+                      >
+                        {r.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-text-sub">
+                      {r.tags.find((t) => t.category === 'REGION')?.name ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-text-sub">{PRICE_RANGE_LABEL[r.priceRange]}</td>
+                    <td className="px-4 py-3 text-text-sub">{r.decaf ? 'O' : '—'}</td>
+                    <td className="px-4 py-3 text-text-sub">{r._count.beans}</td>
+                    <td className="px-4 py-3 text-text-sub">
+                      {r.isOnboardingCandidate ? 'O' : '—'}
+                    </td>
+                    <td className="px-4 py-3">
+                      {isDeleted && (
+                        <span className="rounded px-1.5 py-0.5 text-xs bg-red-100 text-red-700">
+                          삭제됨
+                        </span>
+                      )}
+                      {!isDeleted && isClosed && (
+                        <span className="rounded px-1.5 py-0.5 text-xs bg-amber-100 text-amber-700">
+                          폐업
+                        </span>
+                      )}
+                      {!isDeleted && !isClosed && isHidden && (
+                        <span className="rounded px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600">
+                          숨김
+                        </span>
+                      )}
+                      {!isDeleted && !isClosed && !isHidden && (
+                        <span className="text-xs text-text-sub">활성</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        {!isDeleted && (
+                          <Link
+                            href={`/admin/roasteries/${r.id}/edit`}
+                            className="text-xs text-text-sub hover:text-text transition-colors"
+                          >
+                            수정
+                          </Link>
+                        )}
+                        <RoasteryStatusButtons
+                          roasteryId={r.id}
+                          deletedAt={r.deletedAt}
+                          hidden={r.hidden}
+                          closedAt={r.closedAt}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
