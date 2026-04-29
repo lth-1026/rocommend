@@ -71,6 +71,7 @@ export interface BeanWithDetails {
 
 export interface RoasteryDetail extends RoasteryWithStats {
   address: string | null
+  closedAt: Date | null
   beans: BeanWithDetails[]
   channels: ChannelWithPrice[] // 원두 미선택 시 또는 가격 없는 로스터리의 기본 채널 목록
 }
