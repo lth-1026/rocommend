@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.12.0](https://github.com/lth-1026/rocommend/compare/roco-0.11.0...roco-0.12.0) (2026-04-30)
+
+
+### Features
+
+* 닉네임 온보딩 단계 및 계정 페이지 변경 기능 추가 ([15b852a](https://github.com/lth-1026/rocommend/commit/15b852aa89bfcfb3fb36907ffb588b6213084f85))
+* 닉네임 온보딩 단계 및 계정 페이지 변경 기능 추가 ([15b852a](https://github.com/lth-1026/rocommend/commit/15b852aa89bfcfb3fb36907ffb588b6213084f85))
+* 닉네임 온보딩 단계 및 계정 페이지 변경 기능 추가 ([#117](https://github.com/lth-1026/rocommend/issues/117)) ([e89a79c](https://github.com/lth-1026/rocommend/commit/e89a79cb39d94cfaaf5fb69c9f95842907433163))
+
 ## [0.11.0](https://github.com/lth-1026/rocommend/compare/roco-0.10.0...roco-0.11.0) (2026-04-30)
 
 
