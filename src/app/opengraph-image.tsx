@@ -2,7 +2,7 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Rocommend — 스페셜티 커피 로스터리 추천'
+export const alt = 'roco — 스페셜티 커피 로스터리 추천'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 

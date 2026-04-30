@@ -1,4 +1,4 @@
-# Rocommend 상태 트리 (State Tree)
+# roco 상태 트리 (State Tree)
 
 **문서 버전**: 1.0
 **작성일**: 2026-03-08

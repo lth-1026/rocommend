@@ -3,7 +3,7 @@ import { loginComplete, loginIncomplete, createTestSession } from '../helpers/au
 
 // E-25: 별점 제출
 test('E-25: 로스터리 상세에서 별점을 제출할 수 있다', async ({ page }) => {
-  await loginComplete(page, `e2e-rating-${Date.now()}@rocommend.dev`)
+  await loginComplete(page, `e2e-rating-${Date.now()}@roco.dev`)
   await page.goto('/roasteries')
 
   const firstCard = page.locator('a[href^="/roasteries/"]').first()
@@ -27,7 +27,7 @@ test('E-25: 로스터리 상세에서 별점을 제출할 수 있다', async ({ 
 
 // E-26: 별점 수정
 test('E-26: 이미 평가한 로스터리의 별점을 수정할 수 있다', async ({ page }) => {
-  const email = `e2e-rating-edit-${Date.now()}@rocommend.dev`
+  const email = `e2e-rating-edit-${Date.now()}@roco.dev`
   await loginComplete(page, email)
   await page.goto('/roasteries')
 
@@ -62,7 +62,7 @@ test('E-26: 이미 평가한 로스터리의 별점을 수정할 수 있다', as
 
 // E-27: 별점 삭제
 test('E-27: 평가를 삭제할 수 있다', async ({ page }) => {
-  const email = `e2e-rating-delete-${Date.now()}@rocommend.dev`
+  const email = `e2e-rating-delete-${Date.now()}@roco.dev`
   await loginComplete(page, email)
   await page.goto('/roasteries')
 
@@ -110,7 +110,7 @@ test('E-28: 비로그인 유저가 평가가 필요한 경로에 접근하면 /l
 
 // E-29: 평가 제출 후 평균 평점이 갱신된다
 test('E-29: 평가 제출 후 평균 평점이 갱신된다', async ({ page }) => {
-  const email = `e2e-rating-avg-${Date.now()}@rocommend.dev`
+  const email = `e2e-rating-avg-${Date.now()}@roco.dev`
   await createTestSession(page, { email, complete: true })
   await page.goto('/roasteries')
 

@@ -1,4 +1,4 @@
-# Rocommend 화면 흐름 문서 (Screen Flow Document)
+# roco 화면 흐름 문서 (Screen Flow Document)
 
 **문서 버전**: 1.0
 **작성일**: 2026-03-01

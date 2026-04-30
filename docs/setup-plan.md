@@ -1,4 +1,4 @@
-# Rocommend 프로젝트 세팅 플랜
+# roco 프로젝트 세팅 플랜
 
 **버전**: 1.3
 **작성일**: 2026-03-10
@@ -29,7 +29,7 @@
 
 ```bash
 # 임시 폴더에 생성
-pnpm dlx create-next-app@latest /tmp/rocommend-init \
+pnpm dlx create-next-app@latest /tmp/roco-init \
   --typescript \
   --tailwind \
   --app \
@@ -39,7 +39,7 @@ pnpm dlx create-next-app@latest /tmp/rocommend-init \
   --yes
 
 # .git, node_modules 제외하고 프로젝트 루트로 복사
-rsync -av --exclude='.git' --exclude='node_modules' /tmp/rocommend-init/ .
+rsync -av --exclude='.git' --exclude='node_modules' /tmp/roco-init/ .
 
 pnpm install
 ```
@@ -51,7 +51,7 @@ pnpm install
 ## Step 2 — 폴더 구조
 
 ```
-rocommend/
+roco/
 ├── src/
 │   ├── app/
 │   │   ├── (auth)/
@@ -300,7 +300,7 @@ pnpm dlx shadcn@latest add button card input badge dialog alert dropdown-menu to
 | 환경 | DB | 방법 |
 |------|-----|------|
 | 개발 (local) | 로컬 PostgreSQL | brew 직접 설치 |
-| 테스트 | 로컬 PostgreSQL (별도 DB) | `rocommend_test` |
+| 테스트 | 로컬 PostgreSQL (별도 DB) | `roco_test` |
 | 프로덕션 (Vercel) | Oracle Cloud PostgreSQL | SSL + Prisma Accelerate |
 
 ### 5-1. 개발/테스트 환경 — 로컬 PostgreSQL 설치
@@ -312,21 +312,21 @@ brew services start postgresql@16
 # PATH 추가 (brew가 자동으로 추가하지 않을 경우)
 export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
 
-createdb rocommend
-createdb rocommend_test
+createdb roco
+createdb roco_test
 ```
 
 `.env.local`:
 ```
 # [username]은 macOS 계정명 (whoami 로 확인)
-DATABASE_URL=postgresql://[username]@localhost:5432/rocommend
+DATABASE_URL=postgresql://[username]@localhost:5432/roco
 AUTH_SECRET=<openssl rand -base64 32>
 AUTH_URL=http://localhost:3000
 ```
 
 `.env.test`:
 ```
-DATABASE_URL=postgresql://[username]@localhost:5432/rocommend_test
+DATABASE_URL=postgresql://[username]@localhost:5432/roco_test
 TEST_SESSION_TOKEN=<openssl rand -base64 32>
 ```
 
@@ -340,19 +340,19 @@ Oracle Cloud Free Tier Always Free VM (1 OCPU, 1GB RAM). **MVP 전용 스펙**.
 2. PostgreSQL에 DB 및 유저 생성 (최소 권한):
 
 ```sql
-CREATE DATABASE rocommend;
-CREATE USER rocommend_user WITH ENCRYPTED PASSWORD 'your_password';
+CREATE DATABASE roco;
+CREATE USER roco_user WITH ENCRYPTED PASSWORD 'your_password';
 -- 최소 권한만 부여
-GRANT CONNECT ON DATABASE rocommend TO rocommend_user;
-\c rocommend
-GRANT USAGE ON SCHEMA public TO rocommend_user;
-GRANT ALL ON ALL TABLES IN SCHEMA public TO rocommend_user;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO rocommend_user;
+GRANT CONNECT ON DATABASE roco TO roco_user;
+\c roco
+GRANT USAGE ON SCHEMA public TO roco_user;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO roco_user;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO roco_user;
 ```
 
 3. Vercel 환경 변수에 등록 (SSL 필수):
 ```
-DATABASE_URL=postgresql://rocommend_user:your_password@oracle-host:5432/rocommend?sslmode=require
+DATABASE_URL=postgresql://roco_user:your_password@oracle-host:5432/roco?sslmode=require
 ```
 
 > **Prisma Accelerate 필수**: Vercel 서버리스는 요청마다 새 DB 연결을 생성한다.
@@ -690,7 +690,7 @@ export const config = {
 
 ```
 # ── Database ────────────────────────────────────────
-# 개발: postgresql://localhost:5432/rocommend
+# 개발: postgresql://localhost:5432/roco
 # 프로덕션: Prisma Accelerate connection string 사용
 DATABASE_URL=
 
@@ -810,13 +810,13 @@ const eslintConfig = defineConfig([
 Oracle Cloud Free Tier Always Free VM (1 OCPU, 1GB RAM). **배포 시점에 진행**.
 
 ```sql
-CREATE DATABASE rocommend;
-CREATE USER rocommend_user WITH ENCRYPTED PASSWORD 'your_password';
-GRANT CONNECT ON DATABASE rocommend TO rocommend_user;
-\c rocommend
-GRANT USAGE ON SCHEMA public TO rocommend_user;
-GRANT ALL ON ALL TABLES IN SCHEMA public TO rocommend_user;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO rocommend_user;
+CREATE DATABASE roco;
+CREATE USER roco_user WITH ENCRYPTED PASSWORD 'your_password';
+GRANT CONNECT ON DATABASE roco TO roco_user;
+\c roco
+GRANT USAGE ON SCHEMA public TO roco_user;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO roco_user;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO roco_user;
 ```
 
 #### 3. Prisma Accelerate 설정
