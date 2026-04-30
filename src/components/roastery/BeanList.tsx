@@ -12,8 +12,9 @@ interface BeanListProps {
   roasteryId: string
 }
 
-function formatPrice(price: number): string {
-  return price.toLocaleString('ko-KR') + '원'
+function formatPrice(price: number, sizeGrams?: number | null): string {
+  const priceStr = price.toLocaleString('ko-KR') + '원'
+  return sizeGrams ? `${priceStr} / ${sizeGrams}g` : priceStr
 }
 
 export function BeanList({ beans, roasteryId }: BeanListProps) {
@@ -78,7 +79,7 @@ export function BeanList({ beans, roasteryId }: BeanListProps) {
                   </div>
                   {hasPurchase && primary.price !== null && (
                     <span className="text-sm font-medium shrink-0 tabular-nums">
-                      {formatPrice(primary.price)}
+                      {formatPrice(primary.price, primary.sizeGrams)}
                     </span>
                   )}
                 </div>
@@ -135,7 +136,7 @@ export function BeanList({ beans, roasteryId }: BeanListProps) {
                           <span className="text-foreground">{ch.label}</span>
                           {ch.price !== null ? (
                             <span className="text-muted-foreground text-xs tabular-nums">
-                              {formatPrice(ch.price)}
+                              {formatPrice(ch.price, ch.sizeGrams)}
                             </span>
                           ) : (
                             <span className="text-muted-foreground text-xs">→</span>

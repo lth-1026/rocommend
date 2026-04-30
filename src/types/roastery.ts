@@ -49,6 +49,7 @@ export interface ChannelWithPrice {
   url: string
   price: number | null // null = 가격 없이 링크만 (언스페셜티 등)
   order: number
+  sizeGrams?: number | null
 }
 
 /** 채널 정렬: 가격 있는 것 오름차순 → 가격 없는 것 order 기준 */
