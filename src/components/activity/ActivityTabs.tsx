@@ -27,7 +27,7 @@ export function ActivityTabs({ ratings, bookmarks }: ActivityTabsProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-6 border-b border-border">
+      <div className="flex gap-6">
         {TABS.map(({ key, label }) => (
           <button
             key={key}
@@ -36,7 +36,7 @@ export function ActivityTabs({ ratings, bookmarks }: ActivityTabsProps) {
             className={cn(
               'pb-3 text-sm font-medium transition-colors cursor-pointer',
               activeTab === key
-                ? 'text-text-primary border-b-2 border-text-primary -mb-px'
+                ? 'text-text-primary border-b-2 border-text-primary'
                 : 'text-text-secondary hover:text-text-primary'
             )}
           >
