@@ -28,7 +28,7 @@ export function LoginCTASection({ title }: LoginCTASectionProps) {
           </p>
           <Link
             href="/login"
-            className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90"
+            className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             로그인하기
           </Link>

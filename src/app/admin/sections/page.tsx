@@ -11,7 +11,7 @@ export default async function SectionsPage() {
         <h1 className="text-2xl font-bold text-text">추천 섹션 관리</h1>
         <Link
           href="/admin/sections/new"
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
           + 새 섹션
         </Link>
