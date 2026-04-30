@@ -210,7 +210,7 @@ export function SectionForm({
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50"
+          className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
         >
           {isPending ? '저장 중...' : isEdit ? '수정' : '생성'}
         </button>
