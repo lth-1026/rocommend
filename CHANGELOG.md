@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1](https://github.com/lth-1026/rocommend/compare/roco-0.15.0...roco-0.15.1) (2026-04-30)
+
+
+### Bug Fixes
+
+* 데스크탑 헤더 내비게이션 및 활동 탭 UI 수정 ([#130](https://github.com/lth-1026/rocommend/issues/130)) ([d9140fd](https://github.com/lth-1026/rocommend/commit/d9140fd6fa925e7df011df5a3eb631278a843c5a))
+
 ## [0.15.0](https://github.com/lth-1026/rocommend/compare/roco-0.14.0...roco-0.15.0) (2026-04-30)
 
 
