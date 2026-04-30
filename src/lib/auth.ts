@@ -2,6 +2,7 @@ import NextAuth from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import { authConfig } from '@/lib/auth.config'
+import { generateUniqueNickname } from '@/lib/nickname'
 import '@/types/auth'
 
 // Node.js 전용 (Server Components, API Routes, Server Actions)
@@ -28,6 +29,18 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         const existingProvider = existing.accounts[0].provider
         if (existingProvider !== account.provider) {
           return `/login?error=OAuthAccountNotLinked&provider=${existingProvider}`
+        }
+      }
+
+      // 닉네임 미배정 유저에게 자동 배정
+      if (user.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { nickname: true },
+        })
+        if (dbUser && !dbUser.nickname) {
+          const nickname = await generateUniqueNickname()
+          await prisma.user.update({ where: { id: user.id }, data: { nickname } })
         }
       }
 

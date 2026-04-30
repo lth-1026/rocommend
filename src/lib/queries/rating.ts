@@ -31,7 +31,7 @@ export async function getRoasteryRatings(input: {
       score: true,
       comment: true,
       updatedAt: true,
-      user: { select: { name: true, image: true } },
+      user: { select: { nickname: true, image: true } },
       reports: {
         where: { userId: currentUserId ?? '' },
         select: { id: true },

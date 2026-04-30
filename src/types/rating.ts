@@ -5,7 +5,7 @@ export interface RatingListItem {
   score: number
   comment: string
   updatedAt: Date
-  user: { name: string | null; image: string | null }
+  user: { nickname: string | null; image: string | null }
   isOwnRating: boolean
   hasReported: boolean
 }
