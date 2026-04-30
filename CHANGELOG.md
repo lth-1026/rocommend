@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.0](https://github.com/lth-1026/rocommend/compare/roco-0.13.0...roco-0.14.0) (2026-04-30)
+
+
+### Features
+
+* 원두 그람 수 및 채널별 직접 구매 링크 지원 ([0e37a25](https://github.com/lth-1026/rocommend/commit/0e37a251d275052a83319f9fbc4f6ec96a6995a3))
+* 원두 그람 수 및 채널별 직접 구매 링크 지원 ([#123](https://github.com/lth-1026/rocommend/issues/123)) ([017f3ca](https://github.com/lth-1026/rocommend/commit/017f3ca4efcb1d3ef6a7605525ebe5744bd61d23))
+
 ## [0.13.0](https://github.com/lth-1026/rocommend/compare/roco-0.12.0...roco-0.13.0) (2026-04-30)
 
 
