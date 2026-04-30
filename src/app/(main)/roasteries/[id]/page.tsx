@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getRoasteryById } from '@/lib/queries/roastery'
-import { getUserRating, getRoasteryRatings } from '@/lib/queries/rating'
+import { getUserRating, getRoasteryRatings, getRatingCount } from '@/lib/queries/rating'
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 import { ROASTING_LEVEL_LABELS } from '@/types/roastery'
@@ -41,19 +41,23 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
   if (!roastery) notFound()
 
   const userId = session?.user?.id
-  const initialSort = userId ? 'SIMILAR' : 'HIGH'
 
-  const [userRating, isBookmarked, initialRatings] = userId
+  const [userRating, isBookmarked, ratingCount] = userId
     ? await Promise.all([
         getUserRating(userId, id),
         getBookmarkStatus(userId, id),
-        getRoasteryRatings({ roasteryId: id, sort: 'SIMILAR', currentUserId: userId }),
+        getRatingCount(userId),
       ])
-    : await Promise.all([
-        Promise.resolve(null),
-        Promise.resolve(false),
-        getRoasteryRatings({ roasteryId: id, sort: 'HIGH' }),
-      ])
+    : [null, false, 0]
+
+  // 평가 3개 미만이면 유사도 계산 불가 → HIGH fallback
+  const initialSort = userId && ratingCount >= 3 ? 'SIMILAR' : 'HIGH'
+
+  const initialRatings = await getRoasteryRatings({
+    roasteryId: id,
+    sort: initialSort,
+    currentUserId: userId,
+  })
 
   // 원두별 최저가 채널 → Offer 스키마
   const beanOffers = roastery.beans.map((bean) => {

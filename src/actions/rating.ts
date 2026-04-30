@@ -134,6 +134,17 @@ export async function reportRating(input: {
   const userId = session.user.id
   const { ratingId, reason } = parsed.data
 
+  const targetRating = await prisma.rating.findUnique({
+    where: { id: ratingId },
+    select: { userId: true },
+  })
+  if (!targetRating) {
+    return { success: false, error: '존재하지 않는 한줄평입니다', code: 'NOT_FOUND' }
+  }
+  if (targetRating.userId === userId) {
+    return { success: false, error: '본인의 한줄평은 신고할 수 없습니다', code: 'FORBIDDEN' }
+  }
+
   try {
     await prisma.ratingReport.create({
       data: { ratingId, userId, reason },
