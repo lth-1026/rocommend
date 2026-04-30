@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/lth-1026/rocommend/compare/roco-0.9.0...roco-0.10.0) (2026-04-30)
+
+
+### Features
+
+* 한줄평 공개 표시 및 신고 기능 배포 ([6325134](https://github.com/lth-1026/rocommend/commit/632513471e8aab6d003e23de8f11de45ec184ce6))
+* 한줄평 공개 표시, 신고 기능, 내 한줄평 조회 ([#111](https://github.com/lth-1026/rocommend/issues/111)) ([6e1a078](https://github.com/lth-1026/rocommend/commit/6e1a0782b19e13c4824b95328b0a7cb65baa59ba))
+
 ## [0.9.0](https://github.com/lth-1026/rocommend/compare/roco-0.8.0...roco-0.9.0) (2026-04-30)
 
 
