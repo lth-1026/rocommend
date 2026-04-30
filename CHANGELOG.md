@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/lth-1026/rocommend/compare/roco-0.12.0...roco-0.13.0) (2026-04-30)
+
+
+### Features
+
+* 온보딩 Q0 프로필 사진 변경 + 닉네임 기본값 보장 ([#120](https://github.com/lth-1026/rocommend/issues/120)) ([#121](https://github.com/lth-1026/rocommend/issues/121)) ([3c96930](https://github.com/lth-1026/rocommend/commit/3c96930c635296b3416c6311820f3b2e863657f4))
+
 ## [0.12.0](https://github.com/lth-1026/rocommend/compare/roco-0.11.0...roco-0.12.0) (2026-04-30)
 
 
