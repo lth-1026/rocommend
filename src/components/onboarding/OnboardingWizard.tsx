@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { signOut } from 'next-auth/react'
 import { toast } from 'sonner'
 import { ProgressBar } from './ProgressBar'
+import { Q0Nickname } from './steps/Q0Nickname'
 import { Q1BrewingMethod } from './steps/Q1BrewingMethod'
 import { Q2PurchaseStyle } from './steps/Q2PurchaseStyle'
 import { Q3PriceRange } from './steps/Q3PriceRange'
@@ -18,7 +19,7 @@ import type {
   OnboardingAnswers,
 } from '@/types/onboarding'
 
-type Step = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5'
+type Step = 'Q0' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5'
 
 interface Roastery {
   id: string
@@ -27,11 +28,12 @@ interface Roastery {
 }
 
 interface OnboardingWizardProps {
+  initialNickname: string
   roasteries: Roastery[]
 }
 
-export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
-  const [step, setStep] = useState<Step>('Q1')
+export function OnboardingWizard({ initialNickname, roasteries }: OnboardingWizardProps) {
+  const [step, setStep] = useState<Step>('Q0')
   const [q1, setQ1] = useState<BrewingMethod[]>([])
   const [q2, setQ2] = useState<PurchaseStyle | null>(null)
   const [q3, setQ3] = useState<OnboardingPriceRange[]>([])
@@ -40,8 +42,8 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   const isFirstTime = q4 === 'FIRST_TIME'
-  const totalSteps = isFirstTime ? 4 : 5
-  const currentStep = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'].indexOf(step) + 1
+  const totalSteps = isFirstTime ? 5 : 6
+  const currentStep = ['Q0', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5'].indexOf(step) + 1
 
   async function handleSubmit(answers: OnboardingAnswers) {
     setIsLoading(true)
@@ -57,6 +59,15 @@ export function OnboardingWizard({ roasteries }: OnboardingWizardProps) {
       }
       setIsLoading(false)
     }
+  }
+
+  if (step === 'Q0') {
+    return (
+      <div className="space-y-6">
+        <ProgressBar current={currentStep} total={totalSteps} />
+        <Q0Nickname initialNickname={initialNickname} onNext={() => setStep('Q1')} />
+      </div>
+    )
   }
 
   if (step === 'Q1') {
