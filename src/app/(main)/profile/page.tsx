@@ -2,11 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getProfileSummary } from '@/lib/queries/profile'
-import { getUserRatings } from '@/lib/queries/rating'
 import { ProfileCard } from '@/components/profile/ProfileCard'
-import { ActivitySummary } from '@/components/profile/ActivitySummary'
-import { MyRatingList } from '@/components/profile/MyRatingList'
 import { LogoutButton } from '@/components/profile/LogoutButton'
 import { ThemeToggle } from '@/components/profile/ThemeToggle'
 import { FeedbackButton } from '@/components/feedback/FeedbackButton'
@@ -15,14 +11,10 @@ export default async function ProfilePage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
-  const [summary, user, myRatings] = await Promise.all([
-    getProfileSummary(session.user.id),
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { name: true, image: true },
-    }),
-    getUserRatings(session.user.id),
-  ])
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, image: true },
+  })
 
   return (
     <div className="page-wrapper py-8 flex flex-col gap-6">
@@ -33,15 +25,6 @@ export default async function ProfilePage() {
         email={session.user.email ?? null}
         image={user?.image ?? session.user.image ?? null}
       />
-
-      <ActivitySummary ratingCount={summary.ratingCount} bookmarkCount={summary.bookmarkCount} />
-
-      <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-text-secondary">내 한줄평</h2>
-        <div className="rounded-xl bg-surface px-4 overflow-hidden">
-          <MyRatingList initialItems={myRatings.items} initialNextCursor={myRatings.nextCursor} />
-        </div>
-      </section>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-text-secondary">테마</h2>
