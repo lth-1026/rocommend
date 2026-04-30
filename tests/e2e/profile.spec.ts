@@ -8,7 +8,7 @@ test('E-40: 인증된 유저가 /profile에 접근하면 프로필 정보가 표
   await expect(page).toHaveURL('/profile')
   await expect(page.getByRole('heading', { name: '프로필' })).toBeVisible()
   // 이름 또는 이메일이 표시됨
-  await expect(page.getByText('테스트 유저').or(page.getByText('complete@rocommend.dev')).first()).toBeVisible()
+  await expect(page.getByText('테스트 유저').or(page.getByText('complete@roco.dev')).first()).toBeVisible()
 })
 
 // E-41: 미인증 유저 접근 시 로그인 리다이렉트

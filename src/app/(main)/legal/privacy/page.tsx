@@ -5,9 +5,9 @@ export const metadata: Metadata = {
 }
 
 const EFFECTIVE_DATE = '2026년 4월 20일'
-const SERVICE_NAME = 'Rocommend'
+const SERVICE_NAME = 'roco'
 const COMPANY_NAME = '[사업자명]'
-const CONTACT_EMAIL = 'privacy@rocommend.kr'
+const CONTACT_EMAIL = 'roco.support@gmail.com'
 
 export default function PrivacyPage() {
   return (
