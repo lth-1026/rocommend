@@ -35,8 +35,8 @@
 
 ```bash
 git switch develop && git pull
-git worktree add ../rocommend-roastery -b feat/roastery-list-detail
-git worktree add ../rocommend-profile  -b feat/user-profile
+git worktree add ../roco-roastery -b feat/roastery-list-detail
+git worktree add ../roco-profile  -b feat/user-profile
 # → 두 worktree에서 동시에 sub-agent 실행
 ```
 

@@ -1,4 +1,4 @@
-# Rocommend 세팅 체크리스트
+# roco 세팅 체크리스트
 
 **기준**: setup-plan.md v1.2
 **작성일**: 2026-03-09
@@ -112,12 +112,12 @@ chore: add design tokens and shadcn/ui
 ```bash
 brew install postgresql@16
 brew services start postgresql@16
-createdb rocommend
-createdb rocommend_test
+createdb roco
+createdb roco_test
 ```
 
 **검증**
-- [ ] `psql -d rocommend -c "\l"` 실행 시 두 DB 모두 목록에 표시
+- [ ] `psql -d roco -c "\l"` 실행 시 두 DB 모두 목록에 표시
 
 ---
 
@@ -144,14 +144,14 @@ pnpm dlx prisma init
 
 `.env.local`:
 ```
-DATABASE_URL=postgresql://localhost:5432/rocommend
+DATABASE_URL=postgresql://localhost:5432/roco
 AUTH_SECRET=<openssl rand -base64 32>
 AUTH_URL=http://localhost:3000
 ```
 
 `.env.test`:
 ```
-DATABASE_URL=postgresql://localhost:5432/rocommend_test
+DATABASE_URL=postgresql://localhost:5432/roco_test
 ```
 
 **검증**
@@ -168,7 +168,7 @@ pnpm dlx prisma migrate dev --name init
 
 **검증**
 - [ ] `prisma/migrations/` 폴더 생성됨
-- [ ] `psql -d rocommend -c "\dt"` 실행 시 8개 테이블 표시
+- [ ] `psql -d roco -c "\dt"` 실행 시 8개 테이블 표시
 
 ---
 
@@ -182,7 +182,7 @@ pnpm dlx prisma db seed
 `package.json`에 `"prisma": { "seed": "tsx prisma/seed.ts" }` 추가.
 
 **검증**
-- [ ] `psql -d rocommend -c "SELECT name FROM \"Roastery\";"` 실행 시 5개 로스터리 출력
+- [ ] `psql -d roco -c "SELECT name FROM \"Roastery\";"` 실행 시 5개 로스터리 출력
 
 ### 커밋
 ```

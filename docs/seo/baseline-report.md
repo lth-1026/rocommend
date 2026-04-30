@@ -39,7 +39,7 @@ robots.ts에 선언된 sitemap URL: https://rocommend.com/sitemap.xml
 ### 3. 페이지별 고유 metadata 없음
 
 모든 페이지가 동일한 기본 title/description 사용:
-- title: `"Rocommend"` (고유 title 없음)
+- title: `"roco"` (고유 title 없음)
 - description: `"취향에 맞는 스페셜티 커피 로스터리 추천"` (모든 페이지 동일)
 
 ### 4. `metadataBase` 미설정
