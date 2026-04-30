@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { generateUniqueNickname } from '@/lib/nickname'
 import { flattenTags } from '@/types/roastery'
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard'
 
@@ -13,10 +14,17 @@ export default async function OnboardingPage() {
     }),
     prisma.user.findUnique({
       where: { id: session!.user.id },
-      select: { nickname: true },
+      select: { nickname: true, image: true, name: true },
     }),
   ])
   if (existing) redirect('/')
+
+  // signIn 콜백 미실행 등으로 닉네임이 없는 경우 여기서 보완
+  let nickname = user?.nickname ?? null
+  if (!nickname) {
+    nickname = await generateUniqueNickname()
+    await prisma.user.update({ where: { id: session!.user.id }, data: { nickname } })
+  }
 
   const roasteries = await prisma.roastery.findMany({
     where: { isOnboardingCandidate: true, deletedAt: null, hidden: false, closedAt: null },
@@ -39,7 +47,9 @@ export default async function OnboardingPage() {
         </p>
       </div>
       <OnboardingWizard
-        initialNickname={user?.nickname ?? ''}
+        initialNickname={nickname}
+        currentImage={user?.image ?? null}
+        name={user?.name ?? null}
         roasteries={roasteries.map((r) => ({ ...r, tags: flattenTags(r.tags) }))}
       />
     </div>
