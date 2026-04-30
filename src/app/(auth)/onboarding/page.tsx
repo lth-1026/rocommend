@@ -6,10 +6,16 @@ import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard'
 
 export default async function OnboardingPage() {
   const session = await auth()
-  const existing = await prisma.onboarding.findUnique({
-    where: { userId: session!.user.id },
-    select: { id: true },
-  })
+  const [existing, user] = await Promise.all([
+    prisma.onboarding.findUnique({
+      where: { userId: session!.user.id },
+      select: { id: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: session!.user.id },
+      select: { nickname: true },
+    }),
+  ])
   if (existing) redirect('/')
 
   const roasteries = await prisma.roastery.findMany({
@@ -32,7 +38,10 @@ export default async function OnboardingPage() {
           맞춤 로스터리 추천을 위해 취향을 알려주세요
         </p>
       </div>
-      <OnboardingWizard roasteries={roasteries.map((r) => ({ ...r, tags: flattenTags(r.tags) }))} />
+      <OnboardingWizard
+        initialNickname={user?.nickname ?? ''}
+        roasteries={roasteries.map((r) => ({ ...r, tags: flattenTags(r.tags) }))}
+      />
     </div>
   )
 }
