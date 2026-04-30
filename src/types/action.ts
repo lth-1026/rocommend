@@ -3,5 +3,12 @@ export type ActionResult<T = void> =
   | {
       success: false
       error: string
-      code?: 'UNAUTHORIZED' | 'FORBIDDEN' | 'VALIDATION' | 'DB_ERROR' | 'NOT_FOUND' | 'UPLOAD_ERROR'
+      code?:
+        | 'UNAUTHORIZED'
+        | 'FORBIDDEN'
+        | 'VALIDATION'
+        | 'DB_ERROR'
+        | 'NOT_FOUND'
+        | 'UPLOAD_ERROR'
+        | 'DUPLICATE'
     }
