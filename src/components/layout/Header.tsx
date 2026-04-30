@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils'
 const authNavLinks = [
   { href: '/', label: '홈' },
   { href: '/roasteries', label: '로스터리' },
-  { href: '/bookmarks', label: '즐겨찾기' },
+  { href: '/activity', label: '내 활동' },
 ]
 
 const guestNavLinks = [
