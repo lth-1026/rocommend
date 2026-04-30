@@ -41,7 +41,7 @@ const securityHeaders = [
       [
         "img-src 'self' data: blob:",
         'https://lh3.googleusercontent.com',
-        'https://k.kakaocdn.net http://k.kakaocdn.net',
+        'https://k.kakaocdn.net http://k.kakaocdn.net https://img1.kakaocdn.net http://img1.kakaocdn.net',
         'https://phinf.pstatic.net https://ssl.pstatic.net',
         'https://*.public.blob.vercel-storage.com',
       ].join(' '),
@@ -70,6 +70,8 @@ const nextConfig: NextConfig = {
       // Kakao 프로필 이미지 (http/https 모두)
       { protocol: 'https', hostname: 'k.kakaocdn.net', pathname: '/**' },
       { protocol: 'http', hostname: 'k.kakaocdn.net', pathname: '/**' },
+      { protocol: 'https', hostname: 'img1.kakaocdn.net', pathname: '/**' },
+      { protocol: 'http', hostname: 'img1.kakaocdn.net', pathname: '/**' },
       // Naver 프로필 이미지
       { protocol: 'https', hostname: 'phinf.pstatic.net', pathname: '/**' },
       { protocol: 'https', hostname: 'ssl.pstatic.net', pathname: '/**' },
