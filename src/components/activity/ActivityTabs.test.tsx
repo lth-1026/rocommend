@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ActivityTabs } from './ActivityTabs'
 
-const mockGet = vi.fn(() => null)
+const mockGet = vi.fn<() => string | null>(() => null)
 const mockReplace = vi.fn()
 
 vi.mock('next/navigation', () => ({
