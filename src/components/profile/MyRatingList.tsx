@@ -78,7 +78,7 @@ function MyRatingRow({ item }: { item: MyRatingItem }) {
   return (
     <Link
       href={`/roasteries/${item.roastery.id}`}
-      className="flex flex-col gap-1 py-4 border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-bg)] -mx-4 px-4 transition-colors"
+      className="flex flex-col gap-1 py-4 border-b border-[var(--color-border)] last-of-type:border-b-0 hover:bg-[var(--color-bg)] -mx-4 px-4 transition-colors"
     >
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
