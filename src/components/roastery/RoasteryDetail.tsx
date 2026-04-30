@@ -5,14 +5,19 @@ import { BackButton } from './BackButton'
 import { RoasteryBuyAndBeans } from './RoasteryBuyAndBeans'
 import { RatingButton } from '@/components/rating/RatingButton'
 import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
+import { RatingList } from '@/components/rating/RatingList'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
 import { PRICE_RANGE_LABELS, getRegions, getCharacteristicTags } from '@/types/roastery'
+import type { RatingListItem, RatingSortOption } from '@/types/rating'
 
 interface RoasteryDetailProps {
   roastery: RoasteryDetailType
   isLoggedIn: boolean
   userRating?: { score: number; comment?: string }
   isBookmarked: boolean
+  initialRatings: RatingListItem[]
+  initialNextCursor: string | null
+  initialSort: RatingSortOption
 }
 
 export function RoasteryDetail({
@@ -20,6 +25,9 @@ export function RoasteryDetail({
   isLoggedIn,
   userRating,
   isBookmarked,
+  initialRatings,
+  initialNextCursor,
+  initialSort,
 }: RoasteryDetailProps) {
   const regions = getRegions(roastery.tags)
   const charTags = getCharacteristicTags(roastery.tags)
@@ -115,6 +123,15 @@ export function RoasteryDetail({
         roasteryId={roastery.id}
         baseChannels={roastery.channels}
         beans={roastery.beans}
+      />
+
+      {/* 한줄평 목록 */}
+      <RatingList
+        roasteryId={roastery.id}
+        initialItems={initialRatings}
+        initialNextCursor={initialNextCursor}
+        initialSort={initialSort}
+        isLoggedIn={isLoggedIn}
       />
     </div>
   )
