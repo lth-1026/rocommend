@@ -40,7 +40,7 @@ interface RatingListItemProps {
 export function RatingListItem({ item, isLoggedIn }: RatingListItemProps) {
   const [reportOpen, setReportOpen] = useState(false)
 
-  const displayName = item.user.name ?? '익명'
+  const displayName = item.user.nickname ?? '익명'
   const date = new Intl.DateTimeFormat('ko-KR', {
     year: 'numeric',
     month: 'short',
