@@ -32,7 +32,12 @@ interface BeanFormProps {
     decaf: boolean
     cupNotes: string[]
     imageUrl: string
-    prices?: { channelId: string; price: number }[]
+    prices?: {
+      channelId: string
+      price: number
+      sizeGrams?: number | null
+      sourceUrl?: string | null
+    }[]
   }
 }
 
@@ -75,10 +80,38 @@ export function BeanForm({
     return map
   })
 
+  // 채널별 그람 수: channelId → sizeGrams string
+  const [sizeGrams, setSizeGrams] = useState<Record<string, string>>(() => {
+    const map: Record<string, string> = {}
+    for (const ch of channels) {
+      const existing = initialData?.prices?.find((p) => p.channelId === ch.id)
+      map[ch.id] = existing?.sizeGrams != null ? String(existing.sizeGrams) : ''
+    }
+    return map
+  })
+
+  // 채널별 구매 링크: channelId → sourceUrl string
+  const [sourceUrls, setSourceUrls] = useState<Record<string, string>>(() => {
+    const map: Record<string, string> = {}
+    for (const ch of channels) {
+      const existing = initialData?.prices?.find((p) => p.channelId === ch.id)
+      map[ch.id] = existing?.sourceUrl ?? ''
+    }
+    return map
+  })
+
   const isEdit = !!beanId
 
   function handlePriceChange(channelId: string, value: string) {
     setPrices((prev) => ({ ...prev, [channelId]: value }))
+  }
+
+  function handleSizeGramsChange(channelId: string, value: string) {
+    setSizeGrams((prev) => ({ ...prev, [channelId]: value }))
+  }
+
+  function handleSourceUrlChange(channelId: string, value: string) {
+    setSourceUrls((prev) => ({ ...prev, [channelId]: value }))
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -88,6 +121,8 @@ export function BeanForm({
     const priceList = channels.map((ch) => ({
       channelId: ch.id,
       price: prices[ch.id] !== '' ? Number(prices[ch.id]) : null,
+      sizeGrams: sizeGrams[ch.id] !== '' ? Number(sizeGrams[ch.id]) : null,
+      sourceUrl: sourceUrls[ch.id]?.trim() || null,
     }))
 
     const input = {
@@ -190,22 +225,41 @@ export function BeanForm({
 
       {/* 채널별 가격 */}
       {channels.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-text">채널별 가격 (200g 기준, 원)</label>
-          <ul className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
+          <label className="text-sm font-medium text-text">채널별 가격 및 구매 링크</label>
+          <ul className="flex flex-col gap-4">
             {channels.map((ch) => {
               const def = CHANNEL_DEFS.find((d) => d.key === ch.channelKey)
               const label = def?.label ?? ch.channelKey
               return (
-                <li key={ch.id} className="flex items-center gap-2">
-                  <span className="w-36 shrink-0 text-sm text-text-sub">{label}</span>
+                <li key={ch.id} className="flex flex-col gap-2 rounded-lg border border-border p-3">
+                  <span className="text-sm font-medium text-text">{label}</span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={0}
+                      value={prices[ch.id] ?? ''}
+                      onChange={(e) => handlePriceChange(ch.id, e.target.value)}
+                      className="w-32 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
+                      placeholder="가격 (원)"
+                    />
+                    <span className="text-sm text-text-sub">/</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={sizeGrams[ch.id] ?? ''}
+                      onChange={(e) => handleSizeGramsChange(ch.id, e.target.value)}
+                      className="w-24 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
+                      placeholder="그람 (g)"
+                    />
+                    <span className="text-sm text-text-sub">g</span>
+                  </div>
                   <input
-                    type="number"
-                    min={0}
-                    value={prices[ch.id] ?? ''}
-                    onChange={(e) => handlePriceChange(ch.id, e.target.value)}
-                    className="w-36 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
-                    placeholder="예: 18000"
+                    type="url"
+                    value={sourceUrls[ch.id] ?? ''}
+                    onChange={(e) => handleSourceUrlChange(ch.id, e.target.value)}
+                    className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:ring-2 focus:ring-primary/30"
+                    placeholder="원두 직접 구매 링크 (선택)"
                   />
                 </li>
               )

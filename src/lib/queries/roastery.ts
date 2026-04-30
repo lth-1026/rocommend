@@ -158,6 +158,8 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
             channelPrices: {
               select: {
                 price: true,
+                sizeGrams: true,
+                sourceUrl: true,
                 channel: CHANNEL_SELECT,
               },
             },
@@ -192,7 +194,21 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
 
   // 원두별 채널 가격
   const beans: RoasteryDetail['beans'] = roastery.beans.map((bean) => {
-    const priceByChannelId = new Map(bean.channelPrices.map((bp) => [bp.channel.id, bp.price]))
+    const bpMap = new Map(bean.channelPrices.map((bp) => [bp.channel.id, bp]))
+    const channelPrices = roastery.channels
+      .filter((ch) => bpMap.has(ch.id))
+      .map((ch) => {
+        const bp = bpMap.get(ch.id)!
+        return {
+          channelId: ch.id,
+          channelKey: ch.channelKey,
+          label: ch.definition.label,
+          url: bp.sourceUrl ?? ch.url,
+          price: bp.price,
+          order: ch.definition.order,
+          sizeGrams: bp.sizeGrams ?? null,
+        }
+      })
     return {
       id: bean.id,
       name: bean.name,
@@ -201,7 +217,7 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
       decaf: bean.decaf,
       cupNotes: bean.cupNotes,
       imageUrl: bean.imageUrl,
-      channelPrices: flattenChannels(roastery.channels, priceByChannelId),
+      channelPrices,
     }
   })
 

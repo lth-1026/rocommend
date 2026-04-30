@@ -126,6 +126,8 @@ export async function createRoastery(
 export interface BeanPriceInput {
   channelId: string
   price: number | null
+  sizeGrams?: number | null
+  sourceUrl?: string | null
 }
 
 export interface CreateBeanInput {
@@ -169,7 +171,12 @@ export async function createBean(input: CreateBeanInput): Promise<ActionResult<{
         cupNotes: input.cupNotes.map((n) => n.trim()).filter(Boolean),
         imageUrl: input.imageUrl.trim() || null,
         channelPrices: {
-          create: validPrices.map((p) => ({ channelId: p.channelId, price: p.price as number })),
+          create: validPrices.map((p) => ({
+            channelId: p.channelId,
+            price: p.price as number,
+            sizeGrams: p.sizeGrams ?? null,
+            sourceUrl: p.sourceUrl?.trim() || null,
+          })),
         },
       },
       select: { id: true },
@@ -281,7 +288,12 @@ export async function updateBean(
         imageUrl: input.imageUrl.trim() || null,
         channelPrices: {
           deleteMany: {},
-          create: validPrices.map((p) => ({ channelId: p.channelId, price: p.price as number })),
+          create: validPrices.map((p) => ({
+            channelId: p.channelId,
+            price: p.price as number,
+            sizeGrams: p.sizeGrams ?? null,
+            sourceUrl: p.sourceUrl?.trim() || null,
+          })),
         },
       },
       select: { id: true },
@@ -456,7 +468,7 @@ export async function getAdminBean(id: string) {
       cupNotes: true,
       imageUrl: true,
       channelPrices: {
-        select: { channelId: true, price: true },
+        select: { channelId: true, price: true, sizeGrams: true, sourceUrl: true },
       },
     },
   })
