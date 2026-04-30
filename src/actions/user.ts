@@ -67,7 +67,7 @@ export async function updateNickname(input: { nickname: string }): Promise<Actio
 
   const available = await checkNicknameAvailable(parsed.data.nickname)
   if (!available) {
-    return { success: false, error: '이미 사용 중인 닉네임입니다', code: 'CONFLICT' }
+    return { success: false, error: '이미 사용 중인 닉네임입니다', code: 'DUPLICATE' }
   }
 
   try {
