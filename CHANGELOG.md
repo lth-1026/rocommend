@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.0](https://github.com/lth-1026/rocommend/compare/roco-0.10.0...roco-0.11.0) (2026-04-30)
+
+
+### Features
+
+* 컵노트 조합 닉네임 자동 생성 ([7c15d56](https://github.com/lth-1026/rocommend/commit/7c15d566ef628276da21765a639f946e807f7a55))
+* 컵노트 조합 닉네임 자동 생성 ([7c15d56](https://github.com/lth-1026/rocommend/commit/7c15d566ef628276da21765a639f946e807f7a55))
+* 컵노트 조합 닉네임 자동 생성 ([#114](https://github.com/lth-1026/rocommend/issues/114)) ([8b457c8](https://github.com/lth-1026/rocommend/commit/8b457c85c74e5ef3b1c61baa81531a9045b08b74))
+
 ## [0.10.0](https://github.com/lth-1026/rocommend/compare/roco-0.9.0...roco-0.10.0) (2026-04-30)
 
 
