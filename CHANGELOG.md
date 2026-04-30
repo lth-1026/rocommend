@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0](https://github.com/lth-1026/rocommend/compare/roco-0.14.0...roco-0.15.0) (2026-04-30)
+
+
+### Features
+
+* 내 활동 페이지 추가 및 하단 탭 재구성 ([#127](https://github.com/lth-1026/rocommend/issues/127)) ([9fcf90e](https://github.com/lth-1026/rocommend/commit/9fcf90ef0a1fa5fd9e05065a54c43259c921086b))
+
+
+### Bug Fixes
+
+* 다크 모드에서 버튼 텍스트 가시성 수정 ([#126](https://github.com/lth-1026/rocommend/issues/126)) ([7cedda8](https://github.com/lth-1026/rocommend/commit/7cedda88bb15761aaeeec7f0ef7206e9824a61f4))
+
 ## [0.14.0](https://github.com/lth-1026/rocommend/compare/roco-0.13.0...roco-0.14.0) (2026-04-30)
 
 
