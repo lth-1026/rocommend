@@ -22,6 +22,7 @@ model User {
   roasteryRequests     RoasteryRequest[]
   onboarding           Onboarding?
   ratings              Rating[]
+  ratingReports        RatingReport[]
   recommendations      Recommendation[]
   sessions             Session[]
 }
@@ -147,20 +148,35 @@ model BeanChannelPrice {
 }
 
 model Rating {
-  id         String   @id @default(cuid())
+  id         String         @id @default(cuid())
   userId     String
   roasteryId String
-  score      Int      @db.SmallInt
+  score      Int            @db.SmallInt
   comment    String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
   source     String?
-  roastery   Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roastery   Roastery       @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reports    RatingReport[]
 
   @@unique([userId, roasteryId])
   @@index([userId])
   @@index([roasteryId])
+}
+
+model RatingReport {
+  id        String             @id @default(cuid())
+  ratingId  String
+  userId    String
+  reason    RatingReportReason
+  createdAt DateTime           @default(now())
+  rating    Rating             @relation(fields: [ratingId], references: [id], onDelete: Cascade)
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([ratingId, userId])
+  @@index([ratingId])
+  @@index([userId])
 }
 
 model Recommendation {
@@ -331,4 +347,10 @@ model RoasteryRequest {
 enum RoasteryRequestStatus {
   PENDING
   READ
+}
+
+enum RatingReportReason {
+  SPAM
+  INAPPROPRIATE
+  OTHER
 }
