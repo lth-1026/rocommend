@@ -15,12 +15,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://rocommend.com'),
   title: {
-    default: 'Rocommend',
-    template: '%s | Rocommend',
+    default: 'roco',
+    template: '%s | roco',
   },
   description: '취향에 맞는 스페셜티 커피 로스터리 추천 서비스',
   openGraph: {
-    siteName: 'Rocommend',
+    siteName: 'roco',
     locale: 'ko_KR',
     type: 'website',
     images: [{ url: '/opengraph-image', width: 1200, height: 630 }],

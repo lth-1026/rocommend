@@ -111,7 +111,7 @@ test('E-11: Q5에서 2개 선택 시 버튼 비활성, 3개 선택 시 활성화
 
 // E-12: 온보딩 전체 플로우 완료 → /home 리디렉션
 test('E-12: Q4=FIRST_TIME 온보딩 완료 후 /home으로 리디렉션된다', async ({ page }) => {
-  await loginIncomplete(page, `e2e-firsttime-${Date.now()}@rocommend.dev`)
+  await loginIncomplete(page, `e2e-firsttime-${Date.now()}@roco.dev`)
   await page.goto('/onboarding')
 
   // Q1

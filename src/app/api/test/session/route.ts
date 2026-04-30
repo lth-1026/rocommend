@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     complete?: boolean
   }
 
-  const userEmail = email ?? 'test@rocommend.dev'
+  const userEmail = email ?? 'test@roco.dev'
 
   const user = await prisma.user.upsert({
     where: { email: userEmail },
