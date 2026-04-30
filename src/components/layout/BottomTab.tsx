@@ -3,13 +3,13 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Home, Coffee, Bookmark, User, Settings } from 'lucide-react'
+import { Home, Coffee, LayoutList, User, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const authTabs = [
   { href: '/', label: '홈', Icon: Home },
   { href: '/roasteries', label: '로스터리', Icon: Coffee },
-  { href: '/bookmarks', label: '즐겨찾기', Icon: Bookmark },
+  { href: '/activity', label: '내 활동', Icon: LayoutList },
   { href: '/profile', label: '프로필', Icon: User },
 ]
 
