@@ -17,7 +17,7 @@ export async function createTestSession(page: Page, options: CreateSessionOption
   const res = await page.request.post(`${BASE_URL}/api/test/session`, {
     headers: { 'x-test-token': TEST_TOKEN },
     data: {
-      email: options.email ?? 'test@rocommend.dev',
+      email: options.email ?? 'test@roco.dev',
       name: options.name ?? '테스트 유저',
       complete: options.complete ?? false,
     },
@@ -31,11 +31,11 @@ export async function createTestSession(page: Page, options: CreateSessionOption
 }
 
 /** 온보딩 미완료 상태로 로그인 */
-export async function loginIncomplete(page: Page, email = 'incomplete@rocommend.dev') {
+export async function loginIncomplete(page: Page, email = 'incomplete@roco.dev') {
   return createTestSession(page, { email, complete: false })
 }
 
 /** 온보딩 완료 상태로 로그인 */
-export async function loginComplete(page: Page, email = 'complete@rocommend.dev') {
+export async function loginComplete(page: Page, email = 'complete@roco.dev') {
   return createTestSession(page, { email, complete: true })
 }
