@@ -3,14 +3,17 @@
 import { useState, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { AvatarUpload } from '@/components/account/AvatarUpload'
 import { checkNicknameAvailable, updateNickname } from '@/actions/user'
 
 interface Q0NicknameProps {
   initialNickname: string
+  currentImage: string | null
+  name: string | null
   onNext: () => void
 }
 
-export function Q0Nickname({ initialNickname, onNext }: Q0NicknameProps) {
+export function Q0Nickname({ initialNickname, currentImage, name, onNext }: Q0NicknameProps) {
   const [nickname, setNickname] = useState(initialNickname)
   const [checking, setChecking] = useState(false)
   const [available, setAvailable] = useState(true)
@@ -63,13 +66,17 @@ export function Q0Nickname({ initialNickname, onNext }: Q0NicknameProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">닉네임을 정해볼까요?</h2>
+        <h2 className="text-xl font-semibold text-text-primary">프로필을 설정해볼까요?</h2>
         <p className="mt-1 text-sm text-text-secondary">
-          커피 향미에서 영감을 받은 닉네임이에요. 원하시면 바꿀 수 있어요.
+          나중에 계정 설정에서 언제든 바꿀 수 있어요.
         </p>
       </div>
 
+      <AvatarUpload currentImage={currentImage} name={name} />
+
       <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-text-primary">닉네임</label>
+        <p className="text-xs text-text-secondary">커피 향미에서 영감을 받은 닉네임이에요.</p>
         <Input
           value={nickname}
           onChange={(e) => handleChange(e.target.value)}

@@ -29,10 +29,17 @@ interface Roastery {
 
 interface OnboardingWizardProps {
   initialNickname: string
+  currentImage: string | null
+  name: string | null
   roasteries: Roastery[]
 }
 
-export function OnboardingWizard({ initialNickname, roasteries }: OnboardingWizardProps) {
+export function OnboardingWizard({
+  initialNickname,
+  currentImage,
+  name,
+  roasteries,
+}: OnboardingWizardProps) {
   const [step, setStep] = useState<Step>('Q0')
   const [q1, setQ1] = useState<BrewingMethod[]>([])
   const [q2, setQ2] = useState<PurchaseStyle | null>(null)
@@ -65,7 +72,12 @@ export function OnboardingWizard({ initialNickname, roasteries }: OnboardingWiza
     return (
       <div className="space-y-6">
         <ProgressBar current={currentStep} total={totalSteps} />
-        <Q0Nickname initialNickname={initialNickname} onNext={() => setStep('Q1')} />
+        <Q0Nickname
+          initialNickname={initialNickname}
+          currentImage={currentImage}
+          name={name}
+          onNext={() => setStep('Q1')}
+        />
       </div>
     )
   }

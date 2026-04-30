@@ -17,6 +17,9 @@ vi.mock('@/actions/user', () => ({
   updateNickname: mockUpdateNickname,
 }))
 vi.mock('sonner', () => ({ toast: mockToast }))
+vi.mock('next-auth/react', () => ({ useSession: () => ({ update: vi.fn() }), signOut: vi.fn() }))
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }))
+vi.mock('@/actions/upload', () => ({ uploadAvatar: vi.fn() }))
 
 const roasteries = [
   {
@@ -52,14 +55,28 @@ describe('OnboardingWizard', () => {
 
   // C-20: 초기 렌더 → Q0(닉네임) 표시
   it('C-20: 초기 렌더 시 닉네임 설정 화면이 표시된다', () => {
-    render(<OnboardingWizard initialNickname={INITIAL_NICKNAME} roasteries={roasteries} />)
-    expect(screen.getByText(/닉네임을 정해볼까요/i)).toBeInTheDocument()
+    render(
+      <OnboardingWizard
+        initialNickname={INITIAL_NICKNAME}
+        currentImage={null}
+        name={null}
+        roasteries={roasteries}
+      />
+    )
+    expect(screen.getByText(/프로필을 설정해볼까요/i)).toBeInTheDocument()
     expect(screen.getByText('1 / 6')).toBeInTheDocument()
   })
 
   // C-20b: Q0 다음 → Q1 표시
   it('C-20b: Q0에서 다음을 누르면 Q1 브루잉 방법 질문이 표시된다', async () => {
-    render(<OnboardingWizard initialNickname={INITIAL_NICKNAME} roasteries={roasteries} />)
+    render(
+      <OnboardingWizard
+        initialNickname={INITIAL_NICKNAME}
+        currentImage={null}
+        name={null}
+        roasteries={roasteries}
+      />
+    )
     await passQ0()
     expect(screen.getByText(/어떤 방법으로 커피를 즐기시나요/i)).toBeInTheDocument()
     expect(screen.getByText('2 / 6')).toBeInTheDocument()
@@ -67,7 +84,14 @@ describe('OnboardingWizard', () => {
 
   // C-21: Q1 선택 → 다음 버튼 활성화
   it('C-21: Q1에서 항목을 선택하면 다음 버튼이 활성화된다', async () => {
-    render(<OnboardingWizard initialNickname={INITIAL_NICKNAME} roasteries={roasteries} />)
+    render(
+      <OnboardingWizard
+        initialNickname={INITIAL_NICKNAME}
+        currentImage={null}
+        name={null}
+        roasteries={roasteries}
+      />
+    )
     await passQ0()
     const nextButton = screen.getByRole('button', { name: '다음' })
     expect(nextButton).toBeDisabled()
@@ -78,7 +102,14 @@ describe('OnboardingWizard', () => {
 
   // C-22: Q4=FIRST_TIME → Q5 스킵, 진행바 "5/5"
   it('C-22: Q4에서 FIRST_TIME을 선택하면 총 5단계가 되고 "완료 및 제출" 버튼이 표시된다', async () => {
-    render(<OnboardingWizard initialNickname={INITIAL_NICKNAME} roasteries={roasteries} />)
+    render(
+      <OnboardingWizard
+        initialNickname={INITIAL_NICKNAME}
+        currentImage={null}
+        name={null}
+        roasteries={roasteries}
+      />
+    )
 
     await passQ0()
 
@@ -103,7 +134,14 @@ describe('OnboardingWizard', () => {
 
   // C-23: Q4≠FIRST_TIME → Q5 표시, 진행바 "6/6"
   it('C-23: Q4에서 FIRST_TIME 외를 선택하고 다음으로 넘어가면 Q5가 표시된다', async () => {
-    render(<OnboardingWizard initialNickname={INITIAL_NICKNAME} roasteries={roasteries} />)
+    render(
+      <OnboardingWizard
+        initialNickname={INITIAL_NICKNAME}
+        currentImage={null}
+        name={null}
+        roasteries={roasteries}
+      />
+    )
 
     await passQ0()
 
@@ -122,7 +160,14 @@ describe('OnboardingWizard', () => {
 
   // C-24: Q5 3개 미만 → 제출 버튼 비활성
   it('C-24: Q5에서 3개 미만 선택 시 제출 버튼이 비활성 상태다', async () => {
-    render(<OnboardingWizard initialNickname={INITIAL_NICKNAME} roasteries={roasteries} />)
+    render(
+      <OnboardingWizard
+        initialNickname={INITIAL_NICKNAME}
+        currentImage={null}
+        name={null}
+        roasteries={roasteries}
+      />
+    )
 
     await passQ0()
 
