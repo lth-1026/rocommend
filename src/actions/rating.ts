@@ -102,9 +102,19 @@ export async function fetchRoasteryRatings(input: {
   return getRoasteryRatings({
     roasteryId: input.roasteryId,
     sort: input.sort,
-    cursor: input.cursor,
+    cursor: input.cursor || undefined,
     currentUserId: session?.user?.id,
   })
+}
+
+export async function fetchUserRatings(cursor: string): Promise<{
+  items: import('@/types/rating').MyRatingItem[]
+  nextCursor: string | null
+}> {
+  const session = await auth()
+  if (!session?.user?.id) return { items: [], nextCursor: null }
+  const { getUserRatings } = await import('@/lib/queries/rating')
+  return getUserRatings(session.user.id, cursor || undefined)
 }
 
 export async function reportRating(input: {

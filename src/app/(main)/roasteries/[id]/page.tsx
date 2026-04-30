@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getRoasteryById } from '@/lib/queries/roastery'
-import { getUserRating } from '@/lib/queries/rating'
+import { getUserRating, getRoasteryRatings } from '@/lib/queries/rating'
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 import { ROASTING_LEVEL_LABELS } from '@/types/roastery'
@@ -41,9 +41,19 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
   if (!roastery) notFound()
 
   const userId = session?.user?.id
-  const [userRating, isBookmarked] = userId
-    ? await Promise.all([getUserRating(userId, id), getBookmarkStatus(userId, id)])
-    : [null, false]
+  const initialSort = userId ? 'SIMILAR' : 'HIGH'
+
+  const [userRating, isBookmarked, initialRatings] = userId
+    ? await Promise.all([
+        getUserRating(userId, id),
+        getBookmarkStatus(userId, id),
+        getRoasteryRatings({ roasteryId: id, sort: 'SIMILAR', currentUserId: userId }),
+      ])
+    : await Promise.all([
+        Promise.resolve(null),
+        Promise.resolve(false),
+        getRoasteryRatings({ roasteryId: id, sort: 'HIGH' }),
+      ])
 
   // 원두별 최저가 채널 → Offer 스키마
   const beanOffers = roastery.beans.map((bean) => {
@@ -115,6 +125,9 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
               : undefined
           }
           isBookmarked={isBookmarked}
+          initialRatings={initialRatings.items}
+          initialNextCursor={initialRatings.nextCursor}
+          initialSort={initialSort}
         />
       </div>
     </>
