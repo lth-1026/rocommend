@@ -7,6 +7,7 @@ import type { PriceRange } from '@prisma/client'
 
 const ROASTING_LEVEL_LABEL: Record<string, string> = {
   LIGHT: '라이트',
+  MEDIUM_LIGHT: '미디움 라이트',
   MEDIUM: '미디엄',
   MEDIUM_DARK: '미디엄 다크',
   DARK: '다크',

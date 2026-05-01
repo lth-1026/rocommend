@@ -25,6 +25,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
   const [isPending, startTransition] = useTransition()
   const [openPill, setOpenPill] = useState<PillId | null>(null)
   const [inputValue, setInputValue] = useState(filter.q)
+  const [compositionKey, setCompositionKey] = useState(0)
   const searchId = useId()
   const isComposingRef = useRef(false)
 
@@ -37,7 +38,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
     const t = setTimeout(() => navigate({ q: inputValue.trim() }), 400)
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputValue])
+  }, [inputValue, compositionKey])
 
   function buildParams(updates: Partial<FilterParams>): string {
     const params = new URLSearchParams(searchParams.toString())
@@ -118,6 +119,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           }}
           onCompositionEnd={() => {
             isComposingRef.current = false
+            setCompositionKey((k) => k + 1)
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.nativeEvent.isComposing) navigate({ q: inputValue.trim() })
@@ -179,6 +181,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           }}
           onCompositionEnd={() => {
             isComposingRef.current = false
+            setCompositionKey((k) => k + 1)
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.nativeEvent.isComposing) navigate({ q: inputValue.trim() })
