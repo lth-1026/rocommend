@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useTransition } from 'react'
+import { toast } from 'sonner'
 import { RatingListItem } from './RatingListItem'
 import { RatingSortSelector } from './RatingSortSelector'
 import { fetchRoasteryRatings } from '@/actions/rating'
@@ -30,10 +31,16 @@ export function RatingList({
   // 정렬 변경 시 서버에서 재조회
   function handleSortChange(newSort: RatingSortOption) {
     setSort(newSort)
+    // 즉시 cursor를 null로 초기화해 IntersectionObserver가 이전 cursor로 동시 fetch하는 경쟁 조건 방지
+    setNextCursor(null)
     startTransition(async () => {
-      const page = await fetchRoasteryRatings({ roasteryId, sort: newSort, cursor: '' })
-      setItems(page.items)
-      setNextCursor(page.nextCursor)
+      try {
+        const page = await fetchRoasteryRatings({ roasteryId, sort: newSort, cursor: '' })
+        setItems(page.items)
+        setNextCursor(page.nextCursor)
+      } catch {
+        toast.error('한줄평을 불러오지 못했어요. 다시 시도해 주세요.')
+      }
     })
   }
 
