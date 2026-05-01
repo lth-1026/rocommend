@@ -143,6 +143,17 @@ export interface CreateBeanInput {
 
 const ROASTING_LEVELS = ['LIGHT', 'MEDIUM_LIGHT', 'MEDIUM', 'MEDIUM_DARK', 'DARK']
 
+/** 현재 visible 원두(deletedAt=null, hidden=false) 기준으로 Roastery.decaf를 재동기화 */
+async function syncRoasteryDecaf(roasteryId: string): Promise<void> {
+  const count = await prisma.bean.count({
+    where: { roasteryId, decaf: true, deletedAt: null, hidden: false },
+  })
+  await prisma.roastery.update({
+    where: { id: roasteryId },
+    data: { decaf: count > 0 },
+  })
+}
+
 export async function createBean(input: CreateBeanInput): Promise<ActionResult<{ id: string }>> {
   const check = await requireAdmin()
   if ('error' in check) {
@@ -181,6 +192,7 @@ export async function createBean(input: CreateBeanInput): Promise<ActionResult<{
       },
       select: { id: true },
     })
+    await syncRoasteryDecaf(input.roasteryId)
     return { success: true, data: { id: bean.id } }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
@@ -276,6 +288,7 @@ export async function updateBean(
 
   try {
     const validPrices = input.prices.filter((p) => p.price !== null && p.price >= 0)
+    const prev = await prisma.bean.findUnique({ where: { id }, select: { roasteryId: true } })
     const bean = await prisma.bean.update({
       where: { id },
       data: {
@@ -298,6 +311,9 @@ export async function updateBean(
       },
       select: { id: true },
     })
+    const syncTargets = new Set([input.roasteryId])
+    if (prev?.roasteryId) syncTargets.add(prev.roasteryId)
+    await Promise.all([...syncTargets].map(syncRoasteryDecaf))
     return { success: true, data: { id: bean.id } }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
@@ -385,7 +401,12 @@ export async function softDeleteBean(id: string): Promise<ActionResult<void>> {
   const check = await requireAdmin()
   if ('error' in check) return { success: false, error: check.error, code: check.code }
   try {
-    await prisma.bean.update({ where: { id }, data: { deletedAt: new Date() } })
+    const bean = await prisma.bean.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+      select: { roasteryId: true },
+    })
+    await syncRoasteryDecaf(bean.roasteryId)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -397,7 +418,12 @@ export async function restoreBean(id: string): Promise<ActionResult<void>> {
   const check = await requireAdmin()
   if ('error' in check) return { success: false, error: check.error, code: check.code }
   try {
-    await prisma.bean.update({ where: { id }, data: { deletedAt: null } })
+    const bean = await prisma.bean.update({
+      where: { id },
+      data: { deletedAt: null },
+      select: { roasteryId: true },
+    })
+    await syncRoasteryDecaf(bean.roasteryId)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -409,9 +435,13 @@ export async function toggleHideBean(id: string): Promise<ActionResult<void>> {
   const check = await requireAdmin()
   if ('error' in check) return { success: false, error: check.error, code: check.code }
   try {
-    const current = await prisma.bean.findUnique({ where: { id }, select: { hidden: true } })
+    const current = await prisma.bean.findUnique({
+      where: { id },
+      select: { hidden: true, roasteryId: true },
+    })
     if (!current) return { success: false, error: '존재하지 않는 원두입니다', code: 'VALIDATION' }
     await prisma.bean.update({ where: { id }, data: { hidden: !current.hidden } })
+    await syncRoasteryDecaf(current.roasteryId)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
