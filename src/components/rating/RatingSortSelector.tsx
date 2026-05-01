@@ -19,6 +19,7 @@ export function RatingSortSelector({ value, onChange }: RatingSortSelectorProps)
       {OPTIONS.map((opt) => (
         <button
           key={opt.value}
+          type="button"
           onClick={() => onChange(opt.value)}
           className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
             value === opt.value
