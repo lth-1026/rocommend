@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.1](https://github.com/lth-1026/rocommend/compare/roco-0.16.0...roco-0.16.1) (2026-05-01)
+
+
+### Bug Fixes
+
+* 정렬 드롭다운 오른쪽 화면 밖으로 넘치는 문제 수정 ([#139](https://github.com/lth-1026/rocommend/issues/139)) ([23f0d3d](https://github.com/lth-1026/rocommend/commit/23f0d3de2fb65af6a0c8704ccd3147f1cc0f43d5))
+
 ## [0.16.0](https://github.com/lth-1026/rocommend/compare/roco-0.15.2...roco-0.16.0) (2026-05-01)
 
 
