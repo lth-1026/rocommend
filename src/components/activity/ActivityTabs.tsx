@@ -52,7 +52,9 @@ export function ActivityTabs({ ratings, bookmarks }: ActivityTabsProps) {
       ) : bookmarks.length === 0 ? (
         <EmptyBookmark />
       ) : (
-        <BookmarkList bookmarks={bookmarks} initialSort="name" />
+        <div className="rounded-xl bg-surface px-4 overflow-hidden">
+          <BookmarkList bookmarks={bookmarks} initialSort="name" />
+        </div>
       )}
     </div>
   )
