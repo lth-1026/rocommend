@@ -59,9 +59,9 @@ export function HomeFeedClient({
   const showDecafToggle = hasCFSections && result.source === 'cf' && isLoggedIn
 
   return (
-    <div className="flex flex-col divide-y divide-border">
+    <div className="flex flex-col gap-8">
       {showDecafToggle && (
-        <div className="page-wrapper flex items-center pb-4">
+        <div className="page-wrapper flex items-center">
           <DecafToggle decafOn={decafOn} onToggle={() => setDecafOn((v) => !v)} />
         </div>
       )}
