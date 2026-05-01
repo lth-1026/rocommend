@@ -34,7 +34,7 @@ const securityHeaders = [
       // 미지정 리소스는 동일 출처만 허용
       "default-src 'self'",
       // Next.js App Router는 인라인 스크립트·eval 필요 (hydration, turbopack)
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
       // Tailwind CSS 등 CSS-in-JS는 인라인 스타일 필요
       "style-src 'self' 'unsafe-inline'",
       // 소셜 로그인 프로필 이미지 및 Vercel Blob 이미지 허용
@@ -48,7 +48,7 @@ const securityHeaders = [
       // 웹폰트는 동일 출처만
       "font-src 'self'",
       // Sentry 에러 전송, Axiom 로그 전송 허용
-      "connect-src 'self' https://*.ingest.sentry.io https://api.axiom.co",
+      "connect-src 'self' https://*.ingest.sentry.io https://api.axiom.co https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com",
       // iframe으로 이 페이지를 삽입하는 것 자체를 차단 (X-Frame-Options 보완)
       "frame-ancestors 'none'",
       // <base> 태그 출처 제한 (base href 하이재킹 방지)
