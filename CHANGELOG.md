@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/lth-1026/rocommend/compare/roco-0.15.2...roco-0.16.0) (2026-05-01)
+
+
+### Features
+
+* 내 평가·즐겨찾기 탭 정렬 기능 + 디자인 개편 ([#136](https://github.com/lth-1026/rocommend/issues/136)) ([0f6cd6f](https://github.com/lth-1026/rocommend/commit/0f6cd6ff40ffb3ab4ec77b1a4b0968ff483dc8d1))
+
 ## [0.15.2](https://github.com/lth-1026/rocommend/compare/roco-0.15.1...roco-0.15.2) (2026-05-01)
 
 
