@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.2](https://github.com/lth-1026/rocommend/compare/roco-0.16.1...roco-0.16.2) (2026-05-01)
+
+
+### Bug Fixes
+
+* 로스터리 검색 input 한글 IME 조합 중 navigate 차단 ([#142](https://github.com/lth-1026/rocommend/issues/142)) ([d021c3d](https://github.com/lth-1026/rocommend/commit/d021c3d07b5fca62c25a8a82bf9bac4744e20c80))
+
 ## [0.16.1](https://github.com/lth-1026/rocommend/compare/roco-0.16.0...roco-0.16.1) (2026-05-01)
 
 
