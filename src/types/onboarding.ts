@@ -26,7 +26,7 @@ export type Frequency = (typeof FREQUENCIES)[number]
 
 export interface OnboardingAnswers {
   q1: BrewingMethod[]
-  q2: PurchaseStyle
+  q2?: PurchaseStyle // q4 = FIRST_TIME이면 undefined
   q3: OnboardingPriceRange[]
   q4: Frequency
   q5?: string[] // roasteryId[], q4 = FIRST_TIME이면 undefined

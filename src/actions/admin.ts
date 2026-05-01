@@ -141,7 +141,7 @@ export interface CreateBeanInput {
   prices: BeanPriceInput[]
 }
 
-const ROASTING_LEVELS = ['LIGHT', 'MEDIUM', 'MEDIUM_DARK', 'DARK']
+const ROASTING_LEVELS = ['LIGHT', 'MEDIUM_LIGHT', 'MEDIUM', 'MEDIUM_DARK', 'DARK']
 
 export async function createBean(input: CreateBeanInput): Promise<ActionResult<{ id: string }>> {
   const check = await requireAdmin()

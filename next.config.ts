@@ -48,7 +48,7 @@ const securityHeaders = [
       // 웹폰트는 동일 출처만
       "font-src 'self'",
       // Sentry 에러 전송, Axiom 로그 전송 허용
-      "connect-src 'self' https://*.ingest.sentry.io https://api.axiom.co https://*.google-analytics.com https://analytics.google.com https://www.googletagmanager.com",
+      "connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://api.axiom.co https://*.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com",
       // iframe으로 이 페이지를 삽입하는 것 자체를 차단 (X-Frame-Options 보완)
       "frame-ancestors 'none'",
       // <base> 태그 출처 제한 (base href 하이재킹 방지)

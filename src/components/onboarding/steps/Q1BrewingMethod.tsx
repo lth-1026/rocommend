@@ -6,9 +6,10 @@ interface Q1BrewingMethodProps {
   selected: BrewingMethod[]
   onChange: (value: BrewingMethod[]) => void
   onNext: () => void
+  onBack: () => void
 }
 
-export function Q1BrewingMethod({ selected, onChange, onNext }: Q1BrewingMethodProps) {
+export function Q1BrewingMethod({ selected, onChange, onNext, onBack }: Q1BrewingMethodProps) {
   function toggle(method: BrewingMethod) {
     if (selected.includes(method)) {
       onChange(selected.filter((m) => m !== method))
@@ -44,9 +45,14 @@ export function Q1BrewingMethod({ selected, onChange, onNext }: Q1BrewingMethodP
         ))}
       </div>
 
-      <Button className="w-full" size="lg" onClick={onNext} disabled={selected.length === 0}>
-        다음
-      </Button>
+      <div className="flex gap-3">
+        <Button variant="outline" size="lg" onClick={onBack} className="shrink-0">
+          이전
+        </Button>
+        <Button className="flex-1" size="lg" onClick={onNext} disabled={selected.length === 0}>
+          다음
+        </Button>
+      </div>
     </div>
   )
 }

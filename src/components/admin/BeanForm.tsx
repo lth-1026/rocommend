@@ -43,6 +43,7 @@ interface BeanFormProps {
 
 const ROASTING_LEVELS = [
   { value: 'LIGHT', label: '라이트' },
+  { value: 'MEDIUM_LIGHT', label: '미디움 라이트' },
   { value: 'MEDIUM', label: '미디엄' },
   { value: 'MEDIUM_DARK', label: '미디엄 다크' },
   { value: 'DARK', label: '다크' },
