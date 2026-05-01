@@ -45,6 +45,11 @@ async function passQ0() {
   await userEvent.click(screen.getByRole('button', { name: '다음' }))
 }
 
+async function passQ4(frequency = '한 달에 한 번') {
+  await userEvent.click(screen.getByRole('button', { name: frequency }))
+  await userEvent.click(screen.getByRole('button', { name: '다음' }))
+}
+
 describe('OnboardingWizard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -67,8 +72,8 @@ describe('OnboardingWizard', () => {
     expect(screen.getByText('1 / 6')).toBeInTheDocument()
   })
 
-  // C-20b: Q0 다음 → Q1 표시
-  it('C-20b: Q0에서 다음을 누르면 Q1 브루잉 방법 질문이 표시된다', async () => {
+  // C-20b: Q0 다음 → Q4(구매빈도) 표시
+  it('C-20b: Q0에서 다음을 누르면 구매 빈도 질문이 표시된다', async () => {
     render(
       <OnboardingWizard
         initialNickname={INITIAL_NICKNAME}
@@ -78,11 +83,11 @@ describe('OnboardingWizard', () => {
       />
     )
     await passQ0()
-    expect(screen.getByText(/어떤 방법으로 커피를 즐기시나요/i)).toBeInTheDocument()
+    expect(screen.getByText(/얼마나 자주 원두를 구매하시나요/i)).toBeInTheDocument()
     expect(screen.getByText('2 / 6')).toBeInTheDocument()
   })
 
-  // C-21: Q1 선택 → 다음 버튼 활성화
+  // C-21: Q4 통과 후 Q1에서 항목 선택하면 다음 버튼 활성화
   it('C-21: Q1에서 항목을 선택하면 다음 버튼이 활성화된다', async () => {
     render(
       <OnboardingWizard
@@ -93,6 +98,8 @@ describe('OnboardingWizard', () => {
       />
     )
     await passQ0()
+    await passQ4()
+
     const nextButton = screen.getByRole('button', { name: '다음' })
     expect(nextButton).toBeDisabled()
 
@@ -100,8 +107,8 @@ describe('OnboardingWizard', () => {
     expect(nextButton).toBeEnabled()
   })
 
-  // C-22: Q4=FIRST_TIME → Q5 스킵, 진행바 "5/5"
-  it('C-22: Q4에서 FIRST_TIME을 선택하면 총 5단계가 되고 "완료 및 제출" 버튼이 표시된다', async () => {
+  // C-22: Q4=FIRST_TIME → 즉시 종료, "2/2", "완료 및 제출" 버튼
+  it('C-22: Q4에서 FIRST_TIME을 선택하면 총 2단계가 되고 "완료 및 제출" 버튼이 표시된다', async () => {
     render(
       <OnboardingWizard
         initialNickname={INITIAL_NICKNAME}
@@ -112,28 +119,14 @@ describe('OnboardingWizard', () => {
     )
 
     await passQ0()
-
-    // Q1
-    await userEvent.click(screen.getByRole('button', { name: '에스프레소 머신' }))
-    await userEvent.click(screen.getByRole('button', { name: '다음' }))
-
-    // Q2
-    await userEvent.click(screen.getByRole('button', { name: '주로 온라인' }))
-    await userEvent.click(screen.getByRole('button', { name: '다음' }))
-
-    // Q3
-    await userEvent.click(screen.getByRole('button', { name: '크게 신경 안 써요' }))
-    await userEvent.click(screen.getByRole('button', { name: '다음' }))
-
-    // Q4 - FIRST_TIME 선택
     await userEvent.click(screen.getByRole('button', { name: '처음 구매해보려고요' }))
 
-    expect(screen.getByText('5 / 5')).toBeInTheDocument()
+    expect(screen.getByText('2 / 2')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '완료 및 제출' })).toBeInTheDocument()
   })
 
-  // C-23: Q4≠FIRST_TIME → Q5 표시, 진행바 "6/6"
-  it('C-23: Q4에서 FIRST_TIME 외를 선택하고 다음으로 넘어가면 Q5가 표시된다', async () => {
+  // C-23: Q4≠FIRST_TIME → Q1→Q2→Q3→Q5 순서로 진행
+  it('C-23: Q4에서 FIRST_TIME 외를 선택하고 진행하면 Q5가 표시된다', async () => {
     render(
       <OnboardingWizard
         initialNickname={INITIAL_NICKNAME}
@@ -144,14 +137,13 @@ describe('OnboardingWizard', () => {
     )
 
     await passQ0()
+    await passQ4()
 
     await userEvent.click(screen.getByRole('button', { name: '에스프레소 머신' }))
     await userEvent.click(screen.getByRole('button', { name: '다음' }))
     await userEvent.click(screen.getByRole('button', { name: '주로 온라인' }))
     await userEvent.click(screen.getByRole('button', { name: '다음' }))
     await userEvent.click(screen.getByRole('button', { name: '크게 신경 안 써요' }))
-    await userEvent.click(screen.getByRole('button', { name: '다음' }))
-    await userEvent.click(screen.getByRole('button', { name: '한 달에 한 번' }))
     await userEvent.click(screen.getByRole('button', { name: '다음' }))
 
     expect(screen.getByText('6 / 6')).toBeInTheDocument()
@@ -170,14 +162,13 @@ describe('OnboardingWizard', () => {
     )
 
     await passQ0()
+    await passQ4()
 
     await userEvent.click(screen.getByRole('button', { name: '에스프레소 머신' }))
     await userEvent.click(screen.getByRole('button', { name: '다음' }))
     await userEvent.click(screen.getByRole('button', { name: '주로 온라인' }))
     await userEvent.click(screen.getByRole('button', { name: '다음' }))
     await userEvent.click(screen.getByRole('button', { name: '크게 신경 안 써요' }))
-    await userEvent.click(screen.getByRole('button', { name: '다음' }))
-    await userEvent.click(screen.getByRole('button', { name: '한 달에 한 번' }))
     await userEvent.click(screen.getByRole('button', { name: '다음' }))
 
     const submitButton = screen.getByRole('button', { name: '완료 및 제출' })

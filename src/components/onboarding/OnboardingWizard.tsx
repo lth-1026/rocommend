@@ -19,7 +19,9 @@ import type {
   OnboardingAnswers,
 } from '@/types/onboarding'
 
+// 실제 표시 순서: Q0 → Q4(구매빈도, FIRST_TIME이면 즉시 종료) → Q1 → Q2 → Q3 → Q5
 type Step = 'Q0' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5'
+const STEP_ORDER: Step[] = ['Q0', 'Q4', 'Q1', 'Q2', 'Q3', 'Q5']
 
 interface Roastery {
   id: string
@@ -49,17 +51,14 @@ export function OnboardingWizard({
   const [isLoading, setIsLoading] = useState(false)
 
   const isFirstTime = q4 === 'FIRST_TIME'
-  const totalSteps = isFirstTime ? 5 : 6
-  const currentStep = ['Q0', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5'].indexOf(step) + 1
+  const totalSteps = isFirstTime ? 2 : 6
+  const currentStep = STEP_ORDER.indexOf(step) + 1
 
   async function handleSubmit(answers: OnboardingAnswers) {
     setIsLoading(true)
     const result = await submitOnboarding(answers)
-    // 성공 시 서버가 redirect('/')를 호출 → 이 코드에 도달하지 않음
-    // 실패 시 서버가 ActionResult를 반환 → 에러 처리
     if (result && !result.success) {
       toast.error(result.error)
-      // FK 위반 (userId가 DB에 없음) → 세션 만료 → 로그아웃 후 /login
       if (result.code === 'UNAUTHORIZED') {
         await signOut({ callbackUrl: '/login' })
         return
@@ -76,7 +75,23 @@ export function OnboardingWizard({
           initialNickname={initialNickname}
           currentImage={currentImage}
           name={name}
+          onNext={() => setStep('Q4')}
+        />
+      </div>
+    )
+  }
+
+  if (step === 'Q4') {
+    return (
+      <div className="space-y-6">
+        <ProgressBar current={currentStep} total={totalSteps} />
+        <Q4Frequency
+          selected={q4}
+          onChange={setQ4}
           onNext={() => setStep('Q1')}
+          onSubmitEarly={() => handleSubmit({ q1: [], q3: [], q4: 'FIRST_TIME' })}
+          onBack={() => setStep('Q0')}
+          isLoading={isLoading}
         />
       </div>
     )
@@ -86,7 +101,12 @@ export function OnboardingWizard({
     return (
       <div className="space-y-6">
         <ProgressBar current={currentStep} total={totalSteps} />
-        <Q1BrewingMethod selected={q1} onChange={setQ1} onNext={() => setStep('Q2')} />
+        <Q1BrewingMethod
+          selected={q1}
+          onChange={setQ1}
+          onNext={() => setStep('Q2')}
+          onBack={() => setStep('Q4')}
+        />
       </div>
     )
   }
@@ -112,26 +132,8 @@ export function OnboardingWizard({
         <Q3PriceRange
           selected={q3}
           onChange={setQ3}
-          onNext={() => setStep('Q4')}
-          onBack={() => setStep('Q2')}
-        />
-      </div>
-    )
-  }
-
-  if (step === 'Q4') {
-    return (
-      <div className="space-y-6">
-        <ProgressBar current={currentStep} total={totalSteps} />
-        <Q4Frequency
-          selected={q4}
-          onChange={setQ4}
           onNext={() => setStep('Q5')}
-          onSubmitEarly={() => {
-            handleSubmit({ q1, q2: q2!, q3, q4: 'FIRST_TIME' })
-          }}
-          onBack={() => setStep('Q3')}
-          isLoading={isLoading}
+          onBack={() => setStep('Q2')}
         />
       </div>
     )
@@ -144,8 +146,8 @@ export function OnboardingWizard({
         roasteries={roasteries}
         selected={q5}
         onChange={setQ5}
-        onSubmit={() => handleSubmit({ q1, q2: q2!, q3, q4: q4!, q5 })}
-        onBack={() => setStep('Q4')}
+        onSubmit={() => handleSubmit({ q1, q2: q2 ?? undefined, q3, q4: q4!, q5 })}
+        onBack={() => setStep('Q3')}
         isLoading={isLoading}
       />
     </div>
