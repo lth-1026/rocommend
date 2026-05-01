@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.2](https://github.com/lth-1026/rocommend/compare/roco-0.15.1...roco-0.15.2) (2026-05-01)
+
+
+### Bug Fixes
+
+* CSP에 Google Analytics 도메인 허용 추가 ([#133](https://github.com/lth-1026/rocommend/issues/133)) ([a1486bc](https://github.com/lth-1026/rocommend/commit/a1486bcb6d940bf7adf47a6007478fb0530fff6c))
+
 ## [0.15.1](https://github.com/lth-1026/rocommend/compare/roco-0.15.0...roco-0.15.1) (2026-04-30)
 
 
