@@ -4,12 +4,14 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
-import { RatingDisplay } from '@/components/roastery/RatingDisplay'
-import { RegionDisplay } from '@/components/roastery/RegionDisplay'
+import { SortDropdown } from '@/components/ui/sort-dropdown'
 import { RemoveBookmarkDialog } from './RemoveBookmarkDialog'
-import { PRICE_RANGE_LABELS, getRegions } from '@/types/roastery'
 import type { BookmarkWithRoastery, BookmarkSort } from '@/types/bookmark'
-import { cn } from '@/lib/utils'
+
+const SORT_OPTIONS: { value: BookmarkSort; label: string }[] = [
+  { value: 'name', label: '이름순' },
+  { value: 'myRating', label: '내 별점순' },
+]
 
 interface BookmarkListProps {
   bookmarks: BookmarkWithRoastery[]
@@ -31,46 +33,43 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
 
   return (
     <>
-      {/* 정렬 탭 */}
-      <div className="flex gap-3 border-b border-border pb-3">
-        {(['name', 'myRating'] as BookmarkSort[]).map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setSort(s)}
-            className={cn(
-              'text-sm font-medium transition-colors cursor-pointer',
-              sort === s ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
-            )}
-          >
-            {s === 'name' ? '이름순' : '내 별점순'}
-          </button>
-        ))}
+      <div className="flex justify-end py-3 border-b border-[var(--color-border)]">
+        <SortDropdown value={sort} options={SORT_OPTIONS} onChange={setSort} />
       </div>
 
-      {/* 목록 */}
-      <ul className="flex flex-col divide-y divide-border">
+      <ul className="flex flex-col">
         {sorted.map((item) => (
           <li
             key={item.id}
-            className={`flex items-center gap-4 py-4 ${item.isUnavailable ? 'opacity-50' : ''}`}
+            className={`border-b border-[var(--color-border)] last-of-type:border-b-0 ${item.isUnavailable ? 'opacity-50' : ''}`}
           >
             {item.isUnavailable ? (
-              <div className="flex flex-1 flex-col gap-1 min-w-0">
-                <span className="font-medium truncate text-muted-foreground">
-                  {item.roastery.name}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  더 이상 이용할 수 없는 로스터리입니다
-                </span>
+              <div className="flex items-center gap-3 py-4">
+                <div className="flex flex-1 flex-col gap-0.5 min-w-0">
+                  <span className="text-sm font-medium text-muted-foreground truncate">
+                    {item.roastery.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    더 이상 이용할 수 없는 로스터리입니다
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRemoveTarget(item)}
+                  className="text-xs text-destructive hover:underline cursor-pointer shrink-0"
+                >
+                  해제
+                </button>
               </div>
             ) : (
-              <Link
-                href={`/roasteries/${item.roasteryId}`}
-                className="flex flex-1 flex-col gap-1 min-w-0"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-medium truncate">{item.roastery.name}</span>
+              <div className="flex items-center gap-3 py-4 hover:bg-[var(--color-surface)] transition-colors">
+                <Link
+                  href={`/roasteries/${item.roasteryId}`}
+                  className="flex flex-1 items-center gap-2 min-w-0"
+                >
+                  <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
+                    {item.roastery.name}
+                  </span>
                   {item.isClosed && (
                     <Badge
                       variant="outline"
@@ -79,43 +78,22 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
                       폐업
                     </Badge>
                   )}
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  <RegionDisplay regions={getRegions(item.roastery.tags)} />
-                </span>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="outline" className="text-xs">
-                    {PRICE_RANGE_LABELS[item.roastery.priceRange]}
-                  </Badge>
-                  {item.roastery.decaf && (
-                    <Badge variant="secondary" className="text-xs">
-                      디카페인
-                    </Badge>
+                  {item.myRating !== null && (
+                    <span className="text-xs text-[var(--color-accent)] shrink-0 ml-auto">
+                      {'★'.repeat(item.myRating)}
+                      {'☆'.repeat(5 - item.myRating)}
+                    </span>
                   )}
-                </div>
-              </Link>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setRemoveTarget(item)}
+                  className="text-xs text-destructive hover:underline cursor-pointer shrink-0"
+                >
+                  해제
+                </button>
+              </div>
             )}
-
-            <div className="flex items-center gap-3 shrink-0">
-              {!item.isUnavailable && (
-                <div className="text-sm flex items-center gap-1">
-                  <RatingDisplay
-                    avgRating={item.roastery.avgRating}
-                    ratingCount={item.roastery.ratingCount}
-                  />
-                </div>
-              )}
-              {item.myRating !== null && (
-                <span className="text-xs text-muted-foreground">내 평가 {item.myRating}점</span>
-              )}
-              <button
-                type="button"
-                onClick={() => setRemoveTarget(item)}
-                className="text-xs text-destructive hover:underline cursor-pointer"
-              >
-                해제
-              </button>
-            </div>
           </li>
         ))}
       </ul>

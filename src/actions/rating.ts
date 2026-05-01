@@ -8,7 +8,7 @@ import { upsertRatingSchema, deleteRatingSchema, reportRatingSchema } from '@/li
 import { computeAndSaveCF } from '@/lib/recommender'
 import { getRoasteryRatings } from '@/lib/queries/rating'
 import type { ActionResult } from '@/types/action'
-import type { RatingSortOption, RatingsPage } from '@/types/rating'
+import type { RatingSortOption, RatingsPage, MyRatingSort } from '@/types/rating'
 
 export async function upsertRating(input: {
   roasteryId: string
@@ -107,14 +107,17 @@ export async function fetchRoasteryRatings(input: {
   })
 }
 
-export async function fetchUserRatings(cursor: string): Promise<{
+export async function fetchUserRatings(
+  sort: MyRatingSort,
+  cursor: string
+): Promise<{
   items: import('@/types/rating').MyRatingItem[]
   nextCursor: string | null
 }> {
   const session = await auth()
   if (!session?.user?.id) return { items: [], nextCursor: null }
   const { getUserRatings } = await import('@/lib/queries/rating')
-  return getUserRatings(session.user.id, cursor || undefined)
+  return getUserRatings(session.user.id, sort, cursor || undefined)
 }
 
 export async function reportRating(input: {

@@ -63,7 +63,16 @@ pnpm prisma db seed        # 시드 재실행
 > **전제 조건**: 릴리즈할 모든 feat/fix 브랜치가 develop에 merge된 상태여야 한다.
 
 1. **미merge 브랜치 확인** — develop에 반영 안 된 작업이 있으면 먼저 PR 생성 후 merge 요청.
-2. **Release PR 확인** — `gh pr list --base main` 으로 release-please가 만든 Release PR이 있는지 확인.
-   - 없으면: GitHub Actions > Release Please > `workflow_dispatch` 로 수동 트리거
-3. **Release PR 머지** — PR 내용(버전 bump, CHANGELOG) 확인 후 **Merge commit** 으로 main에 머지 → GitHub Release 자동 생성 + Vercel 자동 배포
-4. **develop 백머지** — `git switch develop && git merge main && git push`
+2. **develop → main PR 생성 및 머지** — develop의 커밋을 main에 반영한다.
+   ```bash
+   gh pr create --base main --head develop --title "chore: merge develop into main for release" --body ""
+   gh pr merge {PR번호} --merge --delete-branch=false
+   ```
+   > release-please는 `push to main`을 감지해야 Release PR을 생성한다. 이 단계가 없으면 `workflow_dispatch`를 눌러도 `commits: 0`으로 PR이 생성되지 않는다.
+3. **Release PR 확인** — release-please가 자동으로 Release PR을 생성할 때까지 대기.
+   ```bash
+   gh pr list --base main
+   ```
+   자동 생성이 안 되면: `gh workflow run release-please.yml`
+4. **Release PR 머지** — PR 내용(버전 bump, CHANGELOG) 확인 후 **Merge commit** 으로 main에 머지 → GitHub Release 자동 생성 + Vercel 자동 배포
+5. **develop 백머지** — `git switch develop && git fetch origin main && git merge origin/main && git push`
