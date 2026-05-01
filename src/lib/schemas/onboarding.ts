@@ -10,6 +10,14 @@ export const onboardingSchema = z
     q5: z.array(z.string()).optional(),
   })
   .superRefine((data, ctx) => {
+    if (data.q1.includes('NONE') && data.q1.length > 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['q1'],
+        message: '"아직 기구가 없어요"는 단독으로만 선택할 수 있습니다',
+      })
+    }
+
     if (data.q3.includes('NO_PREFERENCE') && data.q3.length > 1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
