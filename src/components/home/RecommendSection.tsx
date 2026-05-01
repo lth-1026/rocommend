@@ -12,8 +12,10 @@ export function RecommendSection({ title, items, onCardClick }: RecommendSection
   if (items.length === 0) return null
 
   return (
-    <section className="flex flex-col gap-3 py-6">
-      <h2 className="page-wrapper text-base font-semibold">{title}</h2>
+    <section className="flex flex-col gap-3">
+      <div className="page-wrapper">
+        <h2 className="border-b border-border pb-2 text-base font-semibold">{title}</h2>
+      </div>
       <ScrollRow>
         {items.map((item, i) => (
           <ScrollItem key={item.roastery.id}>
