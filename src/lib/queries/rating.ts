@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { cosineSimilarity } from '@/lib/recommender/item-cf'
-import type { RatingSortOption, RatingListItem, MyRatingItem } from '@/types/rating'
+import type { RatingSortOption, RatingListItem, MyRatingItem, MyRatingSort } from '@/types/rating'
 
 const PAGE_SIZE = 10
 
@@ -93,8 +93,17 @@ export async function getRoasteryRatings(input: {
 
 export async function getUserRatings(
   userId: string,
+  sort: MyRatingSort = 'date_desc',
   cursor?: string
 ): Promise<{ items: MyRatingItem[]; nextCursor: string | null }> {
+  const orderBy = {
+    date_desc: [{ updatedAt: 'desc' as const }],
+    score_desc: [{ score: 'desc' as const }, { updatedAt: 'desc' as const }],
+    score_asc: [{ score: 'asc' as const }, { updatedAt: 'desc' as const }],
+    name_asc: [{ roastery: { name: 'asc' as const } }],
+    name_desc: [{ roastery: { name: 'desc' as const } }],
+  }[sort]
+
   const rawRatings = await prisma.rating.findMany({
     where: { userId },
     select: {
@@ -104,7 +113,7 @@ export async function getUserRatings(
       updatedAt: true,
       roastery: { select: { id: true, name: true, imageUrl: true } },
     },
-    orderBy: { updatedAt: 'desc' },
+    orderBy,
     take: PAGE_SIZE + 1,
     ...(cursor && { cursor: { id: cursor }, skip: 1 }),
   })
