@@ -62,7 +62,7 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-3 py-4 hover:bg-[var(--color-bg)] -mx-4 px-4 transition-colors">
+              <div className="flex items-center gap-3 py-4 hover:bg-[var(--color-surface)] transition-colors">
                 <Link
                   href={`/roasteries/${item.roasteryId}`}
                   className="flex flex-1 items-center gap-2 min-w-0"
