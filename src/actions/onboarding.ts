@@ -23,14 +23,15 @@ export async function submitOnboarding(data: OnboardingAnswers): Promise<ActionR
 
   const userId = session.user.id
   const { q1, q2, q3, q4, q5 } = parsed.data
+  const storedQ2 = q2 ?? '' // FIRST_TIME 시 q2 미입력 → 빈 문자열로 저장
   const storedQ3 = q3.filter((p) => p !== 'NO_PREFERENCE')
 
   try {
     await prisma.$transaction(async (tx) => {
       await tx.onboarding.upsert({
         where: { userId },
-        create: { userId, version: 3, q1, q2, q3: storedQ3, q4, q5: q5 ?? [] },
-        update: { version: 3, q1, q2, q3: storedQ3, q4, q5: q5 ?? [] },
+        create: { userId, version: 3, q1, q2: storedQ2, q3: storedQ3, q4, q5: q5 ?? [] },
+        update: { version: 3, q1, q2: storedQ2, q3: storedQ3, q4, q5: q5 ?? [] },
       })
 
       if (q4 !== 'FIRST_TIME' && q5 && q5.length > 0) {

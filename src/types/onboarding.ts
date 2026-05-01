@@ -5,7 +5,6 @@ export const BREWING_METHODS = [
   'COLD_BREW',
   'AEROPRESS',
   'MOKA_POT',
-  'NONE',
 ] as const
 
 export const PURCHASE_STYLES = ['ONLINE', 'OFFLINE', 'BOTH'] as const
@@ -27,7 +26,7 @@ export type Frequency = (typeof FREQUENCIES)[number]
 
 export interface OnboardingAnswers {
   q1: BrewingMethod[]
-  q2: PurchaseStyle
+  q2?: PurchaseStyle // q4 = FIRST_TIME이면 undefined
   q3: OnboardingPriceRange[]
   q4: Frequency
   q5?: string[] // roasteryId[], q4 = FIRST_TIME이면 undefined
@@ -40,7 +39,6 @@ export const BREWING_METHOD_LABELS: Record<BrewingMethod, string> = {
   COLD_BREW: '콜드브루',
   AEROPRESS: '에어로프레스',
   MOKA_POT: '모카포트',
-  NONE: '아직 기구가 없어요',
 }
 
 export const PURCHASE_STYLE_LABELS: Record<PurchaseStyle, string> = {
