@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.17.0](https://github.com/lth-1026/rocommend/compare/roco-0.16.3...roco-0.17.0) (2026-05-01)
+
+
+### Features
+
+* 온보딩 Q1에 '아직 기구가 없어요' 옵션 추가 ([#150](https://github.com/lth-1026/rocommend/issues/150)) ([9b2d0c8](https://github.com/lth-1026/rocommend/commit/9b2d0c8122356265d0c453be01b239975793adde))
+* 온보딩 구매 빈도 질문을 첫 번째로 이동, 초보자 즉시 종료 ([#153](https://github.com/lth-1026/rocommend/issues/153)) ([0650f0b](https://github.com/lth-1026/rocommend/commit/0650f0b94208103767da1ee442a8838beac10fb1))
+* 원두 로스팅 포인트에 미디움 라이트 옵션 추가 ([#151](https://github.com/lth-1026/rocommend/issues/151)) ([d90b9c0](https://github.com/lth-1026/rocommend/commit/d90b9c078a885cfc8b4b58f06cde6d9cc894f75e))
+
+
+### Bug Fixes
+
+* 검색 input 한글 IME 조합 끊김 및 글자 재등장 버그 수정 ([#149](https://github.com/lth-1026/rocommend/issues/149)) ([9a1bfd0](https://github.com/lth-1026/rocommend/commit/9a1bfd0ae12471901bcd16e4a6d43e4f811565a0))
+* 한줄평 정렬 변경 시 / 리다이렉트 버그 수정 ([#152](https://github.com/lth-1026/rocommend/issues/152)) ([e659979](https://github.com/lth-1026/rocommend/commit/e6599794131407c563870461ef0b803f3f0d55b1))
+
 ## [0.16.3](https://github.com/lth-1026/rocommend/compare/roco-0.16.2...roco-0.16.3) (2026-05-01)
 
 
