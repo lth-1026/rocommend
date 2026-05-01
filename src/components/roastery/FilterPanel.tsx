@@ -26,13 +26,14 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
   const [openPill, setOpenPill] = useState<PillId | null>(null)
   const [inputValue, setInputValue] = useState(filter.q)
   const searchId = useId()
+  const isComposingRef = useRef(false)
 
   useEffect(() => {
     setInputValue(filter.q)
   }, [filter.q])
 
   useEffect(() => {
-    if (inputValue.trim() === filter.q) return
+    if (inputValue.trim() === filter.q || isComposingRef.current) return
     const t = setTimeout(() => navigate({ q: inputValue.trim() }), 400)
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,8 +113,14 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           placeholder="로스터리 이름 검색..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onCompositionStart={() => {
+            isComposingRef.current = true
+          }}
+          onCompositionEnd={() => {
+            isComposingRef.current = false
+          }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') navigate({ q: inputValue.trim() })
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) navigate({ q: inputValue.trim() })
           }}
           className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-[16px] leading-snug text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           aria-label="로스터리 이름 검색"
@@ -167,8 +174,14 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           placeholder="로스터리 이름 검색..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onCompositionStart={() => {
+            isComposingRef.current = true
+          }}
+          onCompositionEnd={() => {
+            isComposingRef.current = false
+          }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') navigate({ q: inputValue.trim() })
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) navigate({ q: inputValue.trim() })
           }}
           className="w-56 rounded-full border border-border bg-background px-4 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           aria-label="로스터리 이름 검색"
