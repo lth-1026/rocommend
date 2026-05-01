@@ -39,7 +39,7 @@ export function SortDropdown<T extends string>({ value, options, onChange }: Sor
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 min-w-[8rem] rounded-xl border border-border bg-background py-1 shadow-lg">
+        <div className="absolute right-0 top-full z-50 mt-1 min-w-[8rem] rounded-xl border border-border bg-background py-1 shadow-lg">
           {options.map((opt) => (
             <button
               key={opt.value}
