@@ -34,19 +34,18 @@ export function MyRatingList({ initialItems, initialNextCursor }: MyRatingListPr
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor)
   const [isPending, startTransition] = useTransition()
   const sentinelRef = useRef<HTMLDivElement>(null)
-  const isFirstRender = useRef(true)
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
+  // 버튼 클릭 핸들러에서 sort 변경 + 상태 즉시 초기화: effect 내 setState 금지 규칙 회피 + stale cursor race 방지
+  function handleSortChange(newSort: MyRatingSort) {
+    setSort(newSort)
+    setItems([])
+    setNextCursor(null)
     startTransition(async () => {
-      const page = await fetchUserRatings(sort, '')
+      const page = await fetchUserRatings(newSort, '')
       setItems(page.items)
       setNextCursor(page.nextCursor)
     })
-  }, [sort])
+  }
 
   useEffect(() => {
     if (!nextCursor || !sentinelRef.current) return
@@ -71,7 +70,7 @@ export function MyRatingList({ initialItems, initialNextCursor }: MyRatingListPr
   if (!isPending && items.length === 0) {
     return (
       <>
-        <SortBar sort={sort} onChange={setSort} />
+        <SortBar sort={sort} onChange={handleSortChange} />
         <p className="text-sm text-[var(--color-text-secondary)] py-4 text-center">
           아직 작성한 한줄평이 없습니다.
         </p>
@@ -81,7 +80,7 @@ export function MyRatingList({ initialItems, initialNextCursor }: MyRatingListPr
 
   return (
     <div className="flex flex-col">
-      <SortBar sort={sort} onChange={setSort} />
+      <SortBar sort={sort} onChange={handleSortChange} />
       {isPending && items.length === 0 ? (
         <p className="text-sm text-[var(--color-text-secondary)] py-4 text-center">
           불러오는 중...

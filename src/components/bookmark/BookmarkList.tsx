@@ -61,13 +61,22 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
             )}
           >
             {item.isUnavailable ? (
-              <div className="flex flex-col gap-1 py-4">
-                <span className="text-sm font-medium text-muted-foreground truncate">
-                  {item.roastery.name}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  더 이상 이용할 수 없는 로스터리입니다
-                </span>
+              <div className="flex items-start gap-3 py-4">
+                <div className="flex flex-1 flex-col gap-1 min-w-0">
+                  <span className="text-sm font-medium text-muted-foreground truncate">
+                    {item.roastery.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    더 이상 이용할 수 없는 로스터리입니다
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRemoveTarget(item)}
+                  className="text-xs text-destructive hover:underline cursor-pointer shrink-0"
+                >
+                  해제
+                </button>
               </div>
             ) : (
               <div className="flex items-start gap-3 py-4 hover:bg-[var(--color-bg)] -mx-4 px-4 transition-colors">
