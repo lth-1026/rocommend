@@ -288,6 +288,7 @@ export async function updateBean(
 
   try {
     const validPrices = input.prices.filter((p) => p.price !== null && p.price >= 0)
+    const prev = await prisma.bean.findUnique({ where: { id }, select: { roasteryId: true } })
     const bean = await prisma.bean.update({
       where: { id },
       data: {
@@ -310,7 +311,9 @@ export async function updateBean(
       },
       select: { id: true },
     })
-    await syncRoasteryDecaf(input.roasteryId)
+    const syncTargets = new Set([input.roasteryId])
+    if (prev?.roasteryId) syncTargets.add(prev.roasteryId)
+    await Promise.all([...syncTargets].map(syncRoasteryDecaf))
     return { success: true, data: { id: bean.id } }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
