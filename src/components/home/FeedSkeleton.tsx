@@ -12,17 +12,17 @@ function CardSkeleton() {
 
 export function FeedSkeleton() {
   return (
-    <div className="flex flex-col divide-y divide-border">
-      <div className="flex flex-col gap-4 py-6">
-        <Skeleton className="h-5 w-32" />
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-5 w-32 border-b border-border pb-2" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <CardSkeleton key={i} />
           ))}
         </div>
       </div>
-      <div className="flex flex-col gap-4 py-6">
-        <Skeleton className="h-5 w-40" />
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-5 w-40 border-b border-border pb-2" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <CardSkeleton key={i} />

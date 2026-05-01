@@ -7,8 +7,10 @@ interface LoginCTASectionProps {
 
 export function LoginCTASection({ title }: LoginCTASectionProps) {
   return (
-    <section className="flex flex-col gap-3 py-6">
-      <h2 className="page-wrapper text-base font-semibold">{title}</h2>
+    <section className="flex flex-col gap-3">
+      <div className="page-wrapper">
+        <h2 className="border-b border-border pb-2 text-base font-semibold">{title}</h2>
+      </div>
       <div className="relative overflow-hidden">
         {/* 블러 배경 — 스켈레톤 카드 3개 */}
         <div className="flex gap-3 px-4 md:px-6 select-none pointer-events-none blur-sm">
