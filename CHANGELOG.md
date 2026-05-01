@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.3](https://github.com/lth-1026/rocommend/compare/roco-0.16.2...roco-0.16.3) (2026-05-01)
+
+
+### Bug Fixes
+
+* 홈 피드 섹션 구분선을 제목 하단으로 이동 및 여백 안으로 제한 ([#146](https://github.com/lth-1026/rocommend/issues/146)) ([7708120](https://github.com/lth-1026/rocommend/commit/77081207cf5a2f6c8a4de7f05d8d65b5da86df0d))
+
 ## [0.16.2](https://github.com/lth-1026/rocommend/compare/roco-0.16.1...roco-0.16.2) (2026-05-01)
 
 
