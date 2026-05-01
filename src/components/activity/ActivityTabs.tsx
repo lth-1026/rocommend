@@ -46,9 +46,7 @@ export function ActivityTabs({ ratings, bookmarks }: ActivityTabsProps) {
       </div>
 
       {activeTab === 'ratings' ? (
-        <div className="rounded-xl bg-surface px-4 overflow-hidden">
-          <MyRatingList initialItems={ratings.items} initialNextCursor={ratings.nextCursor} />
-        </div>
+        <MyRatingList initialItems={ratings.items} initialNextCursor={ratings.nextCursor} />
       ) : bookmarks.length === 0 ? (
         <EmptyBookmark />
       ) : (
