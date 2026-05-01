@@ -27,9 +27,10 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
   const [inputValue, setInputValue] = useState(filter.q)
   const searchId = useId()
   const isComposingRef = useRef(false)
+  const isFocusedRef = useRef(false)
 
   useEffect(() => {
-    setInputValue(filter.q)
+    if (!isFocusedRef.current) setInputValue(filter.q)
   }, [filter.q])
 
   useEffect(() => {
@@ -113,6 +114,12 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           placeholder="로스터리 이름 검색..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onFocus={() => {
+            isFocusedRef.current = true
+          }}
+          onBlur={() => {
+            isFocusedRef.current = false
+          }}
           onCompositionStart={() => {
             isComposingRef.current = true
           }}
@@ -174,6 +181,12 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           placeholder="로스터리 이름 검색..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onFocus={() => {
+            isFocusedRef.current = true
+          }}
+          onBlur={() => {
+            isFocusedRef.current = false
+          }}
           onCompositionStart={() => {
             isComposingRef.current = true
           }}
