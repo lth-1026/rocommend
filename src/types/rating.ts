@@ -1,6 +1,6 @@
 export type RatingSortOption = 'SIMILAR' | 'HIGH' | 'LOW'
 
-export type MyRatingSort = 'date_desc' | 'score_desc' | 'score_asc' | 'name_asc' | 'name_desc'
+export type MyRatingSort = 'date_desc' | 'score_desc' | 'score_asc'
 
 export interface RatingListItem {
   id: string

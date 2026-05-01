@@ -3,20 +3,18 @@
 import { useState, useEffect, useRef, useTransition } from 'react'
 import Link from 'next/link'
 import { fetchUserRatings } from '@/actions/rating'
-import { cn } from '@/lib/utils'
+import { SortDropdown } from '@/components/ui/sort-dropdown'
 import type { MyRatingItem, MyRatingSort } from '@/types/rating'
 
 const SORT_OPTIONS: { value: MyRatingSort; label: string }[] = [
   { value: 'date_desc', label: '최신순' },
   { value: 'score_desc', label: '별점 높은순' },
   { value: 'score_asc', label: '별점 낮은순' },
-  { value: 'name_asc', label: '이름순' },
-  { value: 'name_desc', label: '이름 역순' },
 ]
 
 function StarRow({ score }: { score: number }) {
   return (
-    <span className="text-xs text-[var(--color-accent)]">
+    <span className="text-xs text-[var(--color-accent)] shrink-0">
       {'★'.repeat(score)}
       {'☆'.repeat(5 - score)}
     </span>
@@ -35,7 +33,6 @@ export function MyRatingList({ initialItems, initialNextCursor }: MyRatingListPr
   const [isPending, startTransition] = useTransition()
   const sentinelRef = useRef<HTMLDivElement>(null)
 
-  // 버튼 클릭 핸들러에서 sort 변경 + 상태 즉시 초기화: effect 내 setState 금지 규칙 회피 + stale cursor race 방지
   function handleSortChange(newSort: MyRatingSort) {
     setSort(newSort)
     setItems([])
@@ -67,23 +64,19 @@ export function MyRatingList({ initialItems, initialNextCursor }: MyRatingListPr
     return () => observer.disconnect()
   }, [nextCursor, isPending, sort])
 
-  if (!isPending && items.length === 0) {
-    return (
-      <>
-        <SortBar sort={sort} onChange={handleSortChange} />
-        <p className="text-sm text-[var(--color-text-secondary)] py-4 text-center">
-          아직 작성한 한줄평이 없습니다.
-        </p>
-      </>
-    )
-  }
-
   return (
     <div className="flex flex-col">
-      <SortBar sort={sort} onChange={handleSortChange} />
+      <div className="flex justify-end py-3 border-b border-[var(--color-border)]">
+        <SortDropdown value={sort} options={SORT_OPTIONS} onChange={handleSortChange} />
+      </div>
+
       {isPending && items.length === 0 ? (
         <p className="text-sm text-[var(--color-text-secondary)] py-4 text-center">
           불러오는 중...
+        </p>
+      ) : !isPending && items.length === 0 ? (
+        <p className="text-sm text-[var(--color-text-secondary)] py-4 text-center">
+          아직 작성한 한줄평이 없습니다.
         </p>
       ) : (
         <>
@@ -102,35 +95,7 @@ export function MyRatingList({ initialItems, initialNextCursor }: MyRatingListPr
   )
 }
 
-function SortBar({ sort, onChange }: { sort: MyRatingSort; onChange: (s: MyRatingSort) => void }) {
-  return (
-    <div className="flex gap-3 border-b border-[var(--color-border)] py-3 overflow-x-auto">
-      {SORT_OPTIONS.map(({ value, label }) => (
-        <button
-          key={value}
-          type="button"
-          onClick={() => onChange(value)}
-          className={cn(
-            'text-sm font-medium transition-colors cursor-pointer shrink-0',
-            sort === value
-              ? 'text-[var(--color-text-primary)]'
-              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-          )}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  )
-}
-
 function MyRatingRow({ item }: { item: MyRatingItem }) {
-  const date = new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(item.updatedAt))
-
   return (
     <Link
       href={`/roasteries/${item.roastery.id}`}
@@ -140,10 +105,7 @@ function MyRatingRow({ item }: { item: MyRatingItem }) {
         <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
           {item.roastery.name}
         </span>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <StarRow score={item.score} />
-          <span className="text-xs text-[var(--color-text-disabled)]">{date}</span>
-        </div>
+        <StarRow score={item.score} />
       </div>
       {item.comment && (
         <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2">{item.comment}</p>

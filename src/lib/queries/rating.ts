@@ -100,8 +100,6 @@ export async function getUserRatings(
     date_desc: [{ updatedAt: 'desc' as const }],
     score_desc: [{ score: 'desc' as const }, { updatedAt: 'desc' as const }],
     score_asc: [{ score: 'asc' as const }, { updatedAt: 'desc' as const }],
-    name_asc: [{ roastery: { name: 'asc' as const } }],
-    name_desc: [{ roastery: { name: 'desc' as const } }],
   }[sort]
 
   const rawRatings = await prisma.rating.findMany({
