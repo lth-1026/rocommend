@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next'
 import { withSentryConfig } from '@sentry/nextjs'
+import { withAxiom } from 'next-axiom'
 
 const securityHeaders = [
   // DNS 프리페칭 허용: 외부 도메인 DNS를 미리 조회해 페이지 로딩 속도 향상
@@ -89,7 +90,7 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withAxiom(nextConfig), {
   // Sentry 프로젝트 설정
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
