@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.18.0](https://github.com/lth-1026/rocommend/compare/roco-0.17.0...roco-0.18.0) (2026-05-01)
+
+
+### Features
+
+* 원두 디카페인 여부에 따라 로스터리 decaf 자동 동기화 ([#158](https://github.com/lth-1026/rocommend/issues/158)) ([972ea1e](https://github.com/lth-1026/rocommend/commit/972ea1ed0ecf4465149ce7f38a8ed0d8aa39c8b3))
+
+
+### Bug Fixes
+
+* next-axiom withAxiom 래퍼 추가 ([#159](https://github.com/lth-1026/rocommend/issues/159)) ([1667f1f](https://github.com/lth-1026/rocommend/commit/1667f1f903bd98950a519f246957e6d2b1c55a31))
+* 온보딩 완료 사용자의 JWT 갱신 후 리다이렉트 ([#157](https://github.com/lth-1026/rocommend/issues/157)) ([7869bcb](https://github.com/lth-1026/rocommend/commit/7869bcb0ab345e2804ec092bdbbe81ea1dce2f90))
+* 한글 IME 조합 중 검색 debounce 처리 개선 ([#156](https://github.com/lth-1026/rocommend/issues/156)) ([fa815b1](https://github.com/lth-1026/rocommend/commit/fa815b104266b23ddb6688f647e57f2d16e7dccc))
+
 ## [0.17.0](https://github.com/lth-1026/rocommend/compare/roco-0.16.3...roco-0.17.0) (2026-05-01)
 
 
