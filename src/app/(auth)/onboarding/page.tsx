@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
+import { auth, unstable_update } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateUniqueNickname } from '@/lib/nickname'
 import { flattenTags } from '@/types/roastery'
@@ -17,7 +17,11 @@ export default async function OnboardingPage() {
       select: { nickname: true, image: true, name: true },
     }),
   ])
-  if (existing) redirect('/')
+  if (existing) {
+    // JWT에 onboardingVersion이 없는 경우를 처리: 갱신 후 리다이렉트
+    await unstable_update({})
+    redirect('/')
+  }
 
   // signIn 콜백 미실행 등으로 닉네임이 없는 경우 여기서 보완
   let nickname = user?.nickname ?? null
