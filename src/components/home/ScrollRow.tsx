@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
-import { fadeUpVariants, SPRING_MEDIUM } from '@/lib/motion'
+import { fadeUpVariants } from '@/lib/motion'
 
 interface ScrollRowProps {
   children: React.ReactNode
@@ -40,7 +40,6 @@ export function ScrollItem({ children }: { children: React.ReactNode }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
-      transition={SPRING_MEDIUM}
     >
       {children}
     </motion.div>

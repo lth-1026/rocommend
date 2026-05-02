@@ -30,7 +30,7 @@ export function StarSelector({ value, onChange }: StarSelectorProps) {
             key={star}
             type="button"
             aria-label={`${star}점`}
-            className="text-3xl leading-none focus-visible:outline-none"
+            className="text-3xl leading-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm"
             whileHover={{ scale: 1.3 }}
             whileTap={TAP_SCALE}
             transition={SPRING_SNAPPY}

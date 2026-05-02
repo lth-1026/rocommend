@@ -42,6 +42,7 @@ export function BookmarkButton({
     <motion.button
       type="button"
       aria-label={isBookmarked ? '즐겨찾기 해제' : '즐겨찾기 추가'}
+      aria-pressed={isBookmarked}
       disabled={isPending}
       onClick={handleClick}
       whileTap={TAP_SCALE}

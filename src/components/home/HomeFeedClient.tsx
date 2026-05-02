@@ -11,7 +11,7 @@ import { logClientEvent } from '@/actions/events'
 import type { RecommendationResult, RecommendationItem } from '@/lib/recommender'
 import type { FeaturedSectionData } from '@/lib/queries/recommendation'
 import type { RoasteryWithStats } from '@/types/roastery'
-import { fadeUpVariants, SPRING_MEDIUM } from '@/lib/motion'
+import { fadeUpVariants } from '@/lib/motion'
 
 interface HomeFeedClientProps {
   result: RecommendationResult
@@ -128,7 +128,6 @@ export function HomeFeedClient({
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
-            transition={SPRING_MEDIUM}
           >
             {content}
           </motion.div>

@@ -12,6 +12,7 @@ export function DecafToggle({ decafOn, onToggle }: DecafToggleProps) {
   return (
     <motion.button
       type="button"
+      aria-pressed={decafOn}
       onClick={onToggle}
       whileTap={TAP_SCALE}
       transition={SPRING_SNAPPY}
