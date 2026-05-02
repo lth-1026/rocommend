@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.19.0](https://github.com/lth-1026/rocommend/compare/roco-0.18.1...roco-0.19.0) (2026-05-02)
+
+
+### Features
+
+* framer-motion 기반 통일 spring 인터랙션 시스템 추가 ([#166](https://github.com/lth-1026/rocommend/issues/166)) ([950a912](https://github.com/lth-1026/rocommend/commit/950a91283092e10048408d110e9a4c1cb8cc5798))
+* 관리자 로스터리 상세/수정 페이지에 공개 페이지 링크 추가 ([#168](https://github.com/lth-1026/rocommend/issues/168)) ([917165c](https://github.com/lth-1026/rocommend/commit/917165ca3a8f2f04211d34e579de85f01b69a85f))
+
+
+### Bug Fixes
+
+* 평가 3개 미만 시 stale Recommendation 레코드 정리 + 주석 오타 수정 ([#165](https://github.com/lth-1026/rocommend/issues/165)) ([e4bf280](https://github.com/lth-1026/rocommend/commit/e4bf280508d5bfbed9209a8e3de5506a8fb62a18))
+
 ## [0.18.1](https://github.com/lth-1026/rocommend/compare/roco-0.18.0...roco-0.18.1) (2026-05-02)
 
 
