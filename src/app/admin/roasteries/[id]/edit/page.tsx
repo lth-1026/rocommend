@@ -28,11 +28,19 @@ export default async function EditRoasteryPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-2xl flex flex-col gap-8">
       <div>
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-6 flex items-center gap-3 flex-wrap">
           <Link href="/admin/roasteries" className="text-sm text-text-sub hover:text-text">
             ← 목록
           </Link>
           <h1 className="text-2xl font-bold text-text">로스터리 수정</h1>
+          <Link
+            href={`/roasteries/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-auto rounded-lg border border-border px-3 py-1.5 text-xs text-text-sub hover:text-text transition-colors"
+          >
+            공개 페이지 ↗
+          </Link>
         </div>
         <div className="rounded-xl border border-border bg-surface p-6">
           <RoasteryForm
