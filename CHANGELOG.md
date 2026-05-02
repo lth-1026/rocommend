@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.1](https://github.com/lth-1026/rocommend/compare/roco-0.18.0...roco-0.18.1) (2026-05-02)
+
+
+### Bug Fixes
+
+* 미디움 라이트 → 미디엄 라이트 오타 수정 ([#162](https://github.com/lth-1026/rocommend/issues/162)) ([005c4e4](https://github.com/lth-1026/rocommend/commit/005c4e40487dd81c060400701f52d8e1afe0a9bc))
+
 ## [0.18.0](https://github.com/lth-1026/rocommend/compare/roco-0.17.0...roco-0.18.0) (2026-05-01)
 
 
