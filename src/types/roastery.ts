@@ -88,7 +88,7 @@ export const PRICE_OPTIONS = Object.keys(PRICE_RANGE_LABELS) as PriceRange[]
 export const ROASTING_LEVEL_LABELS: Record<string, string> = {
   LIGHT: '라이트',
   LIGHT_MEDIUM: '라이트 미디엄',
-  MEDIUM_LIGHT: '미디움 라이트',
+  MEDIUM_LIGHT: '미디엄 라이트',
   MEDIUM: '미디엄',
   MEDIUM_DARK: '미디엄 다크',
   DARK: '다크',
