@@ -142,4 +142,78 @@ describe('추천 정확도 (offline)', () => {
       }
     }
   })
+
+  // A-06: 100명 시뮬레이션 Leave-one-out Hit Rate
+  // 취향 그룹 3개(과일향/진한로스팅/라이트로스팅)로 100명 생성 후,
+  // 각 유저의 최고 평점 아이템 1개를 제외한 나머지로 CF 실행.
+  // 숨긴 아이템이 예측 상위 5개에 포함되는 비율(Hit Rate @5)이 60% 이상이어야 한다.
+  it('A-06: 100명 시뮬레이션 Leave-one-out Hit Rate @5 >= 60%', () => {
+    // 결정론적 LCG 난수 생성기 (seed=42, 재현 가능)
+    let seed = 42
+    const rand = () => {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff
+      return seed / 0x7fffffff
+    }
+    const pickHigh = (): number => (rand() > 0.5 ? 5 : 4)
+    const pickLow = (): number => (rand() > 0.5 ? 1 : 2)
+
+    // 취향 아키타입: [highItems, lowItems, midItems(50% 확률 포함)]
+    const archetypes = [
+      { high: ['r1', 'r2', 'r3'], low: ['r4', 'r5'], mid: ['r7', 'r8'] }, // 과일향
+      { high: ['r4', 'r5', 'r6'], low: ['r1', 'r2'], mid: ['r8', 'r9'] }, // 진한 로스팅
+      { high: ['r7', 'r8', 'r9'], low: ['r2'], mid: ['r3', 'r5'] }, // 라이트 로스팅
+    ]
+    const groupSizes = [35, 35, 30]
+
+    const allRatings: RawRating[] = []
+    const holdouts: { userId: string; roasteryId: string }[] = []
+
+    for (let g = 0; g < archetypes.length; g++) {
+      const { high, low, mid } = archetypes[g]
+
+      for (let i = 0; i < groupSizes[g]; i++) {
+        const userId = `u_g${g}_${i}`
+        const userRatings: RawRating[] = []
+
+        for (const rid of high) userRatings.push({ userId, roasteryId: rid, score: pickHigh() })
+        for (const rid of low) userRatings.push({ userId, roasteryId: rid, score: pickLow() })
+        for (const rid of mid) {
+          if (rand() > 0.5) userRatings.push({ userId, roasteryId: rid, score: 3 })
+        }
+
+        // holdout: high 아이템 중 점수 가장 높은 것 1개 제거
+        const highRatings = userRatings.filter((r) => high.includes(r.roasteryId))
+        const holdout = [...highRatings].sort(
+          (a, b) => b.score - a.score || a.roasteryId.localeCompare(b.roasteryId)
+        )[0]
+        holdouts.push({ userId, roasteryId: holdout.roasteryId })
+
+        allRatings.push(...userRatings.filter((r) => r.roasteryId !== holdout.roasteryId))
+      }
+    }
+
+    const matrix = buildSimilarityMatrix(allRatings)
+    const allItemIds = [...new Set(allRatings.map((r) => r.roasteryId))]
+
+    let hits = 0
+
+    for (const { userId, roasteryId: heldId } of holdouts) {
+      const userMap = new Map(
+        allRatings.filter((r) => r.userId === userId).map((r) => [r.roasteryId, r.score])
+      )
+
+      const top5 = allItemIds
+        .filter((id) => !userMap.has(id))
+        .map((id) => ({ id, score: predictScore(matrix, userMap, id) }))
+        .filter((p) => p.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
+        .map((p) => p.id)
+
+      if (top5.includes(heldId)) hits++
+    }
+
+    const hitRate = hits / holdouts.length
+    expect(hitRate).toBeGreaterThanOrEqual(0.6)
+  })
 })
