@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Navigation } from '@/components/layout/Navigation'
+import { PageTransition } from '@/components/motion/PageTransition'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -19,7 +20,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
       <Navigation />
       {/* 모바일: BottomTab 높이(64px)만큼 하단 패딩 */}
       <main className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   )

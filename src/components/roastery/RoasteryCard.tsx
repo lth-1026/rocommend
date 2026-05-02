@@ -1,10 +1,14 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import { RegionDisplay } from './RegionDisplay'
 import { RatingDisplay } from './RatingDisplay'
 import type { RoasteryWithStats } from '@/types/roastery'
 import { PRICE_RANGE_LABELS, getRegions, getCharacteristicTags } from '@/types/roastery'
+import { SPRING_SNAPPY, TAP_SCALE } from '@/lib/motion'
 
 interface RoasteryCardProps {
   roastery: RoasteryWithStats
@@ -52,7 +56,11 @@ export function RoasteryCard({
         href={`/roasteries/${roastery.id}`}
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
       >
-        <div className="group flex flex-row items-start gap-3 rounded-xl p-2 hover:bg-muted/50 transition-colors">
+        <motion.div
+          className="group flex flex-row items-start gap-3 rounded-xl p-2 hover:bg-muted/50 transition-colors"
+          whileTap={TAP_SCALE}
+          transition={SPRING_SNAPPY}
+        >
           <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
             {roastery.imageUrl ? (
               <Image
@@ -88,7 +96,7 @@ export function RoasteryCard({
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
       </Link>
     )
   }
@@ -99,7 +107,11 @@ export function RoasteryCard({
       href={`/roasteries/${roastery.id}`}
       className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
     >
-      <div className="group flex flex-col gap-2">
+      <motion.div
+        className="group flex flex-col gap-2"
+        whileTap={TAP_SCALE}
+        transition={SPRING_SNAPPY}
+      >
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-muted">
           {roastery.imageUrl ? (
             <Image
@@ -140,7 +152,7 @@ export function RoasteryCard({
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </Link>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { DecafToggle } from './DecafToggle'
 import { RecommendSection } from './RecommendSection'
 import { PopularSection } from './PopularSection'
@@ -10,6 +11,7 @@ import { logClientEvent } from '@/actions/events'
 import type { RecommendationResult, RecommendationItem } from '@/lib/recommender'
 import type { FeaturedSectionData } from '@/lib/queries/recommendation'
 import type { RoasteryWithStats } from '@/types/roastery'
+import { fadeUpVariants } from '@/lib/motion'
 
 interface HomeFeedClientProps {
   result: RecommendationResult
@@ -67,51 +69,69 @@ export function HomeFeedClient({
       )}
 
       {sections.map((section) => {
+        let content: React.ReactNode = null
+
         switch (section.type) {
           case 'CF_NEW':
-            if (!isLoggedIn) return <LoginCTASection key={section.id} title={section.title} />
-            if (result.source === 'fallback') return null
-            return (
-              <RecommendSection
-                key={section.id}
-                title={section.title}
-                items={cfNewItems}
-                onCardClick={handleCardClick}
-              />
-            )
+            if (!isLoggedIn) content = <LoginCTASection title={section.title} />
+            else if (result.source === 'fallback') return null
+            else
+              content = (
+                <RecommendSection
+                  title={section.title}
+                  items={cfNewItems}
+                  onCardClick={handleCardClick}
+                />
+              )
+            break
 
           case 'CF_REPEAT':
-            if (!isLoggedIn) return <LoginCTASection key={section.id} title={section.title} />
-            if (result.source === 'fallback') return null
-            return (
-              <RecommendSection
-                key={section.id}
-                title={section.title}
-                items={cfRepeatItems}
-                onCardClick={handleCardClick}
-              />
-            )
+            if (!isLoggedIn) content = <LoginCTASection title={section.title} />
+            else if (result.source === 'fallback') return null
+            else
+              content = (
+                <RecommendSection
+                  title={section.title}
+                  items={cfRepeatItems}
+                  onCardClick={handleCardClick}
+                />
+              )
+            break
 
           case 'POPULAR':
-            return (
+            content = (
               <PopularSection
-                key={section.id}
                 title={section.title}
                 items={popularItems}
                 onCardClick={handleCardClick}
               />
             )
+            break
 
           case 'CUSTOM':
-            return (
+            content = (
               <PopularSection
-                key={section.id}
                 title={section.title}
                 items={section.roasteries}
                 onCardClick={handleCardClick}
               />
             )
+            break
         }
+
+        if (!content) return null
+
+        return (
+          <motion.div
+            key={section.id}
+            variants={fadeUpVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+          >
+            {content}
+          </motion.div>
+        )
       })}
     </div>
   )
