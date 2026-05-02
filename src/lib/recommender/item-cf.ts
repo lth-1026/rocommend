@@ -70,7 +70,10 @@ export async function computeAndSaveCF(userId: string): Promise<void> {
   if (ratings.length === 0) return
 
   const userRatings = ratings.filter((r) => r.userId === userId)
-  if (userRatings.length < 3) return
+  if (userRatings.length < 3) {
+    await prisma.recommendation.deleteMany({ where: { userId } })
+    return
+  }
 
   const matrix = buildSimilarityMatrix(ratings)
   const userRatedMap = new Map(userRatings.map((r) => [r.roasteryId, r.score]))

@@ -1,5 +1,9 @@
+'use client'
+
+import { motion } from 'framer-motion'
 import { RoasteryCard } from './RoasteryCard'
 import type { RoasteryWithStats } from '@/types/roastery'
+import { staggerContainerVariants, fadeUpVariants } from '@/lib/motion'
 
 interface RoasteryGridProps {
   roasteries: RoasteryWithStats[]
@@ -8,16 +12,22 @@ interface RoasteryGridProps {
 
 export function RoasteryGrid({ roasteries, activeRegions }: RoasteryGridProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <motion.div
+      variants={staggerContainerVariants}
+      initial="hidden"
+      animate="visible"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    >
       {roasteries.map((roastery, i) => (
-        <RoasteryCard
-          key={roastery.id}
-          roastery={roastery}
-          priority={i < 4}
-          activeRegions={activeRegions}
-          variant="landscape"
-        />
+        <motion.div key={roastery.id} variants={fadeUpVariants}>
+          <RoasteryCard
+            roastery={roastery}
+            priority={i < 4}
+            activeRegions={activeRegions}
+            variant="landscape"
+          />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   )
 }

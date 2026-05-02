@@ -53,6 +53,14 @@ export default async function RoasteryDetailPage({ params }: Props) {
         {!isDeleted && !isClosed && isHidden && (
           <span className="rounded px-2 py-0.5 text-xs bg-gray-100 text-gray-600">숨김</span>
         )}
+        <Link
+          href={`/roasteries/${id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-auto rounded-lg border border-border px-3 py-1.5 text-xs text-text-sub hover:text-text transition-colors"
+        >
+          공개 페이지 ↗
+        </Link>
       </div>
 
       {/* 로스터리 정보 카드 */}
