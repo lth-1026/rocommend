@@ -21,7 +21,7 @@ export async function getRecommendations(userId?: string): Promise<Recommendatio
     return getPopularFallback(userId)
   }
 
-  // new: 유저가 평가하지 않은 로스터리, cfScore 내림차순 상위 5개
+  // new: 유저가 평가하지 않은 로스터리, cfScore 내림차순 상위 7개
   const newItems = stored
     .filter((r) => r.userRating === undefined)
     .sort((a, b) => b.cfScore - a.cfScore)
