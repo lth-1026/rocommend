@@ -1,6 +1,8 @@
 'use client'
 
 import { useRef } from 'react'
+import { motion } from 'framer-motion'
+import { fadeUpVariants, SPRING_MEDIUM } from '@/lib/motion'
 
 interface ScrollRowProps {
   children: React.ReactNode
@@ -28,14 +30,19 @@ export function ScrollRow({ children }: ScrollRowProps) {
   )
 }
 
-/** ScrollRow 내 개별 카드 래퍼 — 고정 너비 + snap */
+/** ScrollRow 내 개별 카드 래퍼 — 고정 너비 + snap + whileInView 등장 */
 export function ScrollItem({ children }: { children: React.ReactNode }) {
   return (
-    <div
+    <motion.div
       className="w-36 sm:w-40 lg:w-[calc((100%-6rem)/7)] flex-shrink-0"
       style={{ scrollSnapAlign: 'start' }}
+      variants={fadeUpVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={SPRING_MEDIUM}
     >
       {children}
-    </div>
+    </motion.div>
   )
 }
