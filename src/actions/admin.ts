@@ -141,7 +141,7 @@ export interface CreateBeanInput {
   prices: BeanPriceInput[]
 }
 
-const ROASTING_LEVELS = ['LIGHT', 'MEDIUM_LIGHT', 'MEDIUM', 'MEDIUM_DARK', 'DARK']
+const ROASTING_LEVELS = ['', 'LIGHT', 'MEDIUM_LIGHT', 'MEDIUM', 'MEDIUM_DARK', 'DARK']
 
 /** 현재 visible 원두(deletedAt=null, hidden=false) 기준으로 Roastery.decaf를 재동기화 */
 async function syncRoasteryDecaf(roasteryId: string): Promise<void> {
