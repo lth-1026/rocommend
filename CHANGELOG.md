@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.20.0](https://github.com/lth-1026/rocommend/compare/roco-0.19.0...roco-0.20.0) (2026-05-03)
+
+
+### Features
+
+* 원두 로스팅 포인트 선택 안 함 옵션 추가 ([#173](https://github.com/lth-1026/rocommend/issues/173)) ([3a12294](https://github.com/lth-1026/rocommend/commit/3a12294516752fb28d892af6710fce351c9dbe16))
+
+
+### Bug Fixes
+
+* ScrollItem 가로 스크롤 중 세로 간섭 제거 ([#171](https://github.com/lth-1026/rocommend/issues/171)) ([08dbe5c](https://github.com/lth-1026/rocommend/commit/08dbe5cf15218507b7f0aec58b2ff876831c30f4))
+
 ## [0.19.0](https://github.com/lth-1026/rocommend/compare/roco-0.18.1...roco-0.19.0) (2026-05-02)
 
 
