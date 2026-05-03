@@ -37,14 +37,11 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
         <SortDropdown value={sort} options={SORT_OPTIONS} onChange={setSort} />
       </div>
 
-      <ul className="flex flex-col">
+      <ul className="flex flex-col gap-1 pt-2">
         {sorted.map((item) => (
-          <li
-            key={item.id}
-            className={`border-b border-[var(--color-border)] last-of-type:border-b-0 ${item.isUnavailable ? 'opacity-50' : ''}`}
-          >
+          <li key={item.id} className={`rounded-md ${item.isUnavailable ? 'opacity-50' : ''}`}>
             {item.isUnavailable ? (
-              <div className="flex items-center gap-3 py-4">
+              <div className="flex items-center gap-3 px-3 py-3">
                 <div className="flex flex-1 flex-col gap-0.5 min-w-0">
                   <span className="text-sm font-medium text-muted-foreground truncate">
                     {item.roastery.name}
@@ -62,7 +59,7 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-3 py-4 hover:bg-[var(--color-surface)] transition-colors">
+              <div className="flex items-center gap-3 px-3 py-3 rounded-md hover:bg-[var(--color-surface)] transition-colors">
                 <Link
                   href={`/roasteries/${item.roasteryId}`}
                   className="flex flex-1 items-center gap-2 min-w-0"

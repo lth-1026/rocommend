@@ -80,9 +80,11 @@ export function MyRatingList({ initialItems, initialNextCursor }: MyRatingListPr
         </p>
       ) : (
         <>
-          {items.map((item) => (
-            <MyRatingRow key={item.id} item={item} />
-          ))}
+          <div className="flex flex-col gap-1 pt-2">
+            {items.map((item) => (
+              <MyRatingRow key={item.id} item={item} />
+            ))}
+          </div>
           <div ref={sentinelRef} className="h-1" />
           {isPending && (
             <p className="text-sm text-[var(--color-text-secondary)] py-4 text-center">
@@ -99,7 +101,7 @@ function MyRatingRow({ item }: { item: MyRatingItem }) {
   return (
     <Link
       href={`/roasteries/${item.roastery.id}`}
-      className="flex flex-col gap-1 py-4 border-b border-[var(--color-border)] last-of-type:border-b-0 hover:bg-[var(--color-surface)] transition-colors"
+      className="flex flex-col gap-1 px-3 py-3 rounded-md hover:bg-[var(--color-surface)] transition-colors"
     >
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
