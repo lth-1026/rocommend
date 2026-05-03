@@ -2,7 +2,6 @@
 
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
-import { fadeUpVariants } from '@/lib/motion'
 
 interface ScrollRowProps {
   children: React.ReactNode
@@ -36,10 +35,10 @@ export function ScrollItem({ children }: { children: React.ReactNode }) {
     <motion.div
       className="w-36 sm:w-40 lg:w-[calc((100%-6rem)/7)] flex-shrink-0"
       style={{ scrollSnapAlign: 'start' }}
-      variants={fadeUpVariants}
-      initial="hidden"
-      whileInView="visible"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
       viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.25 }}
     >
       {children}
     </motion.div>
