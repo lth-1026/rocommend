@@ -42,6 +42,7 @@ interface BeanFormProps {
 }
 
 const ROASTING_LEVELS = [
+  { value: '', label: '선택 안 함' },
   { value: 'LIGHT', label: '라이트' },
   { value: 'MEDIUM_LIGHT', label: '미디엄 라이트' },
   { value: 'MEDIUM', label: '미디엄' },
@@ -66,7 +67,7 @@ export function BeanForm({
   )
   const [name, setName] = useState(initialData?.name ?? '')
   const [origins, setOrigins] = useState<string[]>(initialData?.origins ?? [])
-  const [roastingLevel, setRoastingLevel] = useState(initialData?.roastingLevel ?? 'MEDIUM')
+  const [roastingLevel, setRoastingLevel] = useState(initialData?.roastingLevel ?? '')
   const [decaf, setDecaf] = useState(initialData?.decaf ?? false)
   const [cupNotes, setCupNotes] = useState<string[]>(initialData?.cupNotes ?? [])
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? '')
@@ -200,9 +201,7 @@ export function BeanForm({
 
       {/* 로스팅 레벨 */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-text">
-          로스팅 레벨 <span className="text-error">*</span>
-        </label>
+        <label className="text-sm font-medium text-text">로스팅 레벨</label>
         <select
           value={roastingLevel}
           onChange={(e) => setRoastingLevel(e.target.value)}
