@@ -56,9 +56,9 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
           {search.trim() ? '검색 결과가 없습니다.' : '즐겨찾기한 로스터리가 없습니다.'}
         </p>
       ) : (
-        <ul className="flex flex-col gap-1 pt-2">
+        <div className="flex flex-col gap-1 pt-2">
           {filtered.map((item) => (
-            <li key={item.id} className={`rounded-md ${item.isUnavailable ? 'opacity-50' : ''}`}>
+            <div key={item.id} className={`rounded-md ${item.isUnavailable ? 'opacity-50' : ''}`}>
               {item.isUnavailable ? (
                 <div className="flex items-center gap-3 px-3 py-3">
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -112,9 +112,9 @@ export function BookmarkList({ bookmarks, initialSort }: BookmarkListProps) {
                   </button>
                 </div>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       {removeTarget && (
