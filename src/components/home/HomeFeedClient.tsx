@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { DecafToggle } from './DecafToggle'
 import { RecommendSection } from './RecommendSection'
@@ -28,7 +27,6 @@ export function HomeFeedClient({
 }: HomeFeedClientProps) {
   const [decafOn, setDecafOn] = useState(false)
   const [, startTransition] = useTransition()
-  const router = useRouter()
 
   const handleCardClick = (roasteryId: string) => {
     startTransition(async () => {
@@ -40,7 +38,6 @@ export function HomeFeedClient({
         },
       })
     })
-    router.push(`/roasteries/${roasteryId}`)
   }
 
   const cfNewItems: RecommendationItem[] =
