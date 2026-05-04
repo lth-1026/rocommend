@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { RatingModal } from './RatingModal'
 
 interface RatingButtonProps {
   roasteryId: string
   roasteryName: string
-  isLoggedIn: boolean
   existingScore?: number
   existingComment?: string
 }
@@ -16,14 +16,16 @@ interface RatingButtonProps {
 export function RatingButton({
   roasteryId,
   roasteryName,
-  isLoggedIn,
   existingScore,
   existingComment,
 }: RatingButtonProps) {
   const [open, setOpen] = useState(false)
   const [currentScore, setCurrentScore] = useState(existingScore)
   const [currentComment, setCurrentComment] = useState(existingComment)
+  const { data: session } = useSession()
   const router = useRouter()
+
+  const isLoggedIn = !!session?.user?.id
 
   function handleClick() {
     if (!isLoggedIn) {

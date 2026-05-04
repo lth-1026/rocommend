@@ -81,7 +81,6 @@ export function RoasteryDetail({
               <RatingButton
                 roasteryId={roastery.id}
                 roasteryName={roastery.name}
-                isLoggedIn={isLoggedIn}
                 existingScore={userRating?.score}
                 existingComment={userRating?.comment}
               />
