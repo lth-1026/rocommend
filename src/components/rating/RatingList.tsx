@@ -28,6 +28,27 @@ export function RatingList({
   const [isPending, startTransition] = useTransition()
   const sentinelRef = useRef<HTMLDivElement>(null)
 
+  // router.refresh() 후 서버에서 새 initialItems가 내려오면 state 동기화
+  // 사용자가 initialSort와 다른 정렬을 선택 중이면 해당 정렬로 재조회
+  // sort는 의도적으로 deps 제외 — 정렬 변경은 handleSortChange가 단독 처리
+  useEffect(() => {
+    if (sort === initialSort) {
+      setItems(initialItems)
+      setNextCursor(initialNextCursor)
+    } else {
+      startTransition(async () => {
+        try {
+          const page = await fetchRoasteryRatings({ roasteryId, sort, cursor: '' })
+          setItems(page.items)
+          setNextCursor(page.nextCursor)
+        } catch {
+          toast.error('한줄평을 불러오지 못했어요. 다시 시도해 주세요.')
+        }
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialItems, initialNextCursor, initialSort, roasteryId])
+
   // 정렬 변경 시 서버에서 재조회
   function handleSortChange(newSort: RatingSortOption) {
     setSort(newSort)
