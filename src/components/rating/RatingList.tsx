@@ -28,13 +28,13 @@ export function RatingList({
   const [isPending, startTransition] = useTransition()
   const sentinelRef = useRef<HTMLDivElement>(null)
 
-  // router.refresh() 후 서버에서 새 props가 내려오면 state 동기화
+  // router.refresh() 후 서버에서 새 initialItems가 내려오면 state 동기화
+  // sort는 사용자가 선택한 값을 유지 (handleSortChange로만 변경)
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(initialItems)
     setNextCursor(initialNextCursor)
-    setSort(initialSort)
-  }, [initialItems, initialNextCursor, initialSort])
+  }, [initialItems, initialNextCursor])
 
   // 정렬 변경 시 서버에서 재조회
   function handleSortChange(newSort: RatingSortOption) {
