@@ -89,17 +89,23 @@ export function MyRatingList({ initialItems, initialNextCursor }: MyRatingListPr
         <p className="py-4 text-center text-sm text-[var(--color-text-secondary)]">
           불러오는 중...
         </p>
-      ) : !isPending && filtered.length === 0 ? (
+      ) : items.length === 0 ? (
         <p className="py-4 text-center text-sm text-[var(--color-text-secondary)]">
-          {search.trim() ? '검색 결과가 없습니다.' : '아직 작성한 한줄평이 없습니다.'}
+          아직 작성한 한줄평이 없습니다.
         </p>
       ) : (
         <>
-          <div className="flex flex-col gap-1 pt-2">
-            {filtered.map((item) => (
-              <MyRatingRow key={item.id} item={item} />
-            ))}
-          </div>
+          {filtered.length === 0 ? (
+            <p className="py-4 text-center text-sm text-[var(--color-text-secondary)]">
+              검색 결과가 없습니다.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-1 pt-2">
+              {filtered.map((item) => (
+                <MyRatingRow key={item.id} item={item} />
+              ))}
+            </div>
+          )}
           <div ref={sentinelRef} className="h-1" />
           {isPending && (
             <p className="py-4 text-center text-sm text-[var(--color-text-secondary)]">
