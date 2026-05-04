@@ -22,12 +22,13 @@ export function RatingButton({
   const [open, setOpen] = useState(false)
   const [currentScore, setCurrentScore] = useState(existingScore)
   const [currentComment, setCurrentComment] = useState(existingComment)
-  const { data: session } = useSession()
+  const { status } = useSession()
   const router = useRouter()
 
-  const isLoggedIn = !!session?.user?.id
+  const isLoggedIn = status === 'authenticated'
 
   function handleClick() {
+    if (status === 'loading') return
     if (!isLoggedIn) {
       router.push('/login')
       return
