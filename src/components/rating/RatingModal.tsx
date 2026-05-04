@@ -13,7 +13,7 @@ interface RatingModalProps {
   roasteryName: string
   existingScore?: number
   existingComment?: string
-  onSuccess: () => void
+  onSuccess: (score?: number, comment?: string) => void
 }
 
 export function RatingModal({
@@ -27,9 +27,9 @@ export function RatingModal({
 }: RatingModalProps) {
   const [deleteOpen, setDeleteOpen] = useState(false)
 
-  function handleSuccess() {
+  function handleSuccess(score?: number, comment?: string) {
     onOpenChange(false)
-    onSuccess()
+    onSuccess(score, comment)
   }
 
   return (
@@ -45,7 +45,7 @@ export function RatingModal({
             roasteryId={roasteryId}
             initialScore={existingScore ?? 0}
             initialComment={existingComment ?? ''}
-            onSuccess={handleSuccess}
+            onSuccess={(score, comment) => handleSuccess(score, comment)}
           />
 
           {existingScore && (

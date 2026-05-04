@@ -44,6 +44,25 @@ export function RatingList({
     })
   }
 
+  // 평가 제출/삭제 시 roco:rating-changed 이벤트를 수신해 첫 페이지를 재조회
+  useEffect(() => {
+    function handleRatingChanged(e: Event) {
+      const detail = (e as CustomEvent<{ roasteryId: string }>).detail
+      if (detail.roasteryId !== roasteryId) return
+      startTransition(async () => {
+        try {
+          const page = await fetchRoasteryRatings({ roasteryId, sort, cursor: '' })
+          setItems(page.items)
+          setNextCursor(page.nextCursor)
+        } catch {
+          toast.error('한줄평을 불러오지 못했어요. 다시 시도해 주세요.')
+        }
+      })
+    }
+    window.addEventListener('roco:rating-changed', handleRatingChanged)
+    return () => window.removeEventListener('roco:rating-changed', handleRatingChanged)
+  }, [roasteryId, sort])
+
   // IntersectionObserver — 스크롤 바닥 감지
   useEffect(() => {
     if (!nextCursor || !sentinelRef.current) return

@@ -125,9 +125,8 @@ export function RoasteryDetail({
         beans={roastery.beans}
       />
 
-      {/* 한줄평 목록 — userRating이 바뀔 때 key가 바뀌어 remount, 최신 서버 데이터로 초기화 */}
+      {/* 한줄평 목록 */}
       <RatingList
-        key={`${userRating?.score ?? 'none'}-${userRating?.comment ?? ''}`}
         roasteryId={roastery.id}
         initialItems={initialRatings}
         initialNextCursor={initialNextCursor}

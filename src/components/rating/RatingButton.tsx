@@ -21,6 +21,8 @@ export function RatingButton({
   existingComment,
 }: RatingButtonProps) {
   const [open, setOpen] = useState(false)
+  const [currentScore, setCurrentScore] = useState(existingScore)
+  const [currentComment, setCurrentComment] = useState(existingComment)
   const router = useRouter()
 
   function handleClick() {
@@ -31,10 +33,16 @@ export function RatingButton({
     setOpen(true)
   }
 
+  function handleSuccess(score?: number, comment?: string) {
+    setCurrentScore(score)
+    setCurrentComment(comment)
+    window.dispatchEvent(new CustomEvent('roco:rating-changed', { detail: { roasteryId } }))
+  }
+
   return (
     <>
-      <Button variant={existingScore ? 'secondary' : 'default'} onClick={handleClick}>
-        {existingScore ? `내 평가: ${existingScore}점 ★` : '평가하기'}
+      <Button variant={currentScore ? 'secondary' : 'default'} onClick={handleClick}>
+        {currentScore ? `내 평가: ${currentScore}점 ★` : '평가하기'}
       </Button>
 
       {isLoggedIn && (
@@ -43,9 +51,9 @@ export function RatingButton({
           onOpenChange={setOpen}
           roasteryId={roasteryId}
           roasteryName={roasteryName}
-          existingScore={existingScore}
-          existingComment={existingComment}
-          onSuccess={() => router.refresh()}
+          existingScore={currentScore}
+          existingComment={currentComment}
+          onSuccess={handleSuccess}
         />
       )}
     </>

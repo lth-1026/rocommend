@@ -10,7 +10,7 @@ interface RatingFormProps {
   roasteryId: string
   initialScore?: number
   initialComment?: string
-  onSuccess: () => void
+  onSuccess: (score: number, comment?: string) => void
 }
 
 export function RatingForm({
@@ -34,7 +34,7 @@ export function RatingForm({
       const result = await upsertRating({ roasteryId, score, comment: comment.trim() || undefined })
       if (result.success) {
         toast.success('평가가 저장됐어요.')
-        onSuccess()
+        onSuccess(score, comment.trim() || undefined)
       } else {
         toast.error(result.error)
       }
