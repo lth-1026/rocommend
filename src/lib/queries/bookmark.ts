@@ -71,12 +71,13 @@ export async function getBookmarks(
     isUnavailable: b.roastery.deletedAt !== null || b.roastery.hidden,
   }))
 
-  if (sort === 'myRating') {
+  if (sort === 'myRating_desc' || sort === 'myRating_asc') {
+    const dir = sort === 'myRating_desc' ? -1 : 1
     result.sort((a, b) => {
       if (a.myRating === null && b.myRating === null) return 0
       if (a.myRating === null) return 1
       if (b.myRating === null) return -1
-      return b.myRating - a.myRating
+      return dir * (a.myRating - b.myRating)
     })
   }
 
