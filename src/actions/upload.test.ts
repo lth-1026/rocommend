@@ -36,6 +36,23 @@ function makeFormData(file: File): FormData {
   return fd
 }
 
+// MIME 타입별 매직 바이트 (12바이트 고정)
+const MAGIC: Record<string, number[]> = {
+  'image/jpeg': [0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0],
+  'image/png': [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0],
+  // RIFF(4) + size(4) + WEBP(4)
+  'image/webp': [0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50],
+}
+
+/** 올바른 매직 바이트가 포함된 이미지 파일을 생성한다 */
+function makeImageFile(name: string, type: string, sizeBytes: number): File {
+  const buf = new Uint8Array(Math.max(sizeBytes, 12))
+  const magic = MAGIC[type]
+  if (magic) magic.forEach((b, i) => (buf[i] = b))
+  return new File([buf], name, { type })
+}
+
+/** 매직 바이트 없이 빈 버퍼로 파일을 생성한다 (유효하지 않은 파일 테스트용) */
 function makeFile(name: string, type: string, sizeBytes: number): File {
   const buf = new Uint8Array(sizeBytes)
   return new File([buf], name, { type })
@@ -86,7 +103,7 @@ describe('uploadAvatar', () => {
     vi.mocked(put).mockResolvedValue({ url: 'https://blob.vercel.test/avatar.jpg' } as never)
     vi.mocked(prisma.user.update).mockResolvedValue({} as never)
 
-    const fd = makeFormData(makeFile('photo.jpg', 'image/jpeg', 1024))
+    const fd = makeFormData(makeImageFile('photo.jpg', 'image/jpeg', 1024))
     const result = await uploadAvatar(fd)
 
     expect(put).toHaveBeenCalledOnce()
@@ -102,7 +119,7 @@ describe('uploadAvatar', () => {
     vi.mocked(put).mockResolvedValue({ url: 'https://blob.vercel.test/avatar.png' } as never)
     vi.mocked(prisma.user.update).mockResolvedValue({} as never)
 
-    const fd = makeFormData(makeFile('photo.png', 'image/png', 512))
+    const fd = makeFormData(makeImageFile('photo.png', 'image/png', 512))
     const result = await uploadAvatar(fd)
     expect(result).toMatchObject({ success: true })
   })
@@ -112,9 +129,17 @@ describe('uploadAvatar', () => {
     vi.mocked(put).mockResolvedValue({ url: 'https://blob.vercel.test/avatar.webp' } as never)
     vi.mocked(prisma.user.update).mockResolvedValue({} as never)
 
-    const fd = makeFormData(makeFile('photo.webp', 'image/webp', 512))
+    const fd = makeFormData(makeImageFile('photo.webp', 'image/webp', 512))
     const result = await uploadAvatar(fd)
     expect(result).toMatchObject({ success: true })
+  })
+
+  // 매직 바이트 불일치 (MIME 스푸핑)
+  it('MIME 타입은 image/jpeg이지만 실제 파일이 이미지가 아니면 VALIDATION을 반환한다', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as never)
+    const fd = makeFormData(makeFile('malicious.jpg', 'image/jpeg', 1024))
+    const result = await uploadAvatar(fd)
+    expect(result).toEqual({ success: false, error: expect.any(String), code: 'VALIDATION' })
   })
 
   // 기존 Blob 이미지 삭제
@@ -125,7 +150,7 @@ describe('uploadAvatar', () => {
     vi.mocked(put).mockResolvedValue({ url: 'https://blob.vercel.test/new.jpg' } as never)
     vi.mocked(prisma.user.update).mockResolvedValue({} as never)
 
-    const fd = makeFormData(makeFile('photo.jpg', 'image/jpeg', 1024))
+    const fd = makeFormData(makeImageFile('photo.jpg', 'image/jpeg', 1024))
     await uploadAvatar(fd)
 
     expect(del).toHaveBeenCalledWith('https://abc.public.blob.vercel-storage.com/old.jpg')
@@ -138,7 +163,7 @@ describe('uploadAvatar', () => {
     vi.mocked(put).mockResolvedValue({ url: 'https://blob.vercel.test/new.jpg' } as never)
     vi.mocked(prisma.user.update).mockResolvedValue({} as never)
 
-    const fd = makeFormData(makeFile('photo.jpg', 'image/jpeg', 1024))
+    const fd = makeFormData(makeImageFile('photo.jpg', 'image/jpeg', 1024))
     await uploadAvatar(fd)
 
     expect(del).not.toHaveBeenCalled()
@@ -149,7 +174,7 @@ describe('uploadAvatar', () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as never)
     vi.mocked(put).mockRejectedValue(new Error('network error'))
 
-    const fd = makeFormData(makeFile('photo.jpg', 'image/jpeg', 1024))
+    const fd = makeFormData(makeImageFile('photo.jpg', 'image/jpeg', 1024))
     const result = await uploadAvatar(fd)
 
     expect(result).toEqual({ success: false, error: expect.any(String), code: 'UPLOAD_ERROR' })
