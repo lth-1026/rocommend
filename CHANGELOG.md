@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0](https://github.com/lth-1026/rocommend/compare/roco-0.21.0...roco-1.0.0) (2026-05-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* 서비스를 공개 출시합니다.
+
+### Features
+
+* v1.0 공개 서비스 출시 ([#185](https://github.com/lth-1026/rocommend/issues/185)) ([8a1c456](https://github.com/lth-1026/rocommend/commit/8a1c4563a99846b266bc4230f8e907da892c0c4d))
+
+
+### Bug Fixes
+
+* 공개 전 보안 취약점 수정 ([#184](https://github.com/lth-1026/rocommend/issues/184)) ([28620c3](https://github.com/lth-1026/rocommend/commit/28620c3bca8d4002d7871a758128716d2e0006c9))
+
 ## [0.21.0](https://github.com/lth-1026/rocommend/compare/roco-0.20.0...roco-0.21.0) (2026-05-05)
 
 
