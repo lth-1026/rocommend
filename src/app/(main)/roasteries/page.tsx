@@ -4,7 +4,7 @@ import { auth } from '@/lib/auth'
 
 export const metadata: Metadata = {
   title: '로스터리',
-  description: '한국 스페셜티 커피 로스터리를 취향에 맞게 찾아보세요.',
+  description: '한국 커피 로스터리를 취향에 맞게 찾아보세요.',
   alternates: {
     canonical: '/roasteries',
   },
