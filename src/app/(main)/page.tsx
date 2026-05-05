@@ -16,7 +16,7 @@ async function HomeFeed({ userId }: { userId?: string }) {
   const [result, sections, popularItems] = await Promise.all([
     getRecommendations(userId),
     getFeaturedSections(),
-    getPopularRoasteries(userId),
+    getPopularRoasteries(),
   ])
 
   return (
