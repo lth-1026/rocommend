@@ -98,6 +98,7 @@ export async function getUserRatings(
 ): Promise<{ items: MyRatingItem[]; nextCursor: string | null }> {
   const orderBy = {
     date_desc: [{ updatedAt: 'desc' as const }],
+    date_asc: [{ updatedAt: 'asc' as const }],
     score_desc: [{ score: 'desc' as const }, { updatedAt: 'desc' as const }],
     score_asc: [{ score: 'asc' as const }, { updatedAt: 'desc' as const }],
   }[sort]

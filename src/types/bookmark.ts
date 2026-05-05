@@ -9,4 +9,4 @@ export interface BookmarkWithRoastery {
   isUnavailable: boolean
 }
 
-export type BookmarkSort = 'name' | 'myRating'
+export type BookmarkSort = 'name' | 'myRating_desc' | 'myRating_asc'
