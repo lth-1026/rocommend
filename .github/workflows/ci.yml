@@ -29,7 +29,7 @@ jobs:
       DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_test
       AUTH_SECRET: test-secret-for-ci-only-not-real-value-32x
       AUTH_URL: http://localhost:3000
-      TEST_SESSION_TOKEN: GJqJOE9YwkHOYhZlD49Dl4s32qTsDKp4pPWwBKLMJb4=
+      TEST_SESSION_TOKEN: ${{ secrets.TEST_SESSION_TOKEN }}
       ENABLE_TEST_API: "1"
 
     steps:

@@ -6,6 +6,15 @@ import { prisma } from '@/lib/prisma'
 import { submitFeedbackSchema } from '@/lib/schemas/feedback'
 import type { ActionResult } from '@/types/action'
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function submitFeedback(input: {
@@ -50,12 +59,12 @@ export async function submitFeedback(input: {
         await resend.emails.send({
           from: 'roco <onboarding@resend.dev>',
           to: emails,
-          subject: `[roco] 새로운 의견이 도착했어요${category ? ` — ${category}` : ''}`,
+          subject: `[roco] 새로운 의견이 도착했어요${category ? ` — ${category.replace(/[\r\n]/g, '')}` : ''}`,
           html: [
-            `<p><strong>보낸 사람</strong>: ${session.user.name ?? '(이름 없음)'} (${session.user.email ?? '이메일 없음'})</p>`,
-            category ? `<p><strong>카테고리</strong>: ${category}</p>` : '',
+            `<p><strong>보낸 사람</strong>: ${escapeHtml(session.user.name ?? '(이름 없음)')} (${escapeHtml(session.user.email ?? '이메일 없음')})</p>`,
+            category ? `<p><strong>카테고리</strong>: ${escapeHtml(category)}</p>` : '',
             `<p><strong>내용</strong>:</p>`,
-            `<blockquote style="border-left:3px solid #ccc;margin:0;padding:0 1em;color:#555">${content.replace(/\n/g, '<br/>')}</blockquote>`,
+            `<blockquote style="border-left:3px solid #ccc;margin:0;padding:0 1em;color:#555">${escapeHtml(content).replace(/\n/g, '<br/>')}</blockquote>`,
           ]
             .filter(Boolean)
             .join('\n'),

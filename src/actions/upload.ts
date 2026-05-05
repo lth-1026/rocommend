@@ -13,11 +13,41 @@ const BLOB_HOST = 'blob.vercel-storage.com'
 const LOCAL_UPLOADS_PATH = '/uploads/avatars'
 const LOCAL_ADMIN_UPLOADS_PATH = '/uploads/admin'
 
+// file.type은 클라이언트가 조작 가능하므로 서버에서 안전한 확장자로 변환
+const MIME_TO_EXT: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+}
+
+// 각 MIME 타입의 파일 시그니처 (매직 바이트)
+const MAGIC_SIGNATURES: Array<{ mime: string; bytes: number[]; offset?: number }> = [
+  { mime: 'image/jpeg', bytes: [0xff, 0xd8, 0xff] },
+  { mime: 'image/png', bytes: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] },
+  // WebP: "RIFF" at 0, "WEBP" at 8
+  { mime: 'image/webp', bytes: [0x52, 0x49, 0x46, 0x46] },
+]
+
+async function detectMimeFromBytes(file: File): Promise<string | null> {
+  const buffer = await file.slice(0, 12).arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+
+  for (const sig of MAGIC_SIGNATURES) {
+    if (sig.bytes.every((b, i) => bytes[i] === b)) {
+      if (sig.mime === 'image/webp') {
+        const webp = [0x57, 0x45, 0x42, 0x50]
+        if (!webp.every((b, i) => bytes[8 + i] === b)) continue
+      }
+      return sig.mime
+    }
+  }
+  return null
+}
+
 /** 로컬 dev: public/uploads/avatars/ 에 저장, 프로덕션: Vercel Blob */
-async function putFile(userId: string, file: File): Promise<string> {
+async function putFile(userId: string, file: File, ext: string): Promise<string> {
   // BLOB_READ_WRITE_TOKEN이 없을 때만 로컬 파일시스템 사용 (호출 시점에 평가)
   const useLocalFS = !process.env.BLOB_READ_WRITE_TOKEN
-  const ext = file.type.split('/')[1]
   // 업로드마다 고유 파일명 → 브라우저 캐시 자동 무효화
   const filename = `${userId}_${Date.now()}.${ext}`
 
@@ -38,9 +68,8 @@ async function putFile(userId: string, file: File): Promise<string> {
 }
 
 /** 로컬 dev: public/uploads/admin/ 에 저장, 프로덕션: Vercel Blob admin/ */
-async function putAdminFile(folder: string, file: File): Promise<string> {
+async function putAdminFile(folder: string, file: File, ext: string): Promise<string> {
   const useLocalFS = !process.env.BLOB_READ_WRITE_TOKEN
-  const ext = file.type.split('/')[1]
   const filename = `${Date.now()}.${ext}`
 
   if (useLocalFS) {
@@ -107,8 +136,18 @@ export async function uploadAdminImage(
     return { success: false, error: '파일 크기는 4MB 이하여야 합니다', code: 'VALIDATION' }
   }
 
+  const detectedMime = await detectMimeFromBytes(file)
+  if (!detectedMime || !ALLOWED_TYPES.includes(detectedMime) || detectedMime !== file.type) {
+    return {
+      success: false,
+      error: '실제 이미지 파일이 아닙니다',
+      code: 'VALIDATION',
+    }
+  }
+  const ext = MIME_TO_EXT[detectedMime]
+
   try {
-    const url = await putAdminFile(folder, file)
+    const url = await putAdminFile(folder, file, ext)
     return { success: true, data: { url } }
   } catch {
     return { success: false, error: '업로드 중 오류가 발생했습니다', code: 'UPLOAD_ERROR' }
@@ -138,9 +177,19 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<{ u
     return { success: false, error: '파일 크기는 4MB 이하여야 합니다', code: 'VALIDATION' }
   }
 
+  const detectedMime = await detectMimeFromBytes(file)
+  if (!detectedMime || !ALLOWED_TYPES.includes(detectedMime) || detectedMime !== file.type) {
+    return {
+      success: false,
+      error: '실제 이미지 파일이 아닙니다',
+      code: 'VALIDATION',
+    }
+  }
+  const ext = MIME_TO_EXT[detectedMime]
+
   let url: string
   try {
-    url = await putFile(session.user.id, file)
+    url = await putFile(session.user.id, file, ext)
   } catch {
     return { success: false, error: '업로드 중 오류가 발생했습니다', code: 'UPLOAD_ERROR' }
   }
