@@ -20,9 +20,7 @@ export default async function LoginPage({ searchParams }: Props) {
       {/* 로고 + 슬로건 */}
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-bold text-text-primary">roco</h1>
-        <p className="text-sm text-text-secondary">
-          취향에 맞는 스페셜티 커피 로스터리를 찾아보세요
-        </p>
+        <p className="text-sm text-text-secondary">취향에 맞는 커피 로스터리를 찾아보세요</p>
       </div>
 
       {error && <ErrorAlert error={error} provider={provider} />}
