@@ -59,7 +59,7 @@ export async function submitFeedback(input: {
         await resend.emails.send({
           from: 'roco <onboarding@resend.dev>',
           to: emails,
-          subject: `[roco] 새로운 의견이 도착했어요${category ? ` — ${escapeHtml(category)}` : ''}`,
+          subject: `[roco] 새로운 의견이 도착했어요${category ? ` — ${category.replace(/[\r\n]/g, '')}` : ''}`,
           html: [
             `<p><strong>보낸 사람</strong>: ${escapeHtml(session.user.name ?? '(이름 없음)')} (${escapeHtml(session.user.email ?? '이메일 없음')})</p>`,
             category ? `<p><strong>카테고리</strong>: ${escapeHtml(category)}</p>` : '',
