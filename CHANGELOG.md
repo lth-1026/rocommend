@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.21.0](https://github.com/lth-1026/rocommend/compare/roco-0.20.0...roco-0.21.0) (2026-05-05)
+
+
+### Features
+
+* Axiom 미들웨어 로깅 및 withUser 헬퍼 추가 ([#181](https://github.com/lth-1026/rocommend/issues/181)) ([6df9859](https://github.com/lth-1026/rocommend/commit/6df98599543adda143340db6dbc8f372a2b010dd))
+* 내 활동 리스트 검색/정렬 및 카드 스타일 개선 ([c67b760](https://github.com/lth-1026/rocommend/commit/c67b7601eab3afd07180de731148365a500bc583))
+
+
+### Bug Fixes
+
+* 법적 문서 사업자명 플레이스홀더를 roco로 교체 ([#179](https://github.com/lth-1026/rocommend/issues/179)) ([4d6e402](https://github.com/lth-1026/rocommend/commit/4d6e40298f38dcb29e0de2bcfaef6fefdb3bde2b))
+* 평가 저장 후 네비게이션 및 한줄평 즉시 반영 버그 수정 ([#178](https://github.com/lth-1026/rocommend/issues/178)) ([3e78725](https://github.com/lth-1026/rocommend/commit/3e78725e2fadbad8d72624bb99884e23187d366e))
+
 ## [0.20.0](https://github.com/lth-1026/rocommend/compare/roco-0.19.0...roco-0.20.0) (2026-05-03)
 
 
