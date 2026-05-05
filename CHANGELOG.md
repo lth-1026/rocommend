@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/lth-1026/rocommend/compare/roco-1.0.1...roco-1.0.2) (2026-05-05)
+
+
+### Bug Fixes
+
+* 인기 섹션에서 userId 필터 제거 ([#191](https://github.com/lth-1026/rocommend/issues/191)) ([7406298](https://github.com/lth-1026/rocommend/commit/74062987676ba668f8bfc0216fdfe4a8aff472bb))
+
 ## [1.0.1](https://github.com/lth-1026/rocommend/compare/roco-1.0.0...roco-1.0.1) (2026-05-05)
 
 
