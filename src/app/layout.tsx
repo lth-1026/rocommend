@@ -24,7 +24,9 @@ export const metadata: Metadata = {
     siteName: 'roco',
     locale: 'ko_KR',
     type: 'website',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+    images: [
+      { url: '/opengraph-image', width: 1200, height: 630, alt: 'roco — 커피 로스터리 추천' },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
