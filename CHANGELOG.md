@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/lth-1026/rocommend/compare/roco-1.0.0...roco-1.0.1) (2026-05-05)
+
+
+### Bug Fixes
+
+* 서비스 설명 문구에서 '스페셜티' 제거 ([#188](https://github.com/lth-1026/rocommend/issues/188)) ([eeb2eb0](https://github.com/lth-1026/rocommend/commit/eeb2eb07565dda35ff7a1e8c2004fcead28a6483))
+
 ## [1.0.0](https://github.com/lth-1026/rocommend/compare/roco-0.21.0...roco-1.0.0) (2026-05-05)
 
 
