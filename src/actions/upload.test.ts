@@ -142,6 +142,18 @@ describe('uploadAvatar', () => {
     expect(result).toEqual({ success: false, error: expect.any(String), code: 'VALIDATION' })
   })
 
+  it('PNG 매직 바이트인데 image/jpeg로 선언하면 VALIDATION을 반환한다', async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: 'user-1' } } as never)
+    // PNG 매직 바이트 + image/jpeg 선언 → 불일치
+    const fd = makeFormData(makeImageFile('spoof.jpg', 'image/png', 512))
+    const file = fd.get('file') as File
+    // file.type을 image/jpeg로 바꿔 만든 새 File
+    const spoofed = new File([file], 'spoof.jpg', { type: 'image/jpeg' })
+    const fd2 = makeFormData(spoofed)
+    const result = await uploadAvatar(fd2)
+    expect(result).toEqual({ success: false, error: expect.any(String), code: 'VALIDATION' })
+  })
+
   // 기존 Blob 이미지 삭제
   it('기존 이미지가 Vercel Blob URL이면 del()을 호출한다', async () => {
     vi.mocked(auth).mockResolvedValue({

@@ -137,7 +137,7 @@ export async function uploadAdminImage(
   }
 
   const detectedMime = await detectMimeFromBytes(file)
-  if (!detectedMime || !ALLOWED_TYPES.includes(detectedMime)) {
+  if (!detectedMime || !ALLOWED_TYPES.includes(detectedMime) || detectedMime !== file.type) {
     return {
       success: false,
       error: '실제 이미지 파일이 아닙니다',
@@ -178,7 +178,7 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<{ u
   }
 
   const detectedMime = await detectMimeFromBytes(file)
-  if (!detectedMime || !ALLOWED_TYPES.includes(detectedMime)) {
+  if (!detectedMime || !ALLOWED_TYPES.includes(detectedMime) || detectedMime !== file.type) {
     return {
       success: false,
       error: '실제 이미지 파일이 아닙니다',
