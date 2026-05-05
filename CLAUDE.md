@@ -57,6 +57,51 @@ pnpm prisma db seed        # 시드 재실행
 - 본문: 한국어, `-` 목록
 - Co-Authored-By 포함
 
+## Axiom 로깅
+
+패키지: `next-axiom`. 환경변수: `AXIOM_TOKEN`, `AXIOM_DATASET` (서버), `NEXT_PUBLIC_AXIOM_TOKEN`, `NEXT_PUBLIC_AXIOM_DATASET` (클라이언트).
+
+### 레이어별 사용법
+
+**Middleware (`src/proxy.ts`)** — 자동 request 로깅, 수동 변경 불필요
+```ts
+const logger = new Logger({ source: 'middleware' })
+await logger.middleware(request, { logRequestDetails: ['nextUrl', 'method'] })
+event.waitUntil(logger.flush())
+```
+
+**Server Action** — `withUser`로 userId 공통 필드 자동 첨부
+```ts
+import { withUser } from '@/lib/logger'
+const log = withUser(session?.user?.id)
+log.info('action.name', { ...payload })
+log.error('action.failed', { error: String(err) })
+await log.flush() // 필수
+```
+
+**Server Component**
+```ts
+import { Logger } from 'next-axiom'
+const log = new Logger()
+log.info('event', { field: value })
+await log.flush() // 필수
+```
+
+**Client Component**
+```ts
+'use client'
+import { useLogger } from 'next-axiom'
+const log = useLogger()
+log.info('event', { field: value })
+```
+
+### 규칙
+- Server Action / Server Component 끝에서 `await log.flush()` 필수 — 없으면 Vercel 서버리스에서 로그 유실
+- `logRequestDetails`에 `body`, `headers` 추가 금지 — PII·Authorization 헤더 노출 위험
+- 로깅 실패가 사용자 플로우를 막으면 안 됨 — try/catch로 감싸고 실패는 무시
+- Web Vitals(`<AxiomWebVitals />`)는 production 배포에서만 전송됨
+- `source` 필드: middleware=`"middleware"`, Server Action/Component=`"server"`, 클라이언트=`"client"`
+
 ## 릴리즈 절차 ("배포하자" 트리거)
 사용자가 "배포하자"를 요청하면 아래 순서를 실행한다.
 
