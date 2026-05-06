@@ -35,6 +35,7 @@ interface Props {
   selectedDetail: SelectedRoasteryData | null
   isLoggedIn: boolean
   activeRegions: string[]
+  listUrl: string
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -44,6 +45,7 @@ export function RoasteryMapLayout({
   selectedDetail,
   isLoggedIn,
   activeRegions,
+  listUrl,
 }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -165,6 +167,13 @@ export function RoasteryMapLayout({
               <>
                 {/* List panel header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b shrink-0">
+                  <Link
+                    href={listUrl}
+                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <ChevronLeft className="size-4" />
+                    목록으로
+                  </Link>
                   <span className="text-sm text-muted-foreground">
                     {roasteries.length}개 로스터리
                   </span>
@@ -213,6 +222,15 @@ export function RoasteryMapLayout({
   // ─── Mobile Layout ───────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col">
+      {/* Back to list */}
+      <Link
+        href={listUrl}
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3 self-start"
+      >
+        <ChevronLeft className="size-4" />
+        목록으로
+      </Link>
+
       {/* View toggle */}
       <div className="flex rounded-lg border overflow-hidden self-center mb-4">
         <button

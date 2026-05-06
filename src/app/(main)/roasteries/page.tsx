@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+import Link from 'next/link'
+import { MapPin } from 'lucide-react'
 import { auth } from '@/lib/auth'
 
 export const metadata: Metadata = {
@@ -14,6 +16,7 @@ import { getUserRating, getRatingCount, getRoasteryRatings } from '@/lib/queries
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
 import { RequestRoasteryButton } from '@/components/roastery/RequestRoasteryButton'
+import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
 import { RoasteryMapLayout } from '@/components/roastery/map/RoasteryMapLayout'
 import { toArray } from '@/lib/utils'
 import { PRICE_OPTIONS } from '@/types/roastery'
@@ -28,8 +31,9 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
   const [params, session] = await Promise.all([searchParams, auth()])
   const userId = session?.user?.id
 
+  const isMapView = params.view === 'map'
   const sort: SortOption = params.sort === 'name' ? 'name' : 'popular'
-  const selectedId = typeof params.id === 'string' ? params.id : undefined
+  const selectedId = isMapView && typeof params.id === 'string' ? params.id : undefined
 
   const filter: FilterParams = {
     q: typeof params.q === 'string' ? params.q.trim() : '',
@@ -42,11 +46,26 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
     rated: params.rated === '1',
   }
 
-  // 목록 + 상세 병렬 fetch
+  // 필터 파라미터만 담은 URLSearchParams (view, id 제외)
+  const filterParams = new URLSearchParams()
+  if (filter.q) filterParams.set('q', filter.q)
+  filter.price.forEach((v) => filterParams.append('price', v))
+  if (filter.decaf) filterParams.set('decaf', '1')
+  filter.regions.forEach((v) => filterParams.append('region', v))
+  filter.tags.forEach((v) => filterParams.append('tag', v))
+  if (filter.rated) filterParams.set('rated', '1')
+  if (sort !== 'popular') filterParams.set('sort', sort)
+
+  const mapUrlParams = new URLSearchParams(filterParams)
+  mapUrlParams.set('view', 'map')
+  const mapUrl = `/roasteries?${mapUrlParams.toString()}`
+  const listUrl = filterParams.toString() ? `/roasteries?${filterParams.toString()}` : '/roasteries'
+
+  // 목록 + 지도 뷰에서만 상세 fetch
   const [roasteries, selectedRoastery, ratingCount] = await Promise.all([
     getRoasteries(sort, filter, userId),
     selectedId ? getRoasteryById(selectedId) : null,
-    userId && selectedId ? getRatingCount(userId) : 0,
+    isMapView && userId && selectedId ? getRatingCount(userId) : 0,
   ])
 
   // 선택된 로스터리 상세 데이터
@@ -88,16 +107,29 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
           <p className="text-sm text-muted-foreground">필터를 조정하거나 검색어를 바꿔보세요.</p>
           <RequestRoasteryButton />
         </div>
+      ) : isMapView ? (
+        <Suspense fallback={null}>
+          <RoasteryMapLayout
+            roasteries={roasteries}
+            selectedDetail={selectedDetail}
+            isLoggedIn={!!userId}
+            activeRegions={filter.regions}
+            listUrl={listUrl}
+          />
+        </Suspense>
       ) : (
         <>
-          <Suspense fallback={null}>
-            <RoasteryMapLayout
-              roasteries={roasteries}
-              selectedDetail={selectedDetail}
-              isLoggedIn={!!userId}
-              activeRegions={filter.regions}
-            />
-          </Suspense>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">{roasteries.length}개 로스터리</span>
+            <Link
+              href={mapUrl}
+              className="flex items-center gap-1.5 text-sm border rounded-md px-3 py-1.5 hover:bg-muted transition-colors"
+            >
+              <MapPin className="size-4" />
+              지도로 보기
+            </Link>
+          </div>
+          <RoasteryGrid roasteries={roasteries} activeRegions={filter.regions} />
           <div className="flex justify-center pt-4 pb-2">
             <RequestRoasteryButton />
           </div>
