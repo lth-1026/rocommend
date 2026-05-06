@@ -18,6 +18,7 @@ interface RoasteryDetailProps {
   initialRatings: RatingListItem[]
   initialNextCursor: string | null
   initialSort: RatingSortOption
+  hideBackButton?: boolean
 }
 
 export function RoasteryDetail({
@@ -28,13 +29,14 @@ export function RoasteryDetail({
   initialRatings,
   initialNextCursor,
   initialSort,
+  hideBackButton = false,
 }: RoasteryDetailProps) {
   const regions = getRegions(roastery.tags)
   const charTags = getCharacteristicTags(roastery.tags)
 
   return (
     <div className="flex flex-col gap-8">
-      <BackButton />
+      {!hideBackButton && <BackButton />}
 
       {/* 기본 정보 */}
       <div className="flex flex-col gap-2">

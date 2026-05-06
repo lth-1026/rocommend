@@ -9,13 +9,16 @@ export const metadata: Metadata = {
     canonical: '/roasteries',
   },
 }
-import { getRoasteries } from '@/lib/queries/roastery'
-import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
+import { getRoasteries, getRoasteryById } from '@/lib/queries/roastery'
+import { getUserRating, getRatingCount, getRoasteryRatings } from '@/lib/queries/rating'
+import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
 import { RequestRoasteryButton } from '@/components/roastery/RequestRoasteryButton'
+import { RoasteryMapLayout } from '@/components/roastery/map/RoasteryMapLayout'
 import { toArray } from '@/lib/utils'
 import { PRICE_OPTIONS } from '@/types/roastery'
 import type { SortOption, FilterParams, PriceRange } from '@/types/roastery'
+import type { SelectedRoasteryData } from '@/components/roastery/map/RoasteryMapLayout'
 
 interface RoasteriesPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -26,6 +29,7 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
   const userId = session?.user?.id
 
   const sort: SortOption = params.sort === 'name' ? 'name' : 'popular'
+  const selectedId = typeof params.id === 'string' ? params.id : undefined
 
   const filter: FilterParams = {
     q: typeof params.q === 'string' ? params.q.trim() : '',
@@ -38,7 +42,37 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
     rated: params.rated === '1',
   }
 
-  const roasteries = await getRoasteries(sort, filter, userId)
+  // 목록 + 상세 병렬 fetch
+  const [roasteries, selectedRoastery, ratingCount] = await Promise.all([
+    getRoasteries(sort, filter, userId),
+    selectedId ? getRoasteryById(selectedId) : null,
+    userId && selectedId ? getRatingCount(userId) : 0,
+  ])
+
+  // 선택된 로스터리 상세 데이터
+  let selectedDetail: SelectedRoasteryData | null = null
+  if (selectedRoastery) {
+    const initialSort = userId && ratingCount >= 3 ? 'SIMILAR' : 'HIGH'
+    const [userRating, isBookmarked, ratingsResult] = await Promise.all([
+      userId ? getUserRating(userId, selectedRoastery.id) : null,
+      userId ? getBookmarkStatus(userId, selectedRoastery.id) : false,
+      getRoasteryRatings({
+        roasteryId: selectedRoastery.id,
+        sort: initialSort,
+        currentUserId: userId,
+      }),
+    ])
+    selectedDetail = {
+      roastery: selectedRoastery,
+      isBookmarked,
+      userRating: userRating
+        ? { score: userRating.score, comment: userRating.comment ?? undefined }
+        : undefined,
+      initialRatings: ratingsResult.items,
+      initialNextCursor: ratingsResult.nextCursor,
+      initialSort,
+    }
+  }
 
   return (
     <div className="page-wrapper py-8 flex flex-col gap-6">
@@ -56,7 +90,14 @@ export default async function RoasteriesPage({ searchParams }: RoasteriesPagePro
         </div>
       ) : (
         <>
-          <RoasteryGrid roasteries={roasteries} activeRegions={filter.regions} />
+          <Suspense fallback={null}>
+            <RoasteryMapLayout
+              roasteries={roasteries}
+              selectedDetail={selectedDetail}
+              isLoggedIn={!!userId}
+              activeRegions={filter.regions}
+            />
+          </Suspense>
           <div className="flex justify-center pt-4 pb-2">
             <RequestRoasteryButton />
           </div>

@@ -15,6 +15,7 @@ interface RoasteryCardProps {
   priority?: boolean
   activeRegions?: string[]
   variant?: 'portrait' | 'landscape'
+  onCardClick?: (id: string) => void
 }
 
 function CoffeePlaceholder({ size }: { size: number }) {
@@ -46,6 +47,7 @@ export function RoasteryCard({
   priority = false,
   activeRegions,
   variant = 'portrait',
+  onCardClick,
 }: RoasteryCardProps) {
   const regions = getRegions(roastery.tags)
   const charTags = getCharacteristicTags(roastery.tags)
@@ -55,6 +57,14 @@ export function RoasteryCard({
       <Link
         href={`/roasteries/${roastery.id}`}
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+        onClick={
+          onCardClick
+            ? (e) => {
+                e.preventDefault()
+                onCardClick(roastery.id)
+              }
+            : undefined
+        }
       >
         <motion.div
           className="group flex flex-row items-start gap-3 rounded-xl p-2 hover:bg-muted/50 transition-colors"
@@ -106,6 +116,14 @@ export function RoasteryCard({
     <Link
       href={`/roasteries/${roastery.id}`}
       className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+      onClick={
+        onCardClick
+          ? (e) => {
+              e.preventDefault()
+              onCardClick(roastery.id)
+            }
+          : undefined
+      }
     >
       <motion.div
         className="group flex flex-col gap-2"
