@@ -58,6 +58,7 @@ export async function getPopularRoasteries(
     .map((r) => ({
       ...r,
       tags: flattenTags(r.tags),
+      locations: [] as never[],
       ratingCount: r._count.ratings,
       avgRating: avgMap.get(r.id) ?? null,
     }))
@@ -125,6 +126,7 @@ export async function getFeaturedSections(): Promise<FeaturedSectionData[]> {
     roasteries: s.roasteries.map(({ roastery: r }) => ({
       ...r,
       tags: flattenTags(r.tags),
+      locations: [] as never[],
       ratingCount: r._count.ratings,
       avgRating: avgMap.get(r.id) ?? null,
     })),
@@ -182,6 +184,7 @@ export async function getStoredRecommendations(userId: string): Promise<StoredRe
     roastery: {
       ...rec.roastery,
       tags: flattenTags(rec.roastery.tags),
+      locations: [] as never[],
       ratingCount: rec.roastery._count.ratings,
       avgRating: avgMap.get(rec.roasteryId) ?? null,
     },

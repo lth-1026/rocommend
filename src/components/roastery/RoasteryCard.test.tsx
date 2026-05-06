@@ -32,6 +32,7 @@ function makeRoastery(overrides: Partial<RoasteryWithStats> = {}): RoasteryWithS
     name: '테스트 로스터리',
     description: null,
     tags: [],
+    locations: [],
     priceRange: 'MID',
     decaf: false,
     imageUrl: null,
