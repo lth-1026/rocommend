@@ -32,7 +32,6 @@ interface NaverMapsAPI {
     ne?: NaverLatLng
   ) => {
     extend(latLng: NaverLatLng): void
-    isEmpty(): boolean
   }
   Size: new (w: number, h: number) => NaverSize
   Point: new (x: number, y: number) => NaverPoint
@@ -160,7 +159,7 @@ export function RoasteryMapView({
       const nv2 = window.naver.maps
       const bounds = new nv2.LatLngBounds()
       for (const m of markers) bounds.extend(new nv2.LatLng(m.lat, m.lng))
-      if (!bounds.isEmpty()) map.fitBounds(bounds, { top: 60, right: 20, bottom: 60, left: 20 })
+      map.fitBounds(bounds, { top: 60, right: 20, bottom: 60, left: 20 })
     }
   }, [mapReady, markers, selectedId, hoveredId, onMarkerClick, onMarkerHover])
 
