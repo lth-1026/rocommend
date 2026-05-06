@@ -92,8 +92,8 @@ export function RoasteryDetail({
         {/* 지역 + 주소 */}
         <div className="flex flex-col gap-0.5">
           {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
-          {roastery.address && (
-            <p className="text-xs text-muted-foreground/70">{roastery.address}</p>
+          {roastery.locations[0]?.address && (
+            <p className="text-xs text-muted-foreground/70">{roastery.locations[0].address}</p>
           )}
         </div>
 
