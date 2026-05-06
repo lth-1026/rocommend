@@ -35,7 +35,7 @@ const securityHeaders = [
       // 미지정 리소스는 동일 출처만 허용
       "default-src 'self'",
       // Next.js App Router는 인라인 스크립트·eval 필요 (hydration, turbopack)
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://oapi.map.naver.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://oapi.map.naver.com https://va.vercel-scripts.com",
       // Tailwind CSS 등 CSS-in-JS는 인라인 스타일 필요
       "style-src 'self' 'unsafe-inline'",
       // 소셜 로그인 프로필 이미지 및 Vercel Blob 이미지 허용
