@@ -45,8 +45,8 @@ const securityHeaders = [
         'https://k.kakaocdn.net http://k.kakaocdn.net https://img1.kakaocdn.net http://img1.kakaocdn.net',
         'https://phinf.pstatic.net https://ssl.pstatic.net',
         'https://*.public.blob.vercel-storage.com',
-        // Naver Maps 타일 이미지
-        'https://map.pstatic.net https://*.map.naver.com',
+        // Naver Maps 타일/리소스 이미지
+        'https://map.pstatic.net https://*.map.naver.com http://static.naver.net https://static.naver.net',
       ].join(' '),
       // 웹폰트는 동일 출처만
       "font-src 'self'",
