@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.1](https://github.com/lth-1026/rocommend/compare/roco-2.0.0...roco-2.0.1) (2026-05-10)
+
+
+### Bug Fixes
+
+* Roastery 모델 locations 필드 중복 제거 ([4fb31ba](https://github.com/lth-1026/rocommend/commit/4fb31ba2957e12a83544567a4e5f2988f3f363e4))
+* Roastery 모델 locations 필드 중복 제거 ([54528d6](https://github.com/lth-1026/rocommend/commit/54528d61c773717ff97eb893febab84242607408))
+* 네이버 지도 CSP nrbe.pstatic.net 추가 ([0642c49](https://github.com/lth-1026/rocommend/commit/0642c49203f2da7e7146b4ad1c5518a5b980c49a))
+* 네이버 지도 CSP에 nrbe.pstatic.net 추가 ([8267ae5](https://github.com/lth-1026/rocommend/commit/8267ae5ab474ce9823894e75b3b86dcb062f1834))
+
 ## [2.0.0](https://github.com/lth-1026/rocommend/compare/roco-1.0.2...roco-2.0.0) (2026-05-10)
 
 
