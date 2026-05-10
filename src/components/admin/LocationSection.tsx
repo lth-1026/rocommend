@@ -72,10 +72,11 @@ export function LocationSection({ roasteryId, initialLocations }: Props) {
         setGeocodeError(result.error)
         return
       }
+      const { lat, lng } = result.data!
       setForm((f) => ({
         ...f,
-        lat: String(result.data.lat),
-        lng: String(result.data.lng),
+        lat: String(lat),
+        lng: String(lng),
       }))
     })
   }
@@ -96,10 +97,11 @@ export function LocationSection({ roasteryId, initialLocations }: Props) {
           setError(result.error)
           return
         }
+        const saved = result.data!
         setLocations((prev) => {
           const updated = prev.map((l) => {
             if (input.isPrimary && l.id !== editingId) return { ...l, isPrimary: false }
-            if (l.id === editingId) return result.data
+            if (l.id === editingId) return saved
             return l
           })
           return sortLocations(updated)
@@ -111,10 +113,11 @@ export function LocationSection({ roasteryId, initialLocations }: Props) {
           setError(result.error)
           return
         }
+        const saved = result.data!
         setLocations((prev) => {
           const next = input.isPrimary
-            ? [...prev.map((l) => ({ ...l, isPrimary: false })), result.data]
-            : [...prev, result.data]
+            ? [...prev.map((l) => ({ ...l, isPrimary: false })), saved]
+            : [...prev, saved]
           return sortLocations(next)
         })
         setShowAddForm(false)
