@@ -15,7 +15,9 @@ export function RoasteryLocationSection({ primaryLocation, otherLocations, roast
   const [expanded, setExpanded] = useState(false)
 
   const hasAddress = primaryLocation?.address || otherLocations.some((l) => l.address)
-  const hasMap = primaryLocation?.lat != null && primaryLocation?.lng != null
+  const hasMap =
+    (primaryLocation?.lat != null && primaryLocation?.lng != null) ||
+    otherLocations.some((l) => l.lat != null && l.lng != null)
 
   if (!hasAddress && !hasMap) return null
 
