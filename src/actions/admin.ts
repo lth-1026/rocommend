@@ -783,3 +783,193 @@ export async function reorderSections(orderedIds: string[]): Promise<ActionResul
     return { success: false, error: '순서 저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
   }
 }
+
+// ── 지점(RoasteryLocation) 관리 ──────────────────────────
+
+export interface LocationInput {
+  address: string
+  lat: number | null
+  lng: number | null
+  isPrimary: boolean
+}
+
+export type AdminLocation = {
+  id: string
+  address: string
+  lat: number | null
+  lng: number | null
+  isPrimary: boolean
+}
+
+export async function getAdminRoasteryLocations(roasteryId: string): Promise<AdminLocation[]> {
+  const check = await requireAdmin()
+  if ('error' in check) redirect('/')
+
+  return prisma.roasteryLocation.findMany({
+    where: { roasteryId },
+    select: { id: true, address: true, lat: true, lng: true, isPrimary: true },
+    orderBy: [{ isPrimary: 'desc' }, { id: 'asc' }],
+  })
+}
+
+export async function createLocation(
+  roasteryId: string,
+  input: LocationInput
+): Promise<ActionResult<AdminLocation>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+
+  if (!input.address.trim()) {
+    return { success: false, error: '주소는 필수입니다', code: 'VALIDATION' }
+  }
+
+  try {
+    if (input.isPrimary) {
+      await prisma.roasteryLocation.updateMany({
+        where: { roasteryId },
+        data: { isPrimary: false },
+      })
+    }
+
+    const loc = await prisma.roasteryLocation.create({
+      data: {
+        roasteryId,
+        address: input.address.trim(),
+        lat: input.lat,
+        lng: input.lng,
+        isPrimary: input.isPrimary,
+      },
+      select: { id: true, address: true, lat: true, lng: true, isPrimary: true },
+    })
+
+    revalidatePath(`/admin/roasteries/${roasteryId}`)
+    revalidatePath(`/roasteries/${roasteryId}`)
+    return { success: true, data: loc }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function updateLocation(
+  id: string,
+  roasteryId: string,
+  input: LocationInput
+): Promise<ActionResult<AdminLocation>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+
+  if (!input.address.trim()) {
+    return { success: false, error: '주소는 필수입니다', code: 'VALIDATION' }
+  }
+
+  try {
+    if (input.isPrimary) {
+      await prisma.roasteryLocation.updateMany({
+        where: { roasteryId, NOT: { id } },
+        data: { isPrimary: false },
+      })
+    }
+
+    const loc = await prisma.roasteryLocation.update({
+      where: { id },
+      data: {
+        address: input.address.trim(),
+        lat: input.lat,
+        lng: input.lng,
+        isPrimary: input.isPrimary,
+      },
+      select: { id: true, address: true, lat: true, lng: true, isPrimary: true },
+    })
+
+    revalidatePath(`/admin/roasteries/${roasteryId}`)
+    revalidatePath(`/roasteries/${roasteryId}`)
+    return { success: true, data: loc }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function deleteLocation(id: string, roasteryId: string): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+
+  try {
+    await prisma.roasteryLocation.delete({ where: { id } })
+    revalidatePath(`/admin/roasteries/${roasteryId}`)
+    revalidatePath(`/roasteries/${roasteryId}`)
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '삭제 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function setPrimaryLocation(
+  id: string,
+  roasteryId: string
+): Promise<ActionResult<void>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+
+  try {
+    await prisma.$transaction([
+      prisma.roasteryLocation.updateMany({
+        where: { roasteryId },
+        data: { isPrimary: false },
+      }),
+      prisma.roasteryLocation.update({
+        where: { id },
+        data: { isPrimary: true },
+      }),
+    ])
+
+    revalidatePath(`/admin/roasteries/${roasteryId}`)
+    revalidatePath(`/roasteries/${roasteryId}`)
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
+  }
+}
+
+export async function geocodeAddress(
+  address: string
+): Promise<ActionResult<{ lat: number; lng: number }>> {
+  const check = await requireAdmin()
+  if ('error' in check) return { success: false, error: check.error, code: check.code }
+
+  if (!address.trim()) {
+    return { success: false, error: '주소를 입력해주세요', code: 'VALIDATION' }
+  }
+
+  const clientId = process.env.NAVER_MAP_CLIENT_ID
+  const clientSecret = process.env.NAVER_MAP_CLIENT_SECRET
+  if (!clientId || !clientSecret) {
+    return { success: false, error: '지오코딩 API 키가 설정되지 않았습니다', code: 'CONFIG_ERROR' }
+  }
+
+  try {
+    const url = `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address.trim())}`
+    const res = await fetch(url, {
+      headers: {
+        'X-NCP-APIGW-API-KEY-ID': clientId,
+        'X-NCP-APIGW-API-KEY': clientSecret,
+      },
+    })
+    if (!res.ok) {
+      return { success: false, error: '지오코딩 요청 실패', code: 'EXTERNAL_ERROR' }
+    }
+    const data = (await res.json()) as {
+      status: string
+      addresses: { x: string; y: string }[]
+    }
+    if (!data.addresses || data.addresses.length === 0) {
+      return { success: false, error: '주소를 찾을 수 없습니다', code: 'NOT_FOUND' }
+    }
+    const first = data.addresses[0]
+    return {
+      success: true,
+      data: { lng: parseFloat(first.x), lat: parseFloat(first.y) },
+    }
+  } catch {
+    return { success: false, error: '지오코딩 중 오류가 발생했습니다', code: 'EXTERNAL_ERROR' }
+  }
+}

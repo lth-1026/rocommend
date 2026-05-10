@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
-import { getAdminRoastery, getAdminRoasteryBeans } from '@/actions/admin'
+import { getAdminRoastery, getAdminRoasteryBeans, getAdminRoasteryLocations } from '@/actions/admin'
 import { RoasteryStatusButtons } from '@/components/admin/RoasteryStatusButtons'
 import { BeanStatusButton } from '@/components/admin/BeanStatusButton'
+import { LocationSection } from '@/components/admin/LocationSection'
 
 const PRICE_RANGE_LABEL: Record<string, string> = {
   LOW: '2만원 미만',
@@ -28,7 +29,11 @@ export default async function RoasteryDetailPage({ params }: Props) {
   if (session?.user?.role !== 'ADMIN') redirect('/')
 
   const { id } = await params
-  const [roastery, beans] = await Promise.all([getAdminRoastery(id), getAdminRoasteryBeans(id)])
+  const [roastery, beans, locations] = await Promise.all([
+    getAdminRoastery(id),
+    getAdminRoasteryBeans(id),
+    getAdminRoasteryLocations(id),
+  ])
   if (!roastery) notFound()
 
   const primaryRegion = roastery.tags.find((t) => t.category === 'REGION')?.name ?? '—'
@@ -192,6 +197,9 @@ export default async function RoasteryDetailPage({ params }: Props) {
           </div>
         )}
       </div>
+
+      {/* 지점 목록 */}
+      <LocationSection roasteryId={id} initialLocations={locations} />
     </div>
   )
 }
