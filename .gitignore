@@ -48,5 +48,8 @@ next-env.d.ts
 # claude code
 .claude/
 
+# 지오코딩 작업 파일 (DB 시딩 완료 후 불필요)
+roastery-geocode*.json
+
 
 /tmp

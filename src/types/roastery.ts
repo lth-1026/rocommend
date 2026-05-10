@@ -18,6 +18,14 @@ export function flattenTags(
     .map(({ isPrimary, tag }) => ({ ...tag, isPrimary }))
 }
 
+export interface LocationItem {
+  id: string
+  address: string
+  lat: number | null
+  lng: number | null
+  isPrimary: boolean
+}
+
 export interface RoasteryWithStats {
   id: string
   name: string
@@ -29,6 +37,7 @@ export interface RoasteryWithStats {
   website: string | null // deprecated — 채널 마이그레이션 완료 후 제거
   avgRating: number | null
   ratingCount: number
+  locations: LocationItem[]
 }
 
 /** 채널 정의 상수 — 어드민 UI 등에서 재사용 */
@@ -71,7 +80,6 @@ export interface BeanWithDetails {
 }
 
 export interface RoasteryDetail extends RoasteryWithStats {
-  address: string | null
   closedAt: Date | null
   beans: BeanWithDetails[]
   channels: ChannelWithPrice[] // 원두 미선택 시 또는 가격 없는 로스터리의 기본 채널 목록
