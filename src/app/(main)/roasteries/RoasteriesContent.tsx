@@ -97,7 +97,7 @@ export async function RoasteriesContent({ params }: Props) {
 
   const pageHeader = <RoasteryPageHeader filter={filter} sort={sort} isLoggedIn={!!userId} />
 
-  if (isMapView && mapRoasteries.length > 0) {
+  if (isMapView) {
     return (
       <div className="flex flex-col lg:h-[calc(100vh-var(--header-height))] lg:overflow-hidden">
         <RoasteriesViewTracker view="map" />

@@ -384,6 +384,13 @@ export function RoasteryMapLayout({
                   </motion.div>
                 ))}
               </motion.div>
+            ) : roasteries.length === 0 ? (
+              <div className="py-12 flex flex-col items-center gap-2 text-center">
+                <p className="text-sm font-medium">찾는 로스터리가 없어요</p>
+                <p className="text-xs text-muted-foreground">
+                  필터를 조정하거나 검색어를 바꿔보세요.
+                </p>
+              </div>
             ) : (
               <RoasteryGrid
                 roasteries={roasteries}
