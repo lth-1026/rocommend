@@ -13,7 +13,7 @@ type PriceMap = Partial<Record<ChannelKey, string>>
 
 interface SeedEntry {
   n: string // name
-  r: string // region
+  r: string | string[] // region (single or multiple)
   a?: string // address
   un?: number // isOnboardingCandidate (0|1)
   ns?: string // naver smartstore URL
@@ -29,7 +29,7 @@ interface SeedEntry {
 const SEED_DATA: SeedEntry[] = [
   {
     n: '프릳츠 커피 컴퍼니',
-    r: '서울',
+    r: ['서울', '제주'],
     a: '마포구 도화동 179-9',
     un: 0,
     w: 'https://fritz.co.kr',
@@ -70,7 +70,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '빈브라더스',
-    r: '서울',
+    r: ['서울', '경기'],
     a: '마포구 토정로 35-1',
     un: 1,
     ns: 'https://smartstore.naver.com/beanbrothers',
@@ -99,7 +99,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '나무사이로',
-    r: '서울',
+    r: ['서울', '경기'],
     a: '종로구 사직로8길 21',
     un: 0,
     w: 'https://namusairo.com',
@@ -113,7 +113,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '알레그리아',
-    r: '경기',
+    r: ['경기', '서울'],
     a: '성남시 분당구 판교역로 230',
     un: 0,
     ns: 'https://smartstore.naver.com/alegriacoffee',
@@ -141,7 +141,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '펠트커피',
-    r: '서울',
+    r: ['서울', '경기'],
     a: '마포구 서강로11길 23',
     un: 1,
     ns: 'https://smartstore.naver.com/feltcoffee',
@@ -222,7 +222,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '억셉트 커피',
-    r: '경기',
+    r: ['서울', '경기'],
     a: '군포시 당정로 28번길 17',
     un: 0,
     ns: 'https://smartstore.naver.com/acceptcoffee',
@@ -305,7 +305,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '필아웃',
-    r: '경기',
+    r: ['경기', '서울'],
     a: '성남시 분당구 벌말로 30번길 12',
     un: 0,
     ns: 'https://smartstore.naver.com/filloutcoffee',
@@ -337,7 +337,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '인크 커피',
-    r: '서울',
+    r: ['서울', '경기'],
     a: '금천구 가산디지털2로 127-20',
     un: 0,
     ns: 'https://smartstore.naver.com/inccoffee',
@@ -507,7 +507,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '유동 커피',
-    r: '제주',
+    r: ['제주', '부산', '경북'],
     a: '제주 서귀포 태평로 406',
     un: 0,
     ns: 'https://smartstore.naver.com/youdongcoffeeshop',
@@ -532,7 +532,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '클라리멘토',
-    r: '경기',
+    r: ['서울', '경기'],
     a: '고양 덕양구 권율대로 420',
     un: 1,
     ns: 'https://smartstore.naver.com/clarimento',
@@ -579,7 +579,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '블랙업커피',
-    r: '부산',
+    r: ['부산', '경남'],
     a: '부산진구 서전로10번길 41',
     un: 1,
     ns: 'https://smartstore.naver.com/blackup_coffee',
@@ -635,7 +635,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '커넥츠 커피',
-    r: '서울',
+    r: ['서울', '경기'],
     a: '마포구 성지길 60',
     un: 1,
     ns: 'https://smartstore.naver.com/connectscoffee',
@@ -728,7 +728,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '비브레이브',
-    r: '제주',
+    r: ['제주', '충남'],
     a: '제주 서귀포 서호중로 85',
     un: 1,
     ns: 'https://smartstore.naver.com/bebravejeju',
@@ -806,7 +806,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '해월커피',
-    r: '경기',
+    r: ['인천', '경기'],
     a: '경기 광주 남구로길 9',
     un: 1,
     ns: 'https://smartstore.naver.com/haewolcoffee',
@@ -917,7 +917,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '커피명가',
-    r: '대구',
+    r: ['경북', '서울'],
     a: '경북 경산시 임당로 40',
     un: 0,
     ns: 'https://smartstore.naver.com/coffeemyungga',
@@ -929,7 +929,7 @@ const SEED_DATA: SeedEntry[] = [
   },
   {
     n: '1LL 커피',
-    r: '대구',
+    r: ['대구', '서울', '경기', '경북'],
     a: '수성구 달구벌대로496길 21',
     un: 0,
     ns: 'https://smartstore.naver.com/1llcoffee',
@@ -1098,7 +1098,7 @@ async function main() {
 
     // 지역 + 특성 태그 처리
     const tagIds = await upsertTags(
-      [entry.r],
+      Array.isArray(entry.r) ? entry.r : [entry.r],
       (entry.tags ?? []).map((t) => t.trim()).filter(Boolean)
     )
 
