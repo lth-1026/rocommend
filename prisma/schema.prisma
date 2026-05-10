@@ -61,6 +61,7 @@ model Roastery {
   beans                 Bean[]
   bookmarks             Bookmark[]
   featuredIn            FeaturedSectionRoastery[]
+  locations             RoasteryLocation[]
   ratings               Rating[]
   recommendations       Recommendation[]
   channels              RoasteryChannel[]
@@ -70,6 +71,18 @@ model Roastery {
   @@index([decaf])
   @@index([name])
   @@index([deletedAt])
+}
+
+model RoasteryLocation {
+  id         String   @id @default(cuid())
+  roasteryId String
+  address    String
+  lat        Float?
+  lng        Float?
+  isPrimary  Boolean  @default(false)
+  roastery   Roastery @relation(fields: [roasteryId], references: [id], onDelete: Cascade)
+
+  @@index([roasteryId])
 }
 
 model Tag {
