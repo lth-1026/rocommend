@@ -14,11 +14,12 @@ interface FilterPanelProps {
   filter: FilterParams
   sort: SortOption
   isLoggedIn: boolean
+  variant?: 'default' | 'map-search' | 'map-pills'
 }
 
 type PillId = 'price' | 'region' | 'tag'
 
-export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
+export function FilterPanel({ filter, sort, isLoggedIn, variant = 'default' }: FilterPanelProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -102,6 +103,111 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
     filter.regions.length > 0 ||
     filter.tags.length > 0 ||
     filter.rated
+
+  if (variant === 'map-search') {
+    return (
+      <div
+        className={`flex items-center gap-2${isPending ? ' opacity-60 pointer-events-none' : ''}`}
+      >
+        <input
+          type="search"
+          placeholder="로스터리 이름 검색..."
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onFocus={() => {
+            isFocusedRef.current = true
+          }}
+          onBlur={() => {
+            isFocusedRef.current = false
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) navigate({ q: inputValue.trim() })
+          }}
+          className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          aria-label="로스터리 이름 검색"
+        />
+        <SortSelector sort={sort} />
+      </div>
+    )
+  }
+
+  if (variant === 'map-pills') {
+    return (
+      <div
+        className={`flex items-center gap-2 flex-wrap${isPending ? ' opacity-60 pointer-events-none' : ''}`}
+      >
+        <FilterPill
+          id="price"
+          label="가격대"
+          count={filter.price.length}
+          open={openPill === 'price'}
+          onToggle={() => setOpenPill(openPill === 'price' ? null : 'price')}
+          onClose={() => setOpenPill(null)}
+          shadow
+        >
+          <PriceGroup selected={filter.price} onToggle={togglePrice} />
+        </FilterPill>
+
+        <button
+          onClick={() => navigate({ decaf: !filter.decaf })}
+          className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors shadow-md ${
+            filter.decaf
+              ? 'border-foreground bg-foreground text-background'
+              : 'border-border bg-background hover:border-foreground/40'
+          }`}
+        >
+          디카페인
+        </button>
+
+        <FilterPill
+          id="region"
+          label="지역"
+          count={filter.regions.length}
+          open={openPill === 'region'}
+          onToggle={() => setOpenPill(openPill === 'region' ? null : 'region')}
+          onClose={() => setOpenPill(null)}
+          shadow
+        >
+          <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+        </FilterPill>
+
+        <FilterPill
+          id="tag"
+          label="태그"
+          count={filter.tags.length}
+          open={openPill === 'tag'}
+          onToggle={() => setOpenPill(openPill === 'tag' ? null : 'tag')}
+          onClose={() => setOpenPill(null)}
+          shadow
+        >
+          <TagGroup selected={filter.tags} onToggle={toggleTag} />
+        </FilterPill>
+
+        {isLoggedIn && (
+          <button
+            onClick={() => navigate({ rated: !filter.rated })}
+            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors shadow-md ${
+              filter.rated
+                ? 'border-foreground bg-foreground text-background'
+                : 'border-border bg-background hover:border-foreground/40'
+            }`}
+          >
+            내가 평가한
+          </button>
+        )}
+
+        {isFiltered && (
+          <button
+            onClick={reset}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            초기화
+          </button>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className={isPending ? 'opacity-60 pointer-events-none' : ''}>
@@ -203,7 +309,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
           className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
             filter.decaf
               ? 'border-foreground bg-foreground text-background'
-              : 'border-border hover:border-foreground/40'
+              : 'border-border bg-background hover:border-foreground/40'
           }`}
         >
           디카페인
@@ -237,7 +343,7 @@ export function FilterPanel({ filter, sort, isLoggedIn }: FilterPanelProps) {
             className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
               filter.rated
                 ? 'border-foreground bg-foreground text-background'
-                : 'border-border hover:border-foreground/40'
+                : 'border-border bg-background hover:border-foreground/40'
             }`}
           >
             내가 평가한
@@ -270,6 +376,7 @@ function FilterPill({
   open,
   onToggle,
   onClose,
+  shadow = false,
   children,
 }: {
   id?: PillId
@@ -278,6 +385,7 @@ function FilterPill({
   open: boolean
   onToggle: () => void
   onClose: () => void
+  shadow?: boolean
   children: React.ReactNode
 }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -295,10 +403,10 @@ function FilterPill({
     <div ref={ref} className="relative">
       <button
         onClick={onToggle}
-        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${shadow ? 'shadow-md' : ''} ${
           count > 0
             ? 'border-foreground bg-foreground text-background'
-            : 'border-border hover:border-foreground/40'
+            : 'border-border bg-background hover:border-foreground/40'
         }`}
       >
         {label}

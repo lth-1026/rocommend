@@ -9,12 +9,16 @@ import { RatingDisplay } from './RatingDisplay'
 import type { RoasteryWithStats } from '@/types/roastery'
 import { PRICE_RANGE_LABELS, getRegions, getCharacteristicTags } from '@/types/roastery'
 import { SPRING_SNAPPY, TAP_SCALE } from '@/lib/motion'
+import { formatDistance } from '@/lib/geo'
 
 interface RoasteryCardProps {
   roastery: RoasteryWithStats
   priority?: boolean
   activeRegions?: string[]
   variant?: 'portrait' | 'landscape'
+  onCardClick?: (id: string) => void
+  nearbyAddress?: string
+  nearbyDistance?: number
 }
 
 function CoffeePlaceholder({ size }: { size: number }) {
@@ -46,6 +50,9 @@ export function RoasteryCard({
   priority = false,
   activeRegions,
   variant = 'portrait',
+  onCardClick,
+  nearbyAddress,
+  nearbyDistance,
 }: RoasteryCardProps) {
   const regions = getRegions(roastery.tags)
   const charTags = getCharacteristicTags(roastery.tags)
@@ -55,6 +62,14 @@ export function RoasteryCard({
       <Link
         href={`/roasteries/${roastery.id}`}
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+        onClick={
+          onCardClick
+            ? (e) => {
+                e.preventDefault()
+                onCardClick(roastery.id)
+              }
+            : undefined
+        }
       >
         <motion.div
           className="group flex flex-row items-start gap-3 rounded-xl p-2 hover:bg-muted/50 transition-colors"
@@ -76,14 +91,27 @@ export function RoasteryCard({
               <CoffeePlaceholder size={24} />
             )}
           </div>
-          <div className="flex flex-col justify-between h-16 min-w-0">
-            <p className="font-medium text-sm leading-tight line-clamp-1">{roastery.name}</p>
-            <p className="text-xs text-muted-foreground line-clamp-1">
-              {regions.length > 0 && (
-                <RegionDisplay regions={regions} activeRegions={activeRegions} />
+          <div className="flex flex-col justify-between h-16 min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-medium text-sm leading-tight line-clamp-1">{roastery.name}</p>
+              {nearbyDistance != null && (
+                <span className="text-xs text-primary font-medium shrink-0">
+                  {formatDistance(nearbyDistance)}
+                </span>
               )}
-              {regions.length > 0 && ' · '}
-              {PRICE_RANGE_LABELS[roastery.priceRange]}
+            </div>
+            <p className="text-xs text-muted-foreground line-clamp-1">
+              {nearbyAddress != null ? (
+                nearbyAddress
+              ) : (
+                <>
+                  {regions.length > 0 && (
+                    <RegionDisplay regions={regions} activeRegions={activeRegions} />
+                  )}
+                  {regions.length > 0 && ' · '}
+                  {PRICE_RANGE_LABELS[roastery.priceRange]}
+                </>
+              )}
             </p>
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-xs">
@@ -106,6 +134,14 @@ export function RoasteryCard({
     <Link
       href={`/roasteries/${roastery.id}`}
       className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+      onClick={
+        onCardClick
+          ? (e) => {
+              e.preventDefault()
+              onCardClick(roastery.id)
+            }
+          : undefined
+      }
     >
       <motion.div
         className="group flex flex-col gap-2"

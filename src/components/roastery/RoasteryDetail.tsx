@@ -8,6 +8,7 @@ import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
 import { RatingList } from '@/components/rating/RatingList'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
 import { PRICE_RANGE_LABELS, getRegions, getCharacteristicTags } from '@/types/roastery'
+import { RoasteryLocationSection } from './RoasteryLocationSection'
 import type { RatingListItem, RatingSortOption } from '@/types/rating'
 
 interface RoasteryDetailProps {
@@ -18,6 +19,7 @@ interface RoasteryDetailProps {
   initialRatings: RatingListItem[]
   initialNextCursor: string | null
   initialSort: RatingSortOption
+  hideBackButton?: boolean
 }
 
 export function RoasteryDetail({
@@ -28,13 +30,17 @@ export function RoasteryDetail({
   initialRatings,
   initialNextCursor,
   initialSort,
+  hideBackButton = false,
 }: RoasteryDetailProps) {
   const regions = getRegions(roastery.tags)
   const charTags = getCharacteristicTags(roastery.tags)
+  const primaryLocation =
+    roastery.locations.find((l) => l.isPrimary) ?? roastery.locations[0] ?? null
+  const otherLocations = roastery.locations.filter((l) => l !== primaryLocation)
 
   return (
     <div className="flex flex-col gap-8">
-      <BackButton />
+      {!hideBackButton && <BackButton />}
 
       {/* 기본 정보 */}
       <div className="flex flex-col gap-2">
@@ -91,10 +97,14 @@ export function RoasteryDetail({
 
         {/* 지역 + 주소 */}
         <div className="flex flex-col gap-0.5">
-          {regions.length > 0 && <p className="text-sm text-muted-foreground">{regions[0]}</p>}
-          {roastery.address && (
-            <p className="text-xs text-muted-foreground/70">{roastery.address}</p>
+          {regions.length > 0 && (
+            <p className="text-sm text-muted-foreground">{regions.join(' · ')}</p>
           )}
+          <RoasteryLocationSection
+            primaryLocation={primaryLocation}
+            otherLocations={otherLocations}
+            roasteryId={roastery.id}
+          />
         </div>
 
         {/* 설명 */}

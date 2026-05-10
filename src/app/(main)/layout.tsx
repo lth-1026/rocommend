@@ -16,10 +16,10 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
+    <div className="flex h-[100svh] flex-col bg-bg">
       <Navigation />
       {/* 모바일: BottomTab 높이(64px)만큼 하단 패딩 */}
-      <main className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
+      <main className="flex-1 overflow-y-auto pb-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px))] lg:pb-0">
         <PageTransition>{children}</PageTransition>
       </main>
     </div>
