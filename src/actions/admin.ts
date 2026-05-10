@@ -955,7 +955,12 @@ export async function geocodeAddress(
       },
     })
     if (!res.ok) {
-      return { success: false, error: '지오코딩 요청 실패', code: 'EXTERNAL_ERROR' }
+      const body = await res.text().catch(() => '')
+      return {
+        success: false,
+        error: `지오코딩 요청 실패 (${res.status}): ${body.slice(0, 200)}`,
+        code: 'EXTERNAL_ERROR',
+      }
     }
     const data = (await res.json()) as {
       status: string
