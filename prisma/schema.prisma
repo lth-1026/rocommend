@@ -65,7 +65,6 @@ model Roastery {
   ratings               Rating[]
   recommendations       Recommendation[]
   channels              RoasteryChannel[]
-  locations             RoasteryLocation[]
   tags                  RoasteryTag[]
 
   @@index([priceRange])
