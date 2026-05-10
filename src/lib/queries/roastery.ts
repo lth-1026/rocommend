@@ -6,6 +6,7 @@ import type {
   RoasteryDetail,
   FilterParams,
   ChannelWithPrice,
+  LocationItem,
 } from '@/types/roastery'
 import { flattenTags } from '@/types/roastery'
 
@@ -24,6 +25,11 @@ const TAG_SELECT = {
     tag: { select: { id: true, name: true, category: true } },
   },
 } as const
+
+const LOCATION_SELECT = {
+  select: { id: true, address: true, lat: true, lng: true, isPrimary: true },
+  orderBy: [{ isPrimary: 'desc' as const }, { id: 'asc' as const }],
+}
 
 export async function getRoasteries(
   sort: SortOption = 'popular',
@@ -61,6 +67,7 @@ export async function getRoasteries(
         name: true,
         description: true,
         tags: TAG_SELECT,
+        locations: LOCATION_SELECT,
         priceRange: true,
         decaf: true,
         imageUrl: true,
@@ -81,6 +88,7 @@ export async function getRoasteries(
   const result = roasteries.map((r) => ({
     ...r,
     tags: flattenTags(r.tags),
+    locations: r.locations as LocationItem[],
     ratingCount: r._count.ratings,
     avgRating: avgMap.get(r.id) ?? null,
   }))
@@ -135,9 +143,9 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
         id: true,
         name: true,
         description: true,
-        address: true,
         closedAt: true,
         tags: TAG_SELECT,
+        locations: LOCATION_SELECT,
         priceRange: true,
         decaf: true,
         imageUrl: true,
@@ -225,6 +233,7 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
     ...roastery,
     closedAt: roastery.closedAt,
     tags: flattenTags(roastery.tags),
+    locations: roastery.locations as LocationItem[],
     ratingCount: roastery._count.ratings,
     avgRating: avgRating._avg.score ?? null,
     channels: baseChannels,

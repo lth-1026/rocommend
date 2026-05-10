@@ -7,23 +7,27 @@ import { Home, Coffee, LayoutList, User, Settings } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { SPRING_SNAPPY, TAP_SCALE } from '@/lib/motion'
-
-const authTabs = [
-  { href: '/', label: '홈', Icon: Home },
-  { href: '/roasteries', label: '로스터리', Icon: Coffee },
-  { href: '/activity', label: '내 활동', Icon: LayoutList },
-  { href: '/profile', label: '프로필', Icon: User },
-]
-
-const guestTabs = [
-  { href: '/', label: '홈', Icon: Home },
-  { href: '/roasteries', label: '로스터리', Icon: Coffee },
-  { href: '/settings', label: '설정', Icon: Settings },
-]
+import { getRoasteriesView } from '@/lib/roasteriesState'
 
 export function BottomTab({ className }: { className?: string }) {
   const pathname = usePathname()
   const { data: session } = useSession()
+
+  const roasteriesHref = getRoasteriesView() === 'map' ? '/roasteries?view=map' : '/roasteries'
+
+  const authTabs = [
+    { key: '/', href: '/', label: '홈', Icon: Home },
+    { key: '/roasteries', href: roasteriesHref, label: '로스터리', Icon: Coffee },
+    { key: '/activity', href: '/activity', label: '내 활동', Icon: LayoutList },
+    { key: '/profile', href: '/profile', label: '프로필', Icon: User },
+  ]
+
+  const guestTabs = [
+    { key: '/', href: '/', label: '홈', Icon: Home },
+    { key: '/roasteries', href: roasteriesHref, label: '로스터리', Icon: Coffee },
+    { key: '/settings', href: '/settings', label: '설정', Icon: Settings },
+  ]
+
   const tabs = session?.user ? authTabs : guestTabs
 
   return (
@@ -35,10 +39,10 @@ export function BottomTab({ className }: { className?: string }) {
       )}
     >
       <ul className="flex h-16 w-full">
-        {tabs.map(({ href, label, Icon }) => {
-          const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
+        {tabs.map(({ key, href, label, Icon }) => {
+          const isActive = key === '/' ? pathname === '/' : pathname.startsWith(key)
           return (
-            <li key={href} className="relative flex flex-1 items-center justify-center">
+            <li key={key} className="relative flex flex-1 items-center justify-center">
               {/* layoutId로 활성 탭 이동 시 인디케이터가 spring으로 슬라이드 */}
               {isActive && (
                 <motion.div

@@ -23,9 +23,9 @@ const securityHeaders = [
   // 미적용 시: URL에 포함된 사용자 식별 정보(쿼리스트링 등)가 외부로 유출 가능
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
 
-  // 브라우저 기능 접근 제한: 카메라·마이크·위치 정보 API 사용 차단
+  // 브라우저 기능 접근 제한: 카메라·마이크 차단, 위치는 자사 페이지만 허용 (GPS 기능)
   // 미적용 시: 공급망 공격(악성 npm 패키지 등)으로 사용자 기기 접근 가능
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self)' },
 
   // CSP: 허용된 리소스 출처만 로드·실행 가능하도록 화이트리스트 지정
   // 미적용 시: XSS 공격 성공 시 악성 스크립트가 자유롭게 실행되고 데이터 외부 전송 가능
@@ -35,21 +35,24 @@ const securityHeaders = [
       // 미지정 리소스는 동일 출처만 허용
       "default-src 'self'",
       // Next.js App Router는 인라인 스크립트·eval 필요 (hydration, turbopack)
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://oapi.map.naver.com http://oapi.map.naver.com http://nrbe.map.naver.net https://va.vercel-scripts.com",
       // Tailwind CSS 등 CSS-in-JS는 인라인 스타일 필요
       "style-src 'self' 'unsafe-inline'",
       // 소셜 로그인 프로필 이미지 및 Vercel Blob 이미지 허용
       [
         "img-src 'self' data: blob:",
+        'https://www.googletagmanager.com',
         'https://lh3.googleusercontent.com',
         'https://k.kakaocdn.net http://k.kakaocdn.net https://img1.kakaocdn.net http://img1.kakaocdn.net',
         'https://phinf.pstatic.net https://ssl.pstatic.net',
         'https://*.public.blob.vercel-storage.com',
+        // Naver Maps 타일/리소스 이미지
+        'https://map.pstatic.net https://*.pstatic.net https://*.map.naver.com http://static.naver.net https://static.naver.net http://*.map.naver.net https://*.map.naver.net',
       ].join(' '),
       // 웹폰트는 동일 출처만
       "font-src 'self'",
       // Sentry 에러 전송, Axiom 로그 전송 허용
-      "connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://api.axiom.co https://*.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com",
+      "connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://api.axiom.co https://*.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com https://*.navercorp.com https://oapi.map.naver.com http://oapi.map.naver.com",
       // iframe으로 이 페이지를 삽입하는 것 자체를 차단 (X-Frame-Options 보완)
       "frame-ancestors 'none'",
       // <base> 태그 출처 제한 (base href 하이재킹 방지)

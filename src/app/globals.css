@@ -143,6 +143,10 @@
   /* 컨테이너 */
   --container-max: 1440px;
 
+  /* 네비게이션 높이 */
+  --header-height: 3.5rem;   /* 데스크탑 헤더 (h-14) */
+  --bottom-tab-height: 4rem; /* 모바일 하단 탭 (h-16) */
+
   /* 브레이크포인트 */
   --breakpoint-sm: 640px;   /* 모바일 large */
   --breakpoint-md: 768px;   /* 태블릿 */
@@ -197,6 +201,28 @@ body {
   overflow-x: clip; /* edge-to-edge 스크롤 섹션의 가로 스크롤바 방지 */
 }
 
+/* ── 스크롤바 스타일링 ── */
+/* webkit: 4px 오버레이 스크롤바 (공간 미차지) */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--foreground) 20%, transparent);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklch, var(--foreground) 35%, transparent);
+}
+
+/* Firefox: 얇은 스크롤바 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
+}
+
 /* ── 페이지 컨테이너 ── */
 /* 사용법: <div className="page-wrapper"> */
 :root {
@@ -217,6 +243,11 @@ body {
     max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--page-padding);
+  }
+
+  /* fixed 요소를 page-wrapper 콘텐츠 오른쪽 끝에 맞춤 (padding + auto margin 동시 반영) */
+  .right-page-edge {
+    right: max(var(--page-padding), calc((100vw - 1440px) / 2 + var(--page-padding)));
   }
 }
 
@@ -253,6 +284,11 @@ body {
   --sidebar-accent-foreground:             oklch(0.985 0 0);
   --sidebar-border:             oklch(1 0 0 / 10%);
   --sidebar-ring:             oklch(0.556 0 0);
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
 }
 
 @layer base {
