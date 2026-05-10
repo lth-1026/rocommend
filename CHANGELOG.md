@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.0](https://github.com/lth-1026/rocommend/compare/roco-1.0.2...roco-2.0.0) (2026-05-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* 지도 기능 탑재로 major 버전 업
+
+### Features
+
+* 로스터리 지도 기능 추가 ([#194](https://github.com/lth-1026/rocommend/issues/194)) ([eacd6ce](https://github.com/lth-1026/rocommend/commit/eacd6ce64c92957d87965103da72dec6cd9c07ee))
+* 로스터리 지도 뷰 추가 ([9801223](https://github.com/lth-1026/rocommend/commit/9801223891bdfb4240e7cacfd1a019bfba05a041))
+* 어드민 로스터리 지점 관리 기능 추가 ([#195](https://github.com/lth-1026/rocommend/issues/195)) ([d8dbfd5](https://github.com/lth-1026/rocommend/commit/d8dbfd5e47f9958005038b28f31bcbd08548f1d1))
+
 ## [1.0.2](https://github.com/lth-1026/rocommend/compare/roco-1.0.1...roco-1.0.2) (2026-05-05)
 
 
