@@ -11,4 +11,6 @@ export type ActionResult<T = void> =
         | 'NOT_FOUND'
         | 'UPLOAD_ERROR'
         | 'DUPLICATE'
+        | 'CONFIG_ERROR'
+        | 'EXTERNAL_ERROR'
     }
