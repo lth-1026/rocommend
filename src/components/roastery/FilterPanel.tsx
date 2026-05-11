@@ -500,12 +500,13 @@ function RegionGroup({
   selected: string[]
   onToggle: (r: string) => void
 }) {
-  if (regions.length === 0) return null
+  const options = [...new Set([...regions, ...selected])]
+  if (options.length === 0) return null
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-medium">지역</legend>
       <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
-        {regions.map((r) => (
+        {options.map((r) => (
           <div key={r} className="flex items-center gap-1.5">
             <Checkbox
               id={`region-${r}`}
