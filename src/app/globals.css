@@ -197,8 +197,15 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  height: 100%;
+  background-color: var(--color-bg); /* safe-area 상단 배경 통일 */
+}
+
 body {
-  overflow-x: clip; /* edge-to-edge 스크롤 섹션의 가로 스크롤바 방지 */
+  height: 100%;
+  overflow: hidden; /* body 레벨 스크롤 차단 (overflow-x: clip 대체) */
+  overscroll-behavior: none; /* iOS rubber-band 방지 */
 }
 
 /* ── 스크롤바 스타일링 ── */
