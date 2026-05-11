@@ -31,6 +31,7 @@ export interface RoasteryWithStats {
   name: string
   description: string | null
   tags: TagItem[]
+  regions: string[] // locations에서 파생 — 대표 지점 먼저
   priceRange: PriceRange
   decaf: boolean
   imageUrl: string | null

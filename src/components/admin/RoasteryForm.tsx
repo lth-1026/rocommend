@@ -9,12 +9,7 @@ import { TagInput } from './TagInput'
 import { ImageUpload } from './ImageUpload'
 import type { PriceRange } from '@prisma/client'
 import type { TagItem } from '@/types/roastery'
-import {
-  getRegions,
-  getCharacteristicTags,
-  CHARACTERISTIC_TAGS,
-  CHANNEL_DEFS,
-} from '@/types/roastery'
+import { getCharacteristicTags, CHARACTERISTIC_TAGS, CHANNEL_DEFS } from '@/types/roastery'
 
 interface RoasteryFormProps {
   roasteryId?: string
@@ -39,7 +34,6 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
   const [name, setName] = useState(initialData?.name ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
   const [address, setAddress] = useState(initialData?.address ?? '')
-  const [regions, setRegions] = useState<string[]>(initialData ? getRegions(initialData.tags) : [])
   const [characteristicTags, setCharacteristicTags] = useState<string[]>(
     initialData ? getCharacteristicTags(initialData.tags) : []
   )
@@ -75,7 +69,6 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
       name,
       description,
       address,
-      regions,
       tags: characteristicTags,
       priceRange,
       decaf,
@@ -140,15 +133,6 @@ export function RoasteryForm({ roasteryId, initialData }: RoasteryFormProps) {
           placeholder="예: 마포구 도화동 179-9"
         />
       </div>
-
-      {/* 지역 (태그) */}
-      <TagInput
-        label="지역"
-        tags={regions}
-        onChange={setRegions}
-        placeholder="예: 서울 (첫 번째 = 대표 지역)"
-        required
-      />
 
       {/* 특성 태그 */}
       <TagInput

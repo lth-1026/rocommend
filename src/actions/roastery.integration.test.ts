@@ -14,34 +14,16 @@ const DEFAULT_FILTER = {
 let r1Id: string
 let r2Id: string
 let r3Id: string
-let seoulTagId: string
-let busanTagId: string
 
 beforeAll(async () => {
-  // 서울, 부산 태그 생성
-  const [seoulTag, busanTag] = await Promise.all([
-    testPrisma.tag.upsert({
-      where: { name_category: { name: '서울', category: 'REGION' } },
-      create: { name: '서울', category: 'REGION' },
-      update: {},
-    }),
-    testPrisma.tag.upsert({
-      where: { name_category: { name: '부산', category: 'REGION' } },
-      create: { name: '부산', category: 'REGION' },
-      update: {},
-    }),
-  ])
-  seoulTagId = seoulTag.id
-  busanTagId = busanTag.id
-
-  // 로스터리 3개 생성
+  // 로스터리 3개 생성 (지역은 RoasteryLocation.address로 결정)
   const [r1, r2, r3] = await Promise.all([
     testPrisma.roastery.create({
       data: {
         name: '서울LOW',
         priceRange: 'LOW',
         decaf: false,
-        tags: { create: { tagId: seoulTagId, isPrimary: true } },
+        locations: { create: { address: '서울 마포구 도화동 1', isPrimary: true } },
       },
     }),
     testPrisma.roastery.create({
@@ -49,7 +31,7 @@ beforeAll(async () => {
         name: '서울MID디카페인',
         priceRange: 'MID',
         decaf: true,
-        tags: { create: { tagId: seoulTagId, isPrimary: true } },
+        locations: { create: { address: '서울 강남구 역삼동 1', isPrimary: true } },
       },
     }),
     testPrisma.roastery.create({
@@ -57,7 +39,7 @@ beforeAll(async () => {
         name: '부산HIGH',
         priceRange: 'HIGH',
         decaf: false,
-        tags: { create: { tagId: busanTagId, isPrimary: true } },
+        locations: { create: { address: '부산 해운대구 우동 1', isPrimary: true } },
       },
     }),
   ])
@@ -95,7 +77,7 @@ describe('getRoasteries (integration)', () => {
   })
 
   // I-20: 지역 필터
-  it('I-20: 지역 필터는 해당 지역 태그를 가진 로스터리만 반환한다', async () => {
+  it('I-20: 지역 필터는 해당 지역 주소를 가진 로스터리만 반환한다', async () => {
     const result = await getRoasteries('name', { ...DEFAULT_FILTER, regions: ['부산'] })
     const ids = result.map((r) => r.id)
     expect(ids).toContain(r3Id)

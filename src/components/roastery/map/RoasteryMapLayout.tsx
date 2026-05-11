@@ -21,6 +21,7 @@ import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { getNearbyLocations, formatDistance } from '@/lib/geo'
+import { getRegionFromAddress } from '@/lib/utils'
 import type { NearbyLocation } from '@/lib/geo'
 import type {
   RoasteryWithStats,
@@ -59,6 +60,7 @@ interface Props {
   listUrl: string
   filter: FilterParams
   sort: SortOption
+  regionOptions: string[]
 }
 
 // ─── Session-level card position memory ──────────────────────────────────────
@@ -83,6 +85,7 @@ export function RoasteryMapLayout({
   listUrl,
   filter,
   sort,
+  regionOptions,
 }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -179,6 +182,12 @@ export function RoasteryMapLayout({
     for (const r of roasteries) {
       for (const loc of r.locations) {
         if (loc.lat !== null && loc.lng !== null) {
+          if (
+            activeRegions.length > 0 &&
+            !activeRegions.includes(getRegionFromAddress(loc.address) ?? '')
+          ) {
+            continue
+          }
           result.push({
             roasteryId: r.id,
             roasteryName: r.name,
@@ -191,7 +200,7 @@ export function RoasteryMapLayout({
       }
     }
     return result
-  }, [roasteries])
+  }, [roasteries, activeRegions])
 
   const nearbyMarkers = useMemo<MapMarkerData[]>(
     () =>
@@ -209,10 +218,27 @@ export function RoasteryMapLayout({
   // 필터 결과가 바뀌면 캐러셀 인덱스 초기화 (React 공식 파생 상태 패턴)
   const roasteriesKey = useMemo(() => roasteries.map((r) => r.id).join(','), [roasteries])
   const [prevRoasteriesKey, setPrevRoasteriesKey] = useState(roasteriesKey)
+  // 정렬 순서에 무관한 결과 집합 키 — 정렬만 바뀐 경우는 nearby 해제 대상이 아님
+  const roasteriesSetKey = useMemo(
+    () => [...roasteries.map((r) => r.id)].sort().join(','),
+    [roasteries]
+  )
+  const [prevRoasteriesSetKey, setPrevRoasteriesSetKey] = useState(roasteriesSetKey)
   if (prevRoasteriesKey !== roasteriesKey) {
     setPrevRoasteriesKey(roasteriesKey)
     setCarouselIndex(0)
     setCarouselDismissed(false)
+  }
+  if (prevRoasteriesSetKey !== roasteriesSetKey) {
+    setPrevRoasteriesSetKey(roasteriesSetKey)
+    setSnapId(undefined)
+    if (nearbyMode) {
+      setNearbyMode(false)
+      setNearbyLocations([])
+      setNearbyIndex(0)
+      setNearbySelectedId(undefined)
+      setUserLocation(null)
+    }
   }
 
   const snapRoastery = useMemo(
@@ -298,8 +324,9 @@ export function RoasteryMapLayout({
       setNearbyIndex(idx)
       setNearbySelectedId(roasteryId)
       zoomRef.current?.panTo(item.location.lat!, item.location.lng!, 15)
+      router.push(buildUrl(roasteryId), { scroll: false })
     },
-    [nearbyLocations]
+    [nearbyLocations, router, buildUrl]
   )
 
   const handleTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {
@@ -326,7 +353,13 @@ export function RoasteryMapLayout({
         <div className="w-[360px] xl:w-[400px] shrink-0 flex flex-col border-r overflow-hidden">
           {/* 검색 */}
           <div className="shrink-0 px-4 py-4 border-b">
-            <FilterPanel filter={filter} sort={sort} isLoggedIn={isLoggedIn} variant="map-search" />
+            <FilterPanel
+              filter={filter}
+              sort={sort}
+              isLoggedIn={isLoggedIn}
+              variant="map-search"
+              regions={regionOptions}
+            />
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-b shrink-0">
             {nearbyMode ? (
@@ -384,6 +417,13 @@ export function RoasteryMapLayout({
                   </motion.div>
                 ))}
               </motion.div>
+            ) : roasteries.length === 0 ? (
+              <div className="py-12 flex flex-col items-center gap-2 text-center">
+                <p className="text-sm font-medium">찾는 로스터리가 없어요</p>
+                <p className="text-xs text-muted-foreground">
+                  필터를 조정하거나 검색어를 바꿔보세요.
+                </p>
+              </div>
             ) : (
               <RoasteryGrid
                 roasteries={roasteries}
@@ -418,6 +458,7 @@ export function RoasteryMapLayout({
                 sort={sort}
                 isLoggedIn={isLoggedIn}
                 variant="map-pills"
+                regions={regionOptions}
               />
               <button
                 onClick={handleGpsClick}

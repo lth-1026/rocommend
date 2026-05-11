@@ -59,6 +59,7 @@ export async function getPopularRoasteries(
       ...r,
       tags: flattenTags(r.tags),
       locations: [] as never[],
+      regions: [] as string[],
       ratingCount: r._count.ratings,
       avgRating: avgMap.get(r.id) ?? null,
     }))
@@ -127,6 +128,7 @@ export async function getFeaturedSections(): Promise<FeaturedSectionData[]> {
       ...r,
       tags: flattenTags(r.tags),
       locations: [] as never[],
+      regions: [] as string[],
       ratingCount: r._count.ratings,
       avgRating: avgMap.get(r.id) ?? null,
     })),
@@ -185,6 +187,7 @@ export async function getStoredRecommendations(userId: string): Promise<StoredRe
       ...rec.roastery,
       tags: flattenTags(rec.roastery.tags),
       locations: [] as never[],
+      regions: [] as string[],
       ratingCount: rec.roastery._count.ratings,
       avgRating: avgMap.get(rec.roasteryId) ?? null,
     },

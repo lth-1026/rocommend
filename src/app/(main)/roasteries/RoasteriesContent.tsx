@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { MapPin, List } from 'lucide-react'
 import { auth } from '@/lib/auth'
-import { getRoasteries, getRoasteryById } from '@/lib/queries/roastery'
+import { getRoasteries, getRoasteryById, getRegionOptions } from '@/lib/queries/roastery'
 import { getUserRating, getRatingCount, getRoasteryRatings } from '@/lib/queries/rating'
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RequestRoasteryButton } from '@/components/roastery/RequestRoasteryButton'
@@ -61,10 +61,11 @@ export async function RoasteriesContent({ params }: Props) {
   const mapUrl = `/roasteries?${mapUrlParams.toString()}`
   const listUrl = filterParams.toString() ? `/roasteries?${filterParams.toString()}` : '/roasteries'
 
-  const [roasteries, selectedRoastery, ratingCount] = await Promise.all([
+  const [roasteries, selectedRoastery, ratingCount, regionOptions] = await Promise.all([
     getRoasteries(sort, filter, userId),
     selectedId ? getRoasteryById(selectedId) : null,
     isMapView && userId && selectedId ? getRatingCount(userId) : 0,
+    getRegionOptions(),
   ])
 
   const mapRoasteries = isMapView
@@ -95,9 +96,11 @@ export async function RoasteriesContent({ params }: Props) {
     }
   }
 
-  const pageHeader = <RoasteryPageHeader filter={filter} sort={sort} isLoggedIn={!!userId} />
+  const pageHeader = (
+    <RoasteryPageHeader filter={filter} sort={sort} isLoggedIn={!!userId} regions={regionOptions} />
+  )
 
-  if (isMapView && mapRoasteries.length > 0) {
+  if (isMapView) {
     return (
       <div className="flex flex-col lg:h-[calc(100vh-var(--header-height))] lg:overflow-hidden">
         <RoasteriesViewTracker view="map" />
@@ -113,6 +116,7 @@ export async function RoasteriesContent({ params }: Props) {
               listUrl={listUrl}
               filter={filter}
               sort={sort}
+              regionOptions={regionOptions}
             />
           </Suspense>
         </div>
@@ -159,6 +163,7 @@ export async function RoasteriesContent({ params }: Props) {
         <Link
           href={mapUrl}
           className="lg:hidden fixed bottom-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px)+20px)] right-page-edge z-50 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors"
+          style={{ touchAction: 'manipulation' }}
           aria-label="지도로 보기"
         >
           <MapPin className="size-6" />

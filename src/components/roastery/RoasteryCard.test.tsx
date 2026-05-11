@@ -33,6 +33,7 @@ function makeRoastery(overrides: Partial<RoasteryWithStats> = {}): RoasteryWithS
     description: null,
     tags: [],
     locations: [],
+    regions: [],
     priceRange: 'MID',
     decaf: false,
     imageUrl: null,
@@ -40,15 +41,6 @@ function makeRoastery(overrides: Partial<RoasteryWithStats> = {}): RoasteryWithS
     avgRating: null,
     ratingCount: 0,
     ...overrides,
-  }
-}
-
-function makeTagItem(name: string, category: 'REGION' | 'CHARACTERISTIC', isPrimary = true) {
-  return {
-    id: `tag-${name}`,
-    name,
-    category: category as import('@/types/roastery').TagCategory,
-    isPrimary,
   }
 }
 
@@ -61,22 +53,14 @@ describe('RoasteryCard', () => {
 
   // C-02: 단일 지역 표시
   it('C-02: 단일 지역이 그대로 표시된다', () => {
-    const roastery = makeRoastery({
-      tags: [makeTagItem('서울', 'REGION', true)],
-    })
+    const roastery = makeRoastery({ regions: ['서울'] })
     render(<RoasteryCard roastery={roastery} />)
     expect(screen.getByText('서울')).toBeInTheDocument()
   })
 
   // C-03: 복수 지역 "서울 외 N곳" 표시
   it('C-03: 복수 지역이면 "서울 외 N곳" 형식으로 표시된다', () => {
-    const roastery = makeRoastery({
-      tags: [
-        makeTagItem('서울', 'REGION', true),
-        makeTagItem('부산', 'REGION', false),
-        makeTagItem('제주', 'REGION', false),
-      ],
-    })
+    const roastery = makeRoastery({ regions: ['서울', '부산', '제주'] })
     render(<RoasteryCard roastery={roastery} />)
     expect(screen.getByText('서울 외 2곳')).toBeInTheDocument()
   })
