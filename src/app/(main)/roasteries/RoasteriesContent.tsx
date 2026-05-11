@@ -159,6 +159,7 @@ export async function RoasteriesContent({ params }: Props) {
         <Link
           href={mapUrl}
           className="lg:hidden fixed bottom-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px)+20px)] right-page-edge z-50 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors"
+          style={{ touchAction: 'manipulation' }}
           aria-label="지도로 보기"
         >
           <MapPin className="size-6" />
