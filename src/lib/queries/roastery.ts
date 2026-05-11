@@ -42,7 +42,7 @@ export async function getRoasteries(
   if (filter.regions.length > 0) {
     const regionOrConditions = filter.regions.flatMap((region) =>
       regionToAddressPrefixes(region).map((prefix) => ({
-        locations: { some: { isPrimary: true, address: { startsWith: prefix } } },
+        locations: { some: { address: { startsWith: prefix } } },
       }))
     )
     if (regionOrConditions.length > 0) {

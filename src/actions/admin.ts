@@ -84,11 +84,12 @@ export async function createRoastery(
   try {
     const tagIds = await upsertTags(input.tags)
 
+    const addr = input.address.trim() || null
     const roastery = await prisma.roastery.create({
       data: {
         name: input.name.trim(),
         description: input.description.trim() || null,
-        address: input.address.trim() || null,
+        address: addr,
         priceRange: input.priceRange,
         decaf: input.decaf,
         imageUrl: input.imageUrl.trim() || null,
@@ -99,6 +100,9 @@ export async function createRoastery(
             .filter((c) => c.channelKey && c.url.trim())
             .map((c) => ({ channelKey: c.channelKey, url: c.url.trim() })),
         },
+        ...(addr && {
+          locations: { create: { address: addr, isPrimary: true } },
+        }),
       },
       select: { id: true },
     })
@@ -242,6 +246,19 @@ export async function updateRoastery(
         })
       )
     )
+
+    // 주소가 입력됐고 대표 위치가 아직 없는 경우에만 생성 (기존 위치 데이터 보호)
+    const addr = input.address.trim()
+    if (addr) {
+      const hasPrimaryLoc = await prisma.roasteryLocation.count({
+        where: { roasteryId: id, isPrimary: true },
+      })
+      if (hasPrimaryLoc === 0) {
+        await prisma.roasteryLocation.create({
+          data: { roasteryId: id, address: addr, isPrimary: true },
+        })
+      }
+    }
 
     return { success: true, data: { id: roastery.id } }
   } catch {
@@ -498,6 +515,11 @@ export async function getAdminRoasteries() {
       name: true,
       tags: {
         select: { isPrimary: true, tag: { select: { id: true, name: true, category: true } } },
+      },
+      locations: {
+        where: { isPrimary: true },
+        select: { address: true },
+        take: 1,
       },
       priceRange: true,
       decaf: true,
