@@ -135,6 +135,18 @@ function flattenChannels(
   }))
 }
 
+export async function getRegionOptions(): Promise<string[]> {
+  const tags = await prisma.tag.findMany({
+    where: {
+      category: 'REGION',
+      roasteries: { some: { roastery: { deletedAt: null, hidden: false, closedAt: null } } },
+    },
+    select: { name: true },
+    orderBy: { name: 'asc' },
+  })
+  return tags.map((t) => t.name)
+}
+
 export async function getRoasteryById(id: string): Promise<RoasteryDetail | null> {
   const [roastery, avgRating] = await Promise.all([
     prisma.roastery.findUnique({
