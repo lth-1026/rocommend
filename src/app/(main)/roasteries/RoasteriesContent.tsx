@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { MapPin, List } from 'lucide-react'
 import { auth } from '@/lib/auth'
-import { getRoasteries, getRoasteryById } from '@/lib/queries/roastery'
+import { getRoasteries, getRoasteryById, getRegionOptions } from '@/lib/queries/roastery'
 import { getUserRating, getRatingCount, getRoasteryRatings } from '@/lib/queries/rating'
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RequestRoasteryButton } from '@/components/roastery/RequestRoasteryButton'
@@ -61,10 +61,11 @@ export async function RoasteriesContent({ params }: Props) {
   const mapUrl = `/roasteries?${mapUrlParams.toString()}`
   const listUrl = filterParams.toString() ? `/roasteries?${filterParams.toString()}` : '/roasteries'
 
-  const [roasteries, selectedRoastery, ratingCount] = await Promise.all([
+  const [roasteries, selectedRoastery, ratingCount, regionOptions] = await Promise.all([
     getRoasteries(sort, filter, userId),
     selectedId ? getRoasteryById(selectedId) : null,
     isMapView && userId && selectedId ? getRatingCount(userId) : 0,
+    getRegionOptions(),
   ])
 
   const mapRoasteries = isMapView
@@ -95,7 +96,9 @@ export async function RoasteriesContent({ params }: Props) {
     }
   }
 
-  const pageHeader = <RoasteryPageHeader filter={filter} sort={sort} isLoggedIn={!!userId} />
+  const pageHeader = (
+    <RoasteryPageHeader filter={filter} sort={sort} isLoggedIn={!!userId} regions={regionOptions} />
+  )
 
   if (isMapView) {
     return (
@@ -113,6 +116,7 @@ export async function RoasteriesContent({ params }: Props) {
               listUrl={listUrl}
               filter={filter}
               sort={sort}
+              regionOptions={regionOptions}
             />
           </Suspense>
         </div>

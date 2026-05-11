@@ -64,6 +64,7 @@ export async function getBookmarks(
       ...b.roastery,
       tags: flattenTags(b.roastery.tags),
       locations: [],
+      regions: [],
       ratingCount: b.roastery._count.ratings,
       avgRating: avgMap.get(b.roasteryId) ?? null,
     },

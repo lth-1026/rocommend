@@ -7,7 +7,7 @@ import { RatingButton } from '@/components/rating/RatingButton'
 import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
 import { RatingList } from '@/components/rating/RatingList'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
-import { PRICE_RANGE_LABELS, getRegions, getCharacteristicTags } from '@/types/roastery'
+import { PRICE_RANGE_LABELS, getCharacteristicTags } from '@/types/roastery'
 import { RoasteryLocationSection } from './RoasteryLocationSection'
 import type { RatingListItem, RatingSortOption } from '@/types/rating'
 
@@ -32,7 +32,7 @@ export function RoasteryDetail({
   initialSort,
   hideBackButton = false,
 }: RoasteryDetailProps) {
-  const regions = getRegions(roastery.tags)
+  const regions = roastery.regions
   const charTags = getCharacteristicTags(roastery.tags)
   const primaryLocation =
     roastery.locations.find((l) => l.isPrimary) ?? roastery.locations[0] ?? null

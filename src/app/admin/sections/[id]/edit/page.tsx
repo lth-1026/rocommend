@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getAdminSection, getAdminRoasteries } from '@/actions/admin'
 import { SectionForm } from '@/components/admin/SectionForm'
-import { getRegions } from '@/types/roastery'
+import { getRegionFromAddress } from '@/lib/utils'
 import { DeleteSectionButton } from '../../_components/DeleteSectionButton'
 
 interface Props {
@@ -18,7 +18,7 @@ export default async function EditSectionPage({ params }: Props) {
   const options = roasteries.map((r) => ({
     id: r.id,
     name: r.name,
-    primaryRegion: getRegions(r.tags)[0] ?? null,
+    primaryRegion: getRegionFromAddress(r.locations[0]?.address ?? null) ?? null,
   }))
 
   const isSystem = section.type !== 'CUSTOM'

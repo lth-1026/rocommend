@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getAdminRoasteries } from '@/actions/admin'
 import { RoasteryStatusButtons } from '@/components/admin/RoasteryStatusButtons'
+import { getRegionFromAddress } from '@/lib/utils'
 
 const PRICE_RANGE_LABEL: Record<string, string> = {
   LOW: '2만원 미만',
@@ -60,7 +61,7 @@ export default async function AdminRoasteriesPage() {
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-text-sub">
-                      {r.tags.find((t) => t.category === 'REGION')?.name ?? '—'}
+                      {getRegionFromAddress(r.locations[0]?.address ?? null) ?? '—'}
                     </td>
                     <td className="px-4 py-3 text-text-sub">{PRICE_RANGE_LABEL[r.priceRange]}</td>
                     <td className="px-4 py-3 text-text-sub">{r.decaf ? 'O' : '—'}</td>
