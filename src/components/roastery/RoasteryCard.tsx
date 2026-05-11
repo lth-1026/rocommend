@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { RegionDisplay } from './RegionDisplay'
 import { RatingDisplay } from './RatingDisplay'
 import type { RoasteryWithStats } from '@/types/roastery'
-import { PRICE_RANGE_LABELS, getRegions, getCharacteristicTags } from '@/types/roastery'
+import { PRICE_RANGE_LABELS, getCharacteristicTags } from '@/types/roastery'
 import { SPRING_SNAPPY, TAP_SCALE } from '@/lib/motion'
 import { formatDistance } from '@/lib/geo'
 
@@ -54,7 +54,7 @@ export function RoasteryCard({
   nearbyAddress,
   nearbyDistance,
 }: RoasteryCardProps) {
-  const regions = getRegions(roastery.tags)
+  const regions = roastery.regions
   const charTags = getCharacteristicTags(roastery.tags)
 
   if (variant === 'landscape') {

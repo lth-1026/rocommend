@@ -59,6 +59,7 @@ interface Props {
   listUrl: string
   filter: FilterParams
   sort: SortOption
+  regionOptions: string[]
 }
 
 // ─── Session-level card position memory ──────────────────────────────────────
@@ -83,6 +84,7 @@ export function RoasteryMapLayout({
   listUrl,
   filter,
   sort,
+  regionOptions,
 }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -344,7 +346,13 @@ export function RoasteryMapLayout({
         <div className="w-[360px] xl:w-[400px] shrink-0 flex flex-col border-r overflow-hidden">
           {/* 검색 */}
           <div className="shrink-0 px-4 py-4 border-b">
-            <FilterPanel filter={filter} sort={sort} isLoggedIn={isLoggedIn} variant="map-search" />
+            <FilterPanel
+              filter={filter}
+              sort={sort}
+              isLoggedIn={isLoggedIn}
+              variant="map-search"
+              regions={regionOptions}
+            />
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-b shrink-0">
             {nearbyMode ? (
@@ -443,6 +451,7 @@ export function RoasteryMapLayout({
                 sort={sort}
                 isLoggedIn={isLoggedIn}
                 variant="map-pills"
+                regions={regionOptions}
               />
               <button
                 onClick={handleGpsClick}

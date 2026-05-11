@@ -6,7 +6,7 @@ import { SlidersHorizontal, RotateCcw, ChevronDown } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { PRICE_RANGE_LABELS, PRICE_OPTIONS, REGIONS, CHARACTERISTIC_TAGS } from '@/types/roastery'
+import { PRICE_RANGE_LABELS, PRICE_OPTIONS, CHARACTERISTIC_TAGS } from '@/types/roastery'
 import type { FilterParams, PriceRange, SortOption } from '@/types/roastery'
 import { SortSelector } from './SortSelector'
 
@@ -15,11 +15,18 @@ interface FilterPanelProps {
   sort: SortOption
   isLoggedIn: boolean
   variant?: 'default' | 'map-search' | 'map-pills'
+  regions?: string[]
 }
 
 type PillId = 'price' | 'region' | 'tag'
 
-export function FilterPanel({ filter, sort, isLoggedIn, variant = 'default' }: FilterPanelProps) {
+export function FilterPanel({
+  filter,
+  sort,
+  isLoggedIn,
+  variant = 'default',
+  regions = [],
+}: FilterPanelProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -169,7 +176,7 @@ export function FilterPanel({ filter, sort, isLoggedIn, variant = 'default' }: F
           onClose={() => setOpenPill(null)}
           shadow
         >
-          <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+          <RegionGroup regions={regions} selected={filter.regions} onToggle={toggleRegion} />
         </FilterPill>
 
         <FilterPill
@@ -251,7 +258,7 @@ export function FilterPanel({ filter, sort, isLoggedIn, variant = 'default' }: F
                 checked={filter.decaf}
                 onToggle={() => navigate({ decaf: !filter.decaf })}
               />
-              <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+              <RegionGroup regions={regions} selected={filter.regions} onToggle={toggleRegion} />
               <TagGroup selected={filter.tags} onToggle={toggleTag} />
               {isLoggedIn && (
                 <RatedGroup
@@ -324,7 +331,7 @@ export function FilterPanel({ filter, sort, isLoggedIn, variant = 'default' }: F
           onToggle={() => setOpenPill(openPill === 'region' ? null : 'region')}
           onClose={() => setOpenPill(null)}
         >
-          <RegionGroup selected={filter.regions} onToggle={toggleRegion} />
+          <RegionGroup regions={regions} selected={filter.regions} onToggle={toggleRegion} />
         </FilterPill>
 
         <FilterPill
@@ -485,17 +492,21 @@ function RatedGroup({ checked, onToggle }: { checked: boolean; onToggle: () => v
 }
 
 function RegionGroup({
+  regions,
   selected,
   onToggle,
 }: {
+  regions: string[]
   selected: string[]
   onToggle: (r: string) => void
 }) {
+  const options = [...new Set([...regions, ...selected])]
+  if (options.length === 0) return null
   return (
     <fieldset>
       <legend className="mb-2 text-sm font-medium">지역</legend>
       <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
-        {REGIONS.map((r) => (
+        {options.map((r) => (
           <div key={r} className="flex items-center gap-1.5">
             <Checkbox
               id={`region-${r}`}

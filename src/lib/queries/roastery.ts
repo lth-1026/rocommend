@@ -9,6 +9,7 @@ import type {
   LocationItem,
 } from '@/types/roastery'
 import { flattenTags } from '@/types/roastery'
+import { getRegionFromAddress, getRegionsFromLocations, regionToAddressPrefixes } from '@/lib/utils'
 
 const DEFAULT_FILTER: FilterParams = {
   q: '',
@@ -39,9 +40,14 @@ export async function getRoasteries(
   const andConditions: Prisma.RoasteryWhereInput[] = []
 
   if (filter.regions.length > 0) {
-    andConditions.push({
-      tags: { some: { tag: { category: 'REGION', name: { in: filter.regions } } } },
-    })
+    const regionOrConditions = filter.regions.flatMap((region) =>
+      regionToAddressPrefixes(region).map((prefix) => ({
+        locations: { some: { isPrimary: true, address: { startsWith: prefix } } },
+      }))
+    )
+    if (regionOrConditions.length > 0) {
+      andConditions.push({ OR: regionOrConditions })
+    }
   }
   if (filter.tags.length > 0) {
     andConditions.push({
@@ -85,13 +91,17 @@ export async function getRoasteries(
 
   const avgMap = new Map(avgRatings.map((r) => [r.roasteryId, r._avg.score]))
 
-  const result = roasteries.map((r) => ({
-    ...r,
-    tags: flattenTags(r.tags),
-    locations: r.locations as LocationItem[],
-    ratingCount: r._count.ratings,
-    avgRating: avgMap.get(r.id) ?? null,
-  }))
+  const result = roasteries.map((r) => {
+    const locations = r.locations as LocationItem[]
+    return {
+      ...r,
+      tags: flattenTags(r.tags),
+      locations,
+      regions: getRegionsFromLocations(locations),
+      ratingCount: r._count.ratings,
+      avgRating: avgMap.get(r.id) ?? null,
+    }
+  })
 
   if (sort === 'popular') {
     result.sort((a, b) => {
@@ -133,6 +143,20 @@ function flattenChannels(
     price: priceByChannelId ? (priceByChannelId.get(c.id) ?? null) : null,
     order: c.definition.order,
   }))
+}
+
+export async function getRegionOptions(): Promise<string[]> {
+  const locations = await prisma.roasteryLocation.findMany({
+    where: {
+      isPrimary: true,
+      roastery: { deletedAt: null, hidden: false, closedAt: null },
+    },
+    select: { address: true },
+  })
+  const regions = [
+    ...new Set(locations.map((l) => getRegionFromAddress(l.address)).filter(Boolean)),
+  ] as string[]
+  return regions.sort()
 }
 
 export async function getRoasteryById(id: string): Promise<RoasteryDetail | null> {
@@ -229,11 +253,13 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
     }
   })
 
+  const locations = roastery.locations as LocationItem[]
   return {
     ...roastery,
     closedAt: roastery.closedAt,
     tags: flattenTags(roastery.tags),
-    locations: roastery.locations as LocationItem[],
+    locations,
+    regions: getRegionsFromLocations(locations),
     ratingCount: roastery._count.ratings,
     avgRating: avgRating._avg.score ?? null,
     channels: baseChannels,

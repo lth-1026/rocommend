@@ -34,7 +34,6 @@ export interface CreateRoasteryInput {
   name: string
   description: string
   address: string
-  regions: string[]
   tags: string[] // CHARACTERISTIC 태그
   priceRange: PriceRange
   decaf: boolean
@@ -43,35 +42,25 @@ export interface CreateRoasteryInput {
   isOnboardingCandidate: boolean
 }
 
-/** 지역 + 특성 태그를 upsert하고 ID + isPrimary 배열을 반환 */
+/** 특성 태그를 upsert하고 ID 배열을 반환 */
 async function upsertTags(
-  regions: string[],
   characteristicTags: string[]
 ): Promise<{ id: string; isPrimary: boolean }[]> {
-  const tagData = [
-    ...regions.map((name, i) => ({
-      name: name.trim(),
-      category: 'REGION' as const,
-      isPrimary: i === 0,
-    })),
-    ...characteristicTags.map((name) => ({
-      name: name.trim(),
-      category: 'CHARACTERISTIC' as const,
-      isPrimary: false,
-    })),
-  ].filter((t) => t.name)
+  const tagData = characteristicTags
+    .map((name) => ({ name: name.trim(), category: 'CHARACTERISTIC' as const }))
+    .filter((t) => t.name)
 
   if (tagData.length === 0) return []
 
   const tags = await Promise.all(
-    tagData.map(async ({ isPrimary, ...tagFields }) => {
+    tagData.map(async (tagFields) => {
       const tag = await prisma.tag.upsert({
         where: { name_category: { name: tagFields.name, category: tagFields.category } },
         create: tagFields,
         update: {},
         select: { id: true },
       })
-      return { id: tag.id, isPrimary }
+      return { id: tag.id, isPrimary: false }
     })
   )
   return tags
@@ -88,15 +77,12 @@ export async function createRoastery(
   if (!input.name.trim()) {
     return { success: false, error: '로스터리 이름은 필수입니다', code: 'VALIDATION' }
   }
-  if (input.regions.length === 0) {
-    return { success: false, error: '지역을 1개 이상 입력해주세요', code: 'VALIDATION' }
-  }
   if (!['LOW', 'MID', 'HIGH'].includes(input.priceRange)) {
     return { success: false, error: '가격대가 올바르지 않습니다', code: 'VALIDATION' }
   }
 
   try {
-    const tagIds = await upsertTags(input.regions, input.tags)
+    const tagIds = await upsertTags(input.tags)
 
     const roastery = await prisma.roastery.create({
       data: {
@@ -212,15 +198,12 @@ export async function updateRoastery(
   if (!input.name.trim()) {
     return { success: false, error: '로스터리 이름은 필수입니다', code: 'VALIDATION' }
   }
-  if (input.regions.length === 0) {
-    return { success: false, error: '지역을 1개 이상 입력해주세요', code: 'VALIDATION' }
-  }
   if (!['LOW', 'MID', 'HIGH'].includes(input.priceRange)) {
     return { success: false, error: '가격대가 올바르지 않습니다', code: 'VALIDATION' }
   }
 
   try {
-    const tagIds = await upsertTags(input.regions, input.tags)
+    const tagIds = await upsertTags(input.tags)
 
     const newChannels = input.channels.filter((c) => c.channelKey && c.url.trim())
     const newChannelKeys = newChannels.map((c) => c.channelKey)
