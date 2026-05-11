@@ -35,8 +35,9 @@ describe('Navigation', () => {
   // C-26: lg 이상 화면 — Header 표시, BottomTab 숨김
   it('BottomTab은 lg 이상에서 hidden 클래스를 갖는다', () => {
     const { container } = render(<Navigation />)
-    // BottomTab은 fixed bottom-0 클래스를 가진 nav — Header 내부 nav와 구분
-    const bottomTabNav = container.querySelector('nav[class*="fixed"]')
+    // BottomTab nav는 lg:hidden 클래스를 가짐 — Header 내부 nav와 구분
+    const navs = Array.from(container.querySelectorAll('nav'))
+    const bottomTabNav = navs.find((nav) => nav.className.includes('lg:hidden'))
     expect(bottomTabNav?.className).toContain('lg:hidden')
   })
 })

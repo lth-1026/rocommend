@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Navigation } from '@/components/layout/Navigation'
+import { Header } from '@/components/layout/Header'
+import { BottomTab } from '@/components/layout/BottomTab'
 import { PageTransition } from '@/components/motion/PageTransition'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
@@ -17,11 +18,11 @@ export default async function MainLayout({ children }: { children: React.ReactNo
 
   return (
     <div className="flex h-[100svh] flex-col bg-bg">
-      <Navigation />
-      {/* 모바일: BottomTab 높이(64px)만큼 하단 패딩 */}
-      <main className="flex-1 overflow-y-auto pb-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px))] lg:pb-0">
+      <Header className="hidden lg:flex" />
+      <main className="flex-1 overflow-y-auto">
         <PageTransition>{children}</PageTransition>
       </main>
+      <BottomTab className="flex lg:hidden" />
     </div>
   )
 }

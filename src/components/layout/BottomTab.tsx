@@ -33,7 +33,7 @@ export function BottomTab({ className }: { className?: string }) {
   return (
     <nav
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface',
+        'border-t border-border bg-surface',
         'pb-[env(safe-area-inset-bottom,0px)]',
         className
       )}
