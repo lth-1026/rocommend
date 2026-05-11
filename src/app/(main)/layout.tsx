@@ -17,7 +17,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="flex h-[100svh] flex-col bg-bg">
+    <div className="flex h-[100svh] flex-col bg-surface lg:bg-bg">
       <Header className="hidden lg:flex" />
       <main className="flex-1 overflow-y-auto">
         <PageTransition>{children}</PageTransition>
