@@ -6,6 +6,7 @@ import { getRoasteries, getRoasteryById, getRegionOptions } from '@/lib/queries/
 import { getUserRating, getRatingCount, getRoasteryRatings } from '@/lib/queries/rating'
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RequestRoasteryButton } from '@/components/roastery/RequestRoasteryButton'
+import { MapViewFAB } from '@/components/roastery/MapViewFAB'
 import { RoasteryPageHeader } from '@/components/roastery/RoasteryPageHeader'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
 import { RoasteryMapLayout } from '@/components/roastery/map/RoasteryMapLayout'
@@ -102,7 +103,7 @@ export async function RoasteriesContent({ params }: Props) {
 
   if (isMapView) {
     return (
-      <div className="flex flex-col lg:h-[calc(100vh-var(--header-height))] lg:overflow-hidden">
+      <div className="flex flex-col h-[calc(100svh-var(--bottom-tab-height)-env(safe-area-inset-bottom,0px))] overflow-hidden lg:h-[calc(100vh-var(--header-height))] lg:overflow-hidden">
         <RoasteriesViewTracker view="map" />
         <div className="lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
           <Suspense fallback={null}>
@@ -159,16 +160,7 @@ export async function RoasteriesContent({ params }: Props) {
         </>
       )}
 
-      {!isMapView && (
-        <Link
-          href={mapUrl}
-          className="lg:hidden fixed bottom-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px)+20px)] right-page-edge z-50 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors"
-          style={{ touchAction: 'manipulation' }}
-          aria-label="지도로 보기"
-        >
-          <MapPin className="size-6" />
-        </Link>
-      )}
+      {!isMapView && <MapViewFAB mapUrl={mapUrl} />}
     </div>
   )
 }
