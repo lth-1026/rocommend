@@ -209,10 +209,19 @@ export function RoasteryMapLayout({
   // 필터 결과가 바뀌면 캐러셀 인덱스 초기화 (React 공식 파생 상태 패턴)
   const roasteriesKey = useMemo(() => roasteries.map((r) => r.id).join(','), [roasteries])
   const [prevRoasteriesKey, setPrevRoasteriesKey] = useState(roasteriesKey)
+  // 정렬 순서에 무관한 결과 집합 키 — 정렬만 바뀐 경우는 nearby 해제 대상이 아님
+  const roasteriesSetKey = useMemo(
+    () => [...roasteries.map((r) => r.id)].sort().join(','),
+    [roasteries]
+  )
+  const [prevRoasteriesSetKey, setPrevRoasteriesSetKey] = useState(roasteriesSetKey)
   if (prevRoasteriesKey !== roasteriesKey) {
     setPrevRoasteriesKey(roasteriesKey)
     setCarouselIndex(0)
     setCarouselDismissed(false)
+  }
+  if (prevRoasteriesSetKey !== roasteriesSetKey) {
+    setPrevRoasteriesSetKey(roasteriesSetKey)
     if (nearbyMode) {
       setNearbyMode(false)
       setNearbyLocations([])
