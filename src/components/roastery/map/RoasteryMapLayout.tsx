@@ -213,6 +213,13 @@ export function RoasteryMapLayout({
     setPrevRoasteriesKey(roasteriesKey)
     setCarouselIndex(0)
     setCarouselDismissed(false)
+    if (nearbyMode) {
+      setNearbyMode(false)
+      setNearbyLocations([])
+      setNearbyIndex(0)
+      setNearbySelectedId(undefined)
+      setUserLocation(null)
+    }
   }
 
   const snapRoastery = useMemo(
