@@ -219,10 +219,10 @@ export function RoasteryMapLayout({
     setPrevRoasteriesKey(roasteriesKey)
     setCarouselIndex(0)
     setCarouselDismissed(false)
-    setSnapId(undefined)
   }
   if (prevRoasteriesSetKey !== roasteriesSetKey) {
     setPrevRoasteriesSetKey(roasteriesSetKey)
+    setSnapId(undefined)
     if (nearbyMode) {
       setNearbyMode(false)
       setNearbyLocations([])
