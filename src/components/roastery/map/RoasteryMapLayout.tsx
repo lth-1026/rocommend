@@ -21,6 +21,7 @@ import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { getNearbyLocations, formatDistance } from '@/lib/geo'
+import { getRegionFromAddress } from '@/lib/utils'
 import type { NearbyLocation } from '@/lib/geo'
 import type {
   RoasteryWithStats,
@@ -181,6 +182,12 @@ export function RoasteryMapLayout({
     for (const r of roasteries) {
       for (const loc of r.locations) {
         if (loc.lat !== null && loc.lng !== null) {
+          if (
+            activeRegions.length > 0 &&
+            !activeRegions.includes(getRegionFromAddress(loc.address) ?? '')
+          ) {
+            continue
+          }
           result.push({
             roasteryId: r.id,
             roasteryName: r.name,
@@ -193,7 +200,7 @@ export function RoasteryMapLayout({
       }
     }
     return result
-  }, [roasteries])
+  }, [roasteries, activeRegions])
 
   const nearbyMarkers = useMemo<MapMarkerData[]>(
     () =>
