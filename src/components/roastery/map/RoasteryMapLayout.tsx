@@ -222,6 +222,7 @@ export function RoasteryMapLayout({
   }
   if (prevRoasteriesSetKey !== roasteriesSetKey) {
     setPrevRoasteriesSetKey(roasteriesSetKey)
+    setSnapId(undefined)
     if (nearbyMode) {
       setNearbyMode(false)
       setNearbyLocations([])
@@ -314,8 +315,9 @@ export function RoasteryMapLayout({
       setNearbyIndex(idx)
       setNearbySelectedId(roasteryId)
       zoomRef.current?.panTo(item.location.lat!, item.location.lng!, 15)
+      router.push(buildUrl(roasteryId), { scroll: false })
     },
-    [nearbyLocations]
+    [nearbyLocations, router, buildUrl]
   )
 
   const handleTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {

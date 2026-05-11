@@ -42,6 +42,7 @@ export function FilterPanel({ filter, sort, isLoggedIn, variant = 'default' }: F
 
   function buildParams(updates: Partial<FilterParams>): string {
     const params = new URLSearchParams(searchParams.toString())
+    params.delete('id')
     const next = { ...filter, ...updates }
 
     if (next.q) params.set('q', next.q)
