@@ -17,10 +17,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div
-      className="flex flex-col bg-bg"
-      style={{ height: 'calc(100svh + env(safe-area-inset-bottom, 0px))' }}
-    >
+    <div className="flex h-[100svh] flex-col bg-bg">
       <Header className="hidden lg:flex" />
       <main className="flex-1 overflow-y-auto">
         <PageTransition>{children}</PageTransition>

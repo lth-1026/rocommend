@@ -37,6 +37,7 @@ export function BottomTab({ className }: { className?: string }) {
         'pb-[env(safe-area-inset-bottom,0px)]',
         className
       )}
+      style={{ boxShadow: '0 100px 0 100px var(--color-surface)' }}
     >
       <ul className="flex h-16 w-full">
         {tabs.map(({ key, href, label, Icon }) => {
