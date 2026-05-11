@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0](https://github.com/lth-1026/rocommend/compare/roco-2.0.1...roco-2.1.0) (2026-05-11)
+
+
+### Features
+
+* 지도 뷰에서 검색 결과 없을 때 지도 유지하며 빈 상태 표시 ([#201](https://github.com/lth-1026/rocommend/issues/201)) ([fb8e30c](https://github.com/lth-1026/rocommend/commit/fb8e30cc7a17b30e62d69452a97daeaf94c2e71e))
+* 지역 데이터를 위치 주소 기반으로 전환 ([#206](https://github.com/lth-1026/rocommend/issues/206)) ([dc801ac](https://github.com/lth-1026/rocommend/commit/dc801ac69249dd548beb90ff3e631a765a1da216))
+
+
+### Bug Fixes
+
+* GPS 내 주변 모드 활성 중 검색/필터 변경 시 자동 해제 ([#203](https://github.com/lth-1026/rocommend/issues/203)) ([08df209](https://github.com/lth-1026/rocommend/commit/08df2090661ce6eb4e4f1b3903d4ff2afc05d415))
+* 모바일 지도 뷰 UI 버그 수정 ([#202](https://github.com/lth-1026/rocommend/issues/202)) ([b6aab0a](https://github.com/lth-1026/rocommend/commit/b6aab0acff9dcb1c08a95cb047ed52561ee5a2e3))
+* 지도 선택 상태 버그 3종 수정 ([#204](https://github.com/lth-1026/rocommend/issues/204)) ([3600e9a](https://github.com/lth-1026/rocommend/commit/3600e9ac342654aad7ae019f73ba475b4ac110f5))
+
 ## [2.0.1](https://github.com/lth-1026/rocommend/compare/roco-2.0.0...roco-2.0.1) (2026-05-10)
 
 
