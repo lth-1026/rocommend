@@ -12,7 +12,6 @@ import {
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { AnimatePresence, motion } from 'framer-motion'
 import { X, List, MapPin, ChevronLeft, ChevronRight, Plus, Minus, LocateFixed } from 'lucide-react'
 import { toast } from 'sonner'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
@@ -31,7 +30,6 @@ import type {
 } from '@/types/roastery'
 import type { RatingListItem, RatingSortOption } from '@/types/rating'
 import type { MapMarkerData, ZoomHandle } from './RoasteryMapView'
-import { staggerContainerVariants, fadeUpVariants } from '@/lib/motion'
 
 // Naver Map을 SSR 없이 로드
 const RoasteryMapView = dynamic(
@@ -389,34 +387,25 @@ export function RoasteryMapLayout({
                 <p className="text-xs text-muted-foreground">다른 지역에서 다시 시도해보세요</p>
               </div>
             ) : nearbyMode ? (
-              <motion.div
-                variants={staggerContainerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-1 gap-4"
-              >
+              <div className="grid grid-cols-1 gap-4">
                 {nearbyLocations.map((item, i) => (
-                  <motion.div
+                  <RoasteryCard
                     key={`${item.roastery.id}-${item.location.lat}-${item.location.lng}`}
-                    variants={fadeUpVariants}
-                  >
-                    <RoasteryCard
-                      roastery={item.roastery}
-                      priority={i < 4}
-                      variant="landscape"
-                      nearbyAddress={item.location.address ?? undefined}
-                      nearbyDistance={item.distance}
-                      onCardClick={() =>
-                        handleNearbyCardClick(
-                          item.roastery.id,
-                          item.location.lat!,
-                          item.location.lng!
-                        )
-                      }
-                    />
-                  </motion.div>
+                    roastery={item.roastery}
+                    priority={i < 4}
+                    variant="landscape"
+                    nearbyAddress={item.location.address ?? undefined}
+                    nearbyDistance={item.distance}
+                    onCardClick={() =>
+                      handleNearbyCardClick(
+                        item.roastery.id,
+                        item.location.lat!,
+                        item.location.lng!
+                      )
+                    }
+                  />
                 ))}
-              </motion.div>
+              </div>
             ) : roasteries.length === 0 ? (
               <div className="py-12 flex flex-col items-center gap-2 text-center">
                 <p className="text-sm font-medium">찾는 로스터리가 없어요</p>
@@ -505,39 +494,31 @@ export function RoasteryMapLayout({
           {/* nearby 모드: 결과 없음 */}
 
           {/* 상세 패널 오버레이 */}
-          <AnimatePresence>
-            {selectedDetail && (
-              <motion.div
-                className="absolute top-[60px] bottom-3 left-3 w-[360px] xl:w-[400px] bg-background z-20 shadow-2xl rounded-xl flex flex-col overflow-hidden"
-                initial={{ x: -10, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -10, opacity: 0 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-              >
-                <div className="flex items-center justify-end px-3 py-2 shrink-0">
-                  <button
-                    onClick={clearSelection}
-                    className="flex items-center justify-center w-7 h-7 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label="닫기"
-                  >
-                    <X className="size-4" />
-                  </button>
-                </div>
-                <div className="flex-1 overflow-y-auto px-4 pb-4">
-                  <RoasteryDetail
-                    roastery={selectedDetail.roastery}
-                    isLoggedIn={isLoggedIn}
-                    userRating={selectedDetail.userRating}
-                    isBookmarked={selectedDetail.isBookmarked}
-                    initialRatings={selectedDetail.initialRatings}
-                    initialNextCursor={selectedDetail.initialNextCursor}
-                    initialSort={selectedDetail.initialSort}
-                    hideBackButton
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {selectedDetail && (
+            <div className="absolute top-[60px] bottom-3 left-3 w-[360px] xl:w-[400px] bg-background z-20 shadow-2xl rounded-xl flex flex-col overflow-hidden">
+              <div className="flex items-center justify-end px-3 py-2 shrink-0">
+                <button
+                  onClick={clearSelection}
+                  className="flex items-center justify-center w-7 h-7 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="닫기"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <RoasteryDetail
+                  roastery={selectedDetail.roastery}
+                  isLoggedIn={isLoggedIn}
+                  userRating={selectedDetail.userRating}
+                  isBookmarked={selectedDetail.isBookmarked}
+                  initialRatings={selectedDetail.initialRatings}
+                  initialNextCursor={selectedDetail.initialNextCursor}
+                  initialSort={selectedDetail.initialSort}
+                  hideBackButton
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     )

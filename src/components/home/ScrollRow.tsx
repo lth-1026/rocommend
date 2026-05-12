@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion } from 'framer-motion'
 
 interface ScrollRowProps {
   children: React.ReactNode
@@ -29,18 +28,14 @@ export function ScrollRow({ children }: ScrollRowProps) {
   )
 }
 
-/** ScrollRow 내 개별 카드 래퍼 — 고정 너비 + snap + whileInView 등장 */
+/** ScrollRow 내 개별 카드 래퍼 — 고정 너비 + snap */
 export function ScrollItem({ children }: { children: React.ReactNode }) {
   return (
-    <motion.div
+    <div
       className="w-36 sm:w-40 lg:w-[calc((100%-6rem)/7)] flex-shrink-0"
       style={{ scrollSnapAlign: 'start' }}
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.25 }}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }

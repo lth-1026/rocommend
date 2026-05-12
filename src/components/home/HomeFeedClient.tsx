@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { motion } from 'framer-motion'
 import { DecafToggle } from './DecafToggle'
 import { RecommendSection } from './RecommendSection'
 import { PopularSection } from './PopularSection'
@@ -10,7 +9,6 @@ import { logClientEvent } from '@/actions/events'
 import type { RecommendationResult, RecommendationItem } from '@/lib/recommender'
 import type { FeaturedSectionData } from '@/lib/queries/recommendation'
 import type { RoasteryWithStats } from '@/types/roastery'
-import { fadeUpVariants } from '@/lib/motion'
 
 interface HomeFeedClientProps {
   result: RecommendationResult
@@ -118,17 +116,7 @@ export function HomeFeedClient({
 
         if (!content) return null
 
-        return (
-          <motion.div
-            key={section.id}
-            variants={fadeUpVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-60px' }}
-          >
-            {content}
-          </motion.div>
-        )
+        return <div key={section.id}>{content}</div>
       })}
     </div>
   )
