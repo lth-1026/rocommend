@@ -47,6 +47,7 @@ export function BookmarkButton({
       onClick={handleClick}
       whileTap={TAP_SCALE}
       transition={SPRING_SNAPPY}
+      style={{ touchAction: 'manipulation' }}
       className={cn(
         'flex items-center justify-center rounded-full p-1.5',
         'hover:bg-muted disabled:pointer-events-none',

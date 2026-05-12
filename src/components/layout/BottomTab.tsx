@@ -51,7 +51,11 @@ export function BottomTab({ className }: { className?: string }) {
                   transition={SPRING_SNAPPY}
                 />
               )}
-              <motion.div whileTap={TAP_SCALE} transition={SPRING_SNAPPY}>
+              <motion.div
+                whileTap={TAP_SCALE}
+                transition={SPRING_SNAPPY}
+                style={{ touchAction: 'manipulation' }}
+              >
                 <Link
                   href={href}
                   className={cn(

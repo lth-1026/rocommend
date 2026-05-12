@@ -75,6 +75,7 @@ export function RoasteryCard({
           className="group flex flex-row items-start gap-3 rounded-xl p-2 hover:bg-muted/50 transition-colors"
           whileTap={TAP_SCALE}
           transition={SPRING_SNAPPY}
+          style={{ touchAction: 'manipulation' }}
         >
           <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
             {roastery.imageUrl ? (
@@ -147,6 +148,7 @@ export function RoasteryCard({
         className="group flex flex-col gap-2"
         whileTap={TAP_SCALE}
         transition={SPRING_SNAPPY}
+        style={{ touchAction: 'manipulation' }}
       >
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-muted">
           {roastery.imageUrl ? (

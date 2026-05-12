@@ -34,6 +34,7 @@ export function StarSelector({ value, onChange }: StarSelectorProps) {
             whileHover={{ scale: 1.3 }}
             whileTap={TAP_SCALE}
             transition={SPRING_SNAPPY}
+            style={{ touchAction: 'manipulation' }}
             onMouseEnter={() => setHovered(star)}
             onMouseLeave={() => setHovered(0)}
             onClick={() => onChange(star)}

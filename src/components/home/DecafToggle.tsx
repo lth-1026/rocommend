@@ -16,6 +16,7 @@ export function DecafToggle({ decafOn, onToggle }: DecafToggleProps) {
       onClick={onToggle}
       whileTap={TAP_SCALE}
       transition={SPRING_SNAPPY}
+      style={{ touchAction: 'manipulation' }}
       className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors cursor-pointer ${
         decafOn
           ? 'border-primary bg-primary text-primary-foreground'
