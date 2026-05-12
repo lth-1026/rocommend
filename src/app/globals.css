@@ -216,9 +216,10 @@ html {
 }
 
 body {
-  height: 100%;
-  overflow: hidden; /* body 레벨 스크롤 차단 (overflow-x: clip 대체) */
-  overscroll-behavior: none; /* iOS rubber-band 방지 */
+  position: fixed; /* iOS에서 body overflow:hidden은 무시됨 — fixed로 진짜 고정 */
+  inset: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* ── 스크롤바 스타일링 ── */
