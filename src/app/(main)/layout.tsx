@@ -18,15 +18,13 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <div className="flex h-dvh flex-col bg-bg">
       <Navigation />
-      <main className="flex-1 overflow-y-auto">
+      <main
+        className="fixed inset-x-0 top-0 overflow-y-auto bg-bg
+          bottom-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px))]
+          lg:static lg:flex-1 lg:bottom-auto"
+      >
         <PageTransition>{children}</PageTransition>
       </main>
-      {/* 모바일 BottomTab 스페이서 — flex 레이아웃에서 탭 높이만큼 공간 확보,
-          main 스크롤바가 BottomTab 뒤로 들어가지 않도록 함 */}
-      <div
-        className="flex-none lg:hidden h-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px))]"
-        aria-hidden="true"
-      />
     </div>
   )
 }
