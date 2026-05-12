@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react'
 import { Home, Coffee, LayoutList, User, Settings } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { SPRING_SNAPPY, TAP_SCALE } from '@/lib/motion'
+import { SPRING_SNAPPY } from '@/lib/motion'
 import { getRoasteriesView } from '@/lib/roasteriesState'
 
 export function BottomTab({ className }: { className?: string }) {
@@ -51,23 +51,21 @@ export function BottomTab({ className }: { className?: string }) {
                   transition={SPRING_SNAPPY}
                 />
               )}
-              <motion.div whileTap={TAP_SCALE} transition={SPRING_SNAPPY}>
-                <Link
-                  href={href}
-                  className={cn(
-                    'flex flex-col items-center gap-1 text-xs font-medium transition-colors',
-                    isActive ? 'text-text-primary' : 'text-text-disabled hover:text-text-secondary'
-                  )}
+              <Link
+                href={href}
+                className={cn(
+                  'flex flex-col items-center gap-1 text-xs font-medium transition-colors active:scale-[0.96]',
+                  isActive ? 'text-text-primary' : 'text-text-disabled hover:text-text-secondary'
+                )}
+              >
+                <motion.div
+                  animate={{ scale: isActive ? 1.1 : 1, y: isActive ? -1 : 0 }}
+                  transition={SPRING_SNAPPY}
                 >
-                  <motion.div
-                    animate={{ scale: isActive ? 1.1 : 1, y: isActive ? -1 : 0 }}
-                    transition={SPRING_SNAPPY}
-                  >
-                    <Icon className={cn('size-5', isActive ? 'stroke-[2.5]' : 'stroke-[1.5]')} />
-                  </motion.div>
-                  <span className="whitespace-nowrap">{label}</span>
-                </Link>
-              </motion.div>
+                  <Icon className={cn('size-5', isActive ? 'stroke-[2.5]' : 'stroke-[1.5]')} />
+                </motion.div>
+                <span className="whitespace-nowrap">{label}</span>
+              </Link>
             </li>
           )
         })}
