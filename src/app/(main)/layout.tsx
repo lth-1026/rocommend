@@ -18,12 +18,10 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <div className="flex h-dvh flex-col bg-bg">
       <Navigation />
-      <main
-        className="fixed inset-x-0 top-0 overflow-y-auto bg-bg
-          bottom-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px))]
-          lg:static lg:flex-1 lg:bottom-auto"
-      >
-        <PageTransition>{children}</PageTransition>
+      <main className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain bg-bg">
+        <div className="pb-[calc(var(--bottom-tab-height)+env(safe-area-inset-bottom,0px))] lg:pb-0">
+          <PageTransition>{children}</PageTransition>
+        </div>
       </main>
     </div>
   )
