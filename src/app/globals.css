@@ -212,12 +212,12 @@ label {
 
 html {
   height: 100%;
+  overflow: hidden; /* body overflow:hidden은 iOS가 무시 — html에 걸어야 실제로 막힘 */
   background-color: var(--color-bg); /* safe-area 상단 배경 통일 */
 }
 
 body {
-  position: fixed; /* iOS에서 body overflow:hidden은 무시됨 — fixed로 진짜 고정 */
-  inset: 0;
+  height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
 }
