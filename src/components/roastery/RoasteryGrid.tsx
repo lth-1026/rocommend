@@ -27,14 +27,19 @@ export function RoasteryGrid({
   return (
     <div className={gridClass}>
       {roasteries.map((roastery, i) => (
-        <RoasteryCard
+        <div
           key={roastery.id}
-          roastery={roastery}
-          priority={i < 4}
-          activeRegions={activeRegions}
-          variant={variant}
-          onCardClick={onCardClick}
-        />
+          className="animate-fade-up"
+          style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}
+        >
+          <RoasteryCard
+            roastery={roastery}
+            priority={i < 4}
+            activeRegions={activeRegions}
+            variant={variant}
+            onCardClick={onCardClick}
+          />
+        </div>
       ))}
     </div>
   )

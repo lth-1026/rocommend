@@ -59,7 +59,7 @@ export function RoasteryCard({
     return (
       <Link
         href={`/roasteries/${roastery.id}`}
-        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl active:scale-[0.97] transition-transform duration-100"
         onClick={
           onCardClick
             ? (e) => {
@@ -127,7 +127,7 @@ export function RoasteryCard({
   return (
     <Link
       href={`/roasteries/${roastery.id}`}
-      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl active:scale-[0.97] transition-transform duration-100"
       onClick={
         onCardClick
           ? (e) => {

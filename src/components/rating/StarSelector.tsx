@@ -28,7 +28,7 @@ export function StarSelector({ value, onChange }: StarSelectorProps) {
             key={star}
             type="button"
             aria-label={`${star}점`}
-            className="text-3xl leading-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm"
+            className="text-3xl leading-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm hover:scale-125 active:scale-[0.9] transition-transform duration-100"
             onMouseEnter={() => setHovered(star)}
             onMouseLeave={() => setHovered(0)}
             onClick={() => onChange(star)}

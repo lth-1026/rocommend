@@ -47,7 +47,7 @@ export function BottomTab({ className }: { className?: string }) {
               <Link
                 href={href}
                 className={cn(
-                  'flex flex-col items-center gap-1 text-xs font-medium transition-colors',
+                  'flex flex-col items-center gap-1 text-xs font-medium transition-colors active:scale-[0.9] transition-transform duration-100',
                   isActive ? 'text-text-primary' : 'text-text-disabled hover:text-text-secondary'
                 )}
               >

@@ -45,7 +45,7 @@ export function BookmarkButton({
       onClick={handleClick}
       className={cn(
         'flex items-center justify-center rounded-full p-1.5',
-        'hover:bg-muted disabled:pointer-events-none',
+        'hover:bg-muted disabled:pointer-events-none active:scale-[0.88] transition-transform duration-100',
         className
       )}
     >
