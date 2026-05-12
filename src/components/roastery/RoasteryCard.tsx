@@ -2,12 +2,16 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import { RegionDisplay } from './RegionDisplay'
 import { RatingDisplay } from './RatingDisplay'
 import type { RoasteryWithStats } from '@/types/roastery'
 import { PRICE_RANGE_LABELS, getCharacteristicTags } from '@/types/roastery'
 import { formatDistance } from '@/lib/geo'
+import { SPRING_SNAPPY, TAP_SCALE } from '@/lib/motion'
+
+const MotionLink = motion.create(Link)
 
 interface RoasteryCardProps {
   roastery: RoasteryWithStats
@@ -57,9 +61,11 @@ export function RoasteryCard({
 
   if (variant === 'landscape') {
     return (
-      <Link
+      <MotionLink
         href={`/roasteries/${roastery.id}`}
-        className="block active:scale-[0.96] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+        whileTap={TAP_SCALE}
+        transition={SPRING_SNAPPY}
         onClick={
           onCardClick
             ? (e) => {
@@ -119,15 +125,17 @@ export function RoasteryCard({
             </div>
           </div>
         </div>
-      </Link>
+      </MotionLink>
     )
   }
 
   // portrait (기본 — 홈 피드)
   return (
-    <Link
+    <MotionLink
       href={`/roasteries/${roastery.id}`}
-      className="block active:scale-[0.96] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+      whileTap={TAP_SCALE}
+      transition={SPRING_SNAPPY}
       onClick={
         onCardClick
           ? (e) => {
@@ -179,6 +187,6 @@ export function RoasteryCard({
           </div>
         </div>
       </div>
-    </Link>
+    </MotionLink>
   )
 }
