@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/lth-1026/rocommend/compare/roco-2.1.0...roco-2.1.1) (2026-05-12)
+
+
+### Bug Fixes
+
+* iOS safe area·이중 스크롤 수정 ([#211](https://github.com/lth-1026/rocommend/issues/211)) ([0388787](https://github.com/lth-1026/rocommend/commit/0388787ed4c1e7706b0821da6c56df6a3d641554))
+
 ## [2.1.0](https://github.com/lth-1026/rocommend/compare/roco-2.0.1...roco-2.1.0) (2026-05-11)
 
 
