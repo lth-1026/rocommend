@@ -197,6 +197,19 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* 멀티 터치 ghost click 방지 및 300ms 딜레이 제거 */
+button,
+a,
+[role="button"],
+[role="tab"],
+[role="checkbox"],
+[role="radio"],
+[role="switch"],
+[role="menuitem"],
+label {
+  touch-action: manipulation;
+}
+
 html {
   height: 100%;
   background-color: var(--color-bg); /* safe-area 상단 배경 통일 */
