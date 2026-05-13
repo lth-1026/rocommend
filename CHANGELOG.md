@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/lth-1026/rocommend/compare/roco-2.2.3...roco-2.3.0) (2026-05-13)
+
+
+### Features
+
+* 데스크탑 헤더에 지도 nav 링크 추가 ([#231](https://github.com/lth-1026/rocommend/issues/231)) ([b6f3a44](https://github.com/lth-1026/rocommend/commit/b6f3a440f4a1932e4cac8718d8e54247ce11b9d6))
+
 ## [2.2.3](https://github.com/lth-1026/rocommend/compare/roco-2.2.2...roco-2.2.3) (2026-05-13)
 
 
