@@ -70,6 +70,7 @@ export interface ZoomHandle {
   panTo: (lat: number, lng: number, zoom?: number) => void
   skipNextFlyTo: () => void
   clearSelection: () => void
+  fitToRoastery: (roasteryId: string) => void
 }
 
 interface Props {
@@ -180,6 +181,14 @@ export function RoasteryMapView({
   const justFitBoundsRef = useRef(false)
   const prevSelectedIdRef = useRef<string | undefined>(undefined)
   const restoredFromSavedRef = useRef(!!savedMapView)
+  const markersRef = useRef(markers)
+  const overlayWidthRef = useRef(overlayWidth)
+  useEffect(() => {
+    markersRef.current = markers
+  }, [markers])
+  useEffect(() => {
+    overlayWidthRef.current = overlayWidth
+  }, [overlayWidth])
   const [selection, setSelection] = useState<{
     roasteryId: string
     lat: number
@@ -226,6 +235,18 @@ export function RoasteryMapView({
         justFitBoundsRef.current = true
       },
       clearSelection: () => clearSelectionRef.current(),
+      fitToRoastery: (roasteryId: string) => {
+        if (!containerRef.current) return
+        const roasteryMarkers = markersRef.current.filter((m) => m.roasteryId === roasteryId)
+        if (roasteryMarkers.length === 0) return
+        const { lat, lng, zoom } = computeFitView(
+          roasteryMarkers,
+          containerRef.current,
+          overlayWidthRef.current
+        )
+        map.morph(new nv.LatLng(lat, lng), zoom)
+        justFitBoundsRef.current = true
+      },
     })
     setMapReady(true)
   }, [])

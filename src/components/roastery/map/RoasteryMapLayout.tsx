@@ -110,6 +110,7 @@ export function RoasteryMapLayout({
   const [clickedAddress, setClickedAddress] = useState<string | null>(null)
   const touchStartX = useRef(0)
   const zoomRef = useRef<ZoomHandle | null>(null)
+  const wasCardClickRef = useRef(false)
   const handleMapReady = useCallback((handle: ZoomHandle) => {
     zoomRef.current = handle
   }, [])
@@ -267,6 +268,8 @@ export function RoasteryMapLayout({
 
   const selectRoastery = useCallback(
     (roasteryId: string, lat: number, lng: number) => {
+      // 마커 클릭은 카드 클릭 의도(전체 fit)를 무효화
+      wasCardClickRef.current = false
       // 클릭한 마커의 주소 추적 (스냅 카드용)
       const clicked = markers.find(
         (m) => m.roasteryId === roasteryId && m.lat === lat && m.lng === lng
@@ -301,19 +304,27 @@ export function RoasteryMapLayout({
     setNearbySelectedId(undefined)
   }, [router, buildUrl])
 
+  // 새 탭/창 열기(Cmd/Ctrl/Shift/Alt + 클릭, 보조 버튼)는 그대로 두기 위한 가드
+  const isPlainPrimaryClick = (e: MouseEvent<HTMLAnchorElement>) =>
+    e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
+
   const handleCardClick = useCallback(
     (roasteryId: string, e: MouseEvent<HTMLAnchorElement>) => {
-      if (isDesktop && !nearbyMode) {
-        e.preventDefault()
-        zoomRef.current?.clearSelection()
-        router.push(buildUrl(roasteryId), { scroll: false })
-      }
+      if (!isDesktop || nearbyMode) return
+      if (!isPlainPrimaryClick(e)) return
+      e.preventDefault()
+      wasCardClickRef.current = true
+      zoomRef.current?.clearSelection()
+      router.push(buildUrl(roasteryId), { scroll: false })
+      // 즉시 fit (overlayWidth는 직전 값으로 적용). selectedDetail 도착 시 아래 useEffect가 보정 호출.
+      zoomRef.current?.fitToRoastery(roasteryId)
     },
     [isDesktop, nearbyMode, router, buildUrl]
   )
 
   const handleNearbyCardClick = useCallback(
     (roasteryId: string, lat: number, lng: number, e: MouseEvent<HTMLAnchorElement>) => {
+      if (!isPlainPrimaryClick(e)) return
       const idx = nearbyLocations.findIndex(
         (item) =>
           item.roastery.id === roasteryId && item.location.lat === lat && item.location.lng === lng
@@ -328,6 +339,14 @@ export function RoasteryMapLayout({
     },
     [nearbyLocations, router, buildUrl]
   )
+
+  // selectedDetail이 도착(또는 변경)되면 카드 클릭이었던 경우 overlayWidth 반영해 다시 fit
+  useEffect(() => {
+    if (!selectedDetail) return
+    if (!wasCardClickRef.current) return
+    wasCardClickRef.current = false
+    zoomRef.current?.fitToRoastery(selectedDetail.roastery.id)
+  }, [selectedDetail])
 
   const handleTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {
     touchStartX.current = e.touches[0].clientX
