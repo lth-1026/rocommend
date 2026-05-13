@@ -144,7 +144,7 @@
   --container-max: 1440px;
 
   /* 네비게이션 높이 */
-  --header-height: 3.5rem;   /* 데스크탑 헤더 (h-14) */
+  --header-height: calc(3.5rem + 1px);   /* 데스크탑 헤더 (h-14 + border-b 1px) */
   --bottom-tab-height: 4rem; /* 모바일 하단 탭 (h-16) */
 
   /* 브레이크포인트 */
@@ -198,14 +198,13 @@
 }
 
 html {
-  height: 100%;
   background-color: var(--color-bg); /* safe-area 상단 배경 통일 */
 }
 
 body {
-  height: 100%;
-  overflow: hidden; /* body 레벨 스크롤 차단 (overflow-x: clip 대체) */
-  overscroll-behavior: none; /* iOS rubber-band 방지 */
+  background-color: var(--color-bg); /* iOS 26+ Safari가 body bg를 safe-area 색으로 사용 (theme-color 메타는 deprecated) */
+  overflow-x: clip; /* clip은 scroll context를 만들지 않아 iOS window scroll 정상 동작 */
+  overscroll-behavior: none;
 }
 
 /* ── 스크롤바 스타일링 ── */
@@ -296,6 +295,36 @@ body {
 @keyframes pulse-ring {
   0% { transform: scale(0.6); opacity: 0.8; }
   100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes page-enter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+  /* transform은 사용 금지 — animation fill-mode 후에도 identity matrix가 남아
+     자손 position:fixed의 containing block이 viewport가 아닌 이 요소가 됨 (FAB 깨짐) */
+}
+
+@layer utilities {
+  .animate-fade-up {
+    animation: fade-up 0.3s ease both;
+  }
+  .animate-page-enter {
+    animation: page-enter 0.25s ease both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-page-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @layer base {
