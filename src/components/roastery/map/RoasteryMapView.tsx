@@ -359,7 +359,12 @@ export function RoasteryMapView({
     const nv = window.naver.maps
 
     const pos = clickedPosRef.current
-    clickedPosRef.current = null
+
+    // 마커 클릭으로 pos가 설정됐지만 selectedId 갱신이 다른 commit으로 분리된 경우,
+    // selectedId가 새 selection을 따라잡을 때까지 pos를 보존하고 대기 (fit bounds 회귀 방지)
+    if (pos && selection?.roasteryId !== selectedId) {
+      return
+    }
 
     const selectedIdChanged = prevSelectedIdRef.current !== selectedId
 
@@ -369,6 +374,7 @@ export function RoasteryMapView({
     prevSelectedIdRef.current = selectedId
 
     if (pos) {
+      clickedPosRef.current = null
       // 지도 마커 클릭: 클릭한 마커 위치로 fly (오버레이 오프셋 적용)
       const currentZoom = mapRef.current.getZoom()
       const targetZoom = currentZoom < 16 ? 16 : currentZoom
