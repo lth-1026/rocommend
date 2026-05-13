@@ -144,7 +144,7 @@
   --container-max: 1440px;
 
   /* 네비게이션 높이 */
-  --header-height: 3.5rem;   /* 데스크탑 헤더 (h-14) */
+  --header-height: calc(3.5rem + 1px);   /* 데스크탑 헤더 (h-14 + border-b 1px) */
   --bottom-tab-height: 4rem; /* 모바일 하단 탭 (h-16) */
 
   /* 브레이크포인트 */

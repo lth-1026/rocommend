@@ -18,7 +18,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <div className="bg-bg">
       <Navigation />
-      <main className="pb-[var(--bottom-tab-height)] lg:pt-[var(--header-height)] lg:pb-0">
+      <main className="pb-[var(--bottom-tab-height)] lg:pb-0">
         <PageTransition>{children}</PageTransition>
       </main>
     </div>
