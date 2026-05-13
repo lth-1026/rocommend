@@ -198,14 +198,11 @@
 }
 
 html {
-  height: 100%;
   background-color: var(--color-bg); /* safe-area 상단 배경 통일 */
 }
 
 body {
-  height: 100%;
-  overflow: hidden; /* body 레벨 스크롤 차단 (overflow-x: clip 대체) */
-  overscroll-behavior: none; /* iOS rubber-band 방지 */
+  overflow-x: hidden; /* 가로 스크롤만 차단 — body가 세로 스크롤 컨테이너 (iOS 상단 탭 → 맨 위 동작) */
 }
 
 /* ── 스크롤바 스타일링 ── */
