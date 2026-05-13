@@ -5,6 +5,7 @@ import { Navigation } from './Navigation'
 // next/navigation 모킹
 vi.mock('next/navigation', () => ({
   usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
 }))
 
 // next-auth/react 모킹
