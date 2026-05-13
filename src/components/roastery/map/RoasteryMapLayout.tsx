@@ -534,7 +534,7 @@ export function RoasteryMapLayout({
     >
       {/* 페이지 헤더 (h1 + 필터) */}
       {mobileHeader && (
-        <div className="shrink-0 bg-background border-b pt-8 pb-3 px-[var(--page-padding)]">
+        <div className="shrink-0 bg-bg border-b pt-8 pb-3 px-[var(--page-padding)]">
           {mobileHeader}
         </div>
       )}
