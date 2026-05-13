@@ -3,10 +3,17 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
 import type { ActionResult } from '@/types/action'
 import type { PriceRange } from '@prisma/client'
 import { flattenTags } from '@/types/roastery'
+
+// 사용자 페이지 캐시(getRoasteryById의 unstable_cache + 라우트 캐시) 무효화 헬퍼.
+// 관리자 액션이 로스터리 자체나 소속 빈의 표시 상태를 바꿀 때 호출.
+function revalidateRoasteryDetail(roasteryId: string) {
+  updateTag(`roastery:${roasteryId}`)
+  revalidatePath(`/roasteries/${roasteryId}`)
+}
 
 // ── 권한 체크 헬퍼 ─────────────────────────────────────
 type AdminCheckError = { error: string; code: 'UNAUTHORIZED' }
@@ -183,6 +190,7 @@ export async function createBean(input: CreateBeanInput): Promise<ActionResult<{
       select: { id: true },
     })
     await syncRoasteryDecaf(input.roasteryId)
+    revalidateRoasteryDetail(input.roasteryId)
     return { success: true, data: { id: bean.id } }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
@@ -260,6 +268,7 @@ export async function updateRoastery(
       }
     }
 
+    revalidateRoasteryDetail(id)
     return { success: true, data: { id: roastery.id } }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
@@ -314,6 +323,7 @@ export async function updateBean(
     const syncTargets = new Set([input.roasteryId])
     if (prev?.roasteryId) syncTargets.add(prev.roasteryId)
     await Promise.all([...syncTargets].map(syncRoasteryDecaf))
+    syncTargets.forEach(revalidateRoasteryDetail)
     return { success: true, data: { id: bean.id } }
   } catch {
     return { success: false, error: '저장 중 오류가 발생했습니다', code: 'DB_ERROR' }
@@ -330,6 +340,7 @@ export async function softDeleteRoastery(id: string): Promise<ActionResult<void>
       where: { id },
       data: { deletedAt: new Date(), isOnboardingCandidate: false },
     })
+    revalidateRoasteryDetail(id)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -342,6 +353,7 @@ export async function restoreRoastery(id: string): Promise<ActionResult<void>> {
   if ('error' in check) return { success: false, error: check.error, code: check.code }
   try {
     await prisma.roastery.update({ where: { id }, data: { deletedAt: null } })
+    revalidateRoasteryDetail(id)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -361,6 +373,7 @@ export async function toggleHideRoastery(id: string): Promise<ActionResult<void>
       where: { id },
       data: { hidden: hide, ...(hide && { isOnboardingCandidate: false }) },
     })
+    revalidateRoasteryDetail(id)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -376,6 +389,7 @@ export async function closeRoastery(id: string): Promise<ActionResult<void>> {
       where: { id },
       data: { closedAt: new Date(), isOnboardingCandidate: false },
     })
+    revalidateRoasteryDetail(id)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -388,6 +402,7 @@ export async function reopenRoastery(id: string): Promise<ActionResult<void>> {
   if ('error' in check) return { success: false, error: check.error, code: check.code }
   try {
     await prisma.roastery.update({ where: { id }, data: { closedAt: null } })
+    revalidateRoasteryDetail(id)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -407,6 +422,7 @@ export async function softDeleteBean(id: string): Promise<ActionResult<void>> {
       select: { roasteryId: true },
     })
     await syncRoasteryDecaf(bean.roasteryId)
+    revalidateRoasteryDetail(bean.roasteryId)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -424,6 +440,7 @@ export async function restoreBean(id: string): Promise<ActionResult<void>> {
       select: { roasteryId: true },
     })
     await syncRoasteryDecaf(bean.roasteryId)
+    revalidateRoasteryDetail(bean.roasteryId)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -442,6 +459,7 @@ export async function toggleHideBean(id: string): Promise<ActionResult<void>> {
     if (!current) return { success: false, error: '존재하지 않는 원두입니다', code: 'VALIDATION' }
     await prisma.bean.update({ where: { id }, data: { hidden: !current.hidden } })
     await syncRoasteryDecaf(current.roasteryId)
+    revalidateRoasteryDetail(current.roasteryId)
     revalidatePath('/admin/roasteries')
     return { success: true, data: undefined }
   } catch {
@@ -847,6 +865,7 @@ export async function createLocation(
       select: { id: true, address: true, lat: true, lng: true, isPrimary: true },
     })
 
+    updateTag(`roastery:${roasteryId}`)
     revalidatePath(`/admin/roasteries/${roasteryId}`)
     revalidatePath(`/roasteries/${roasteryId}`)
     return { success: true, data: loc }
@@ -886,6 +905,7 @@ export async function updateLocation(
       select: { id: true, address: true, lat: true, lng: true, isPrimary: true },
     })
 
+    updateTag(`roastery:${roasteryId}`)
     revalidatePath(`/admin/roasteries/${roasteryId}`)
     revalidatePath(`/roasteries/${roasteryId}`)
     return { success: true, data: loc }
@@ -900,6 +920,7 @@ export async function deleteLocation(id: string, roasteryId: string): Promise<Ac
 
   try {
     await prisma.roasteryLocation.delete({ where: { id } })
+    updateTag(`roastery:${roasteryId}`)
     revalidatePath(`/admin/roasteries/${roasteryId}`)
     revalidatePath(`/roasteries/${roasteryId}`)
     return { success: true, data: undefined }
@@ -927,6 +948,7 @@ export async function setPrimaryLocation(
       }),
     ])
 
+    updateTag(`roastery:${roasteryId}`)
     revalidatePath(`/admin/roasteries/${roasteryId}`)
     revalidatePath(`/roasteries/${roasteryId}`)
     return { success: true, data: undefined }

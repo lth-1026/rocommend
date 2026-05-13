@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
 import { after } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -47,6 +47,7 @@ export async function upsertRating(input: {
     // 무시
   }
 
+  updateTag(`roastery:${roasteryId}`)
   revalidatePath(`/roasteries/${roasteryId}`)
   revalidatePath('/')
   revalidatePath('/bookmarks')
@@ -81,6 +82,7 @@ export async function deleteRating(input: { roasteryId: string }): Promise<Actio
     return { success: false, error: '삭제 중 오류가 발생했습니다.', code: 'DB_ERROR' }
   }
 
+  updateTag(`roastery:${roasteryId}`)
   revalidatePath(`/roasteries/${roasteryId}`)
   revalidatePath('/')
   revalidatePath('/bookmarks')
