@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.3](https://github.com/lth-1026/rocommend/compare/roco-2.2.2...roco-2.2.3) (2026-05-13)
+
+
+### Bug Fixes
+
+* 지도 마커 미들웨어 인증 리다이렉트로 깨지던 문제 해결 ([#228](https://github.com/lth-1026/rocommend/issues/228)) ([6c16679](https://github.com/lth-1026/rocommend/commit/6c1667906752721c6abe35fae2192f78a7a31b12))
+
 ## [2.2.2](https://github.com/lth-1026/rocommend/compare/roco-2.2.1...roco-2.2.2) (2026-05-13)
 
 
