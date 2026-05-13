@@ -3,11 +3,12 @@ import Link from 'next/link'
 import { MapPin, List } from 'lucide-react'
 import { auth } from '@/lib/auth'
 import { getRoasteries, getRoasteryById, getRegionOptions } from '@/lib/queries/roastery'
-import { getUserRating, getRatingCount, getRoasteryRatings } from '@/lib/queries/rating'
+import { getUserRating, getRatingCount } from '@/lib/queries/rating'
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RequestRoasteryButton } from '@/components/roastery/RequestRoasteryButton'
 import { RoasteryPageHeader } from '@/components/roastery/RoasteryPageHeader'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
+import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 import { RoasteryMapLayout } from '@/components/roastery/map/RoasteryMapLayout'
 import { RoasteriesViewTracker } from '@/components/roastery/RoasteriesViewTracker'
 import { toArray } from '@/lib/utils'
@@ -74,15 +75,9 @@ export async function RoasteriesContent({ params }: Props) {
 
   let selectedDetail: SelectedRoasteryData | null = null
   if (selectedRoastery) {
-    const initialSort = userId && ratingCount >= 3 ? 'SIMILAR' : 'HIGH'
-    const [userRating, isBookmarked, ratingsResult] = await Promise.all([
+    const [userRating, isBookmarked] = await Promise.all([
       userId ? getUserRating(userId, selectedRoastery.id) : null,
       userId ? getBookmarkStatus(userId, selectedRoastery.id) : false,
-      getRoasteryRatings({
-        roasteryId: selectedRoastery.id,
-        sort: initialSort,
-        currentUserId: userId,
-      }),
     ])
     selectedDetail = {
       roastery: selectedRoastery,
@@ -90,9 +85,8 @@ export async function RoasteriesContent({ params }: Props) {
       userRating: userRating
         ? { score: userRating.score, comment: userRating.comment ?? undefined }
         : undefined,
-      initialRatings: ratingsResult.items,
-      initialNextCursor: ratingsResult.nextCursor,
-      initialSort,
+      userId,
+      ratingCount,
     }
   }
 
@@ -101,6 +95,18 @@ export async function RoasteriesContent({ params }: Props) {
   )
 
   if (isMapView) {
+    const selectedDetailNode = selectedDetail ? (
+      <RoasteryDetail
+        roastery={selectedDetail.roastery}
+        isLoggedIn={!!userId}
+        userId={selectedDetail.userId}
+        userRating={selectedDetail.userRating}
+        isBookmarked={selectedDetail.isBookmarked}
+        ratingCount={selectedDetail.ratingCount}
+        hideBackButton
+      />
+    ) : null
+
     return (
       <div className="flex flex-col lg:h-[calc(100vh-var(--header-height))] lg:overflow-hidden">
         <RoasteriesViewTracker view="map" />
@@ -109,6 +115,7 @@ export async function RoasteriesContent({ params }: Props) {
             <RoasteryMapLayout
               roasteries={mapRoasteries}
               selectedDetail={selectedDetail}
+              selectedDetailNode={selectedDetailNode}
               isLoggedIn={!!userId}
               activeRegions={filter.regions}
               isFiltered={isFiltered}

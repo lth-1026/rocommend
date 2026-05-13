@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { DecafToggle } from './DecafToggle'
 import { RecommendSection } from './RecommendSection'
 import { PopularSection } from './PopularSection'
@@ -24,17 +24,14 @@ export function HomeFeedClient({
   isLoggedIn,
 }: HomeFeedClientProps) {
   const [decafOn, setDecafOn] = useState(false)
-  const [, startTransition] = useTransition()
 
   const handleCardClick = (roasteryId: string) => {
-    startTransition(async () => {
-      await logClientEvent({
-        event: 'recommendation_clicked',
-        payload: {
-          roasteryId,
-          recommendationSource: result.source === 'cf' ? 'cf' : 'fallback_global',
-        },
-      })
+    void logClientEvent({
+      event: 'recommendation_clicked',
+      payload: {
+        roasteryId,
+        recommendationSource: result.source === 'cf' ? 'cf' : 'fallback_global',
+      },
     })
   }
 

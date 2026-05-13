@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { RatingDisplay } from './RatingDisplay'
@@ -5,31 +6,29 @@ import { BackButton } from './BackButton'
 import { RoasteryBuyAndBeans } from './RoasteryBuyAndBeans'
 import { RatingButton } from '@/components/rating/RatingButton'
 import { BookmarkButton } from '@/components/bookmark/BookmarkButton'
-import { RatingList } from '@/components/rating/RatingList'
+import { RatingListSection } from './RatingListSection'
+import { RatingListSkeleton } from './RatingListSkeleton'
 import type { RoasteryDetail as RoasteryDetailType } from '@/types/roastery'
 import { PRICE_RANGE_LABELS, getCharacteristicTags } from '@/types/roastery'
 import { RoasteryLocationSection } from './RoasteryLocationSection'
-import type { RatingListItem, RatingSortOption } from '@/types/rating'
 
 interface RoasteryDetailProps {
   roastery: RoasteryDetailType
   isLoggedIn: boolean
+  userId: string | undefined
   userRating?: { score: number; comment?: string }
   isBookmarked: boolean
-  initialRatings: RatingListItem[]
-  initialNextCursor: string | null
-  initialSort: RatingSortOption
+  ratingCount: number
   hideBackButton?: boolean
 }
 
 export function RoasteryDetail({
   roastery,
   isLoggedIn,
+  userId,
   userRating,
   isBookmarked,
-  initialRatings,
-  initialNextCursor,
-  initialSort,
+  ratingCount,
   hideBackButton = false,
 }: RoasteryDetailProps) {
   const regions = roastery.regions
@@ -136,13 +135,14 @@ export function RoasteryDetail({
       />
 
       {/* 한줄평 목록 */}
-      <RatingList
-        roasteryId={roastery.id}
-        initialItems={initialRatings}
-        initialNextCursor={initialNextCursor}
-        initialSort={initialSort}
-        isLoggedIn={isLoggedIn}
-      />
+      <Suspense fallback={<RatingListSkeleton />}>
+        <RatingListSection
+          roasteryId={roastery.id}
+          userId={userId}
+          ratingCount={ratingCount}
+          isLoggedIn={isLoggedIn}
+        />
+      </Suspense>
     </div>
   )
 }
