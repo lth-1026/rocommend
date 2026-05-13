@@ -8,6 +8,7 @@ import {
   useEffect,
   type ReactNode,
   type TouchEvent,
+  type MouseEvent,
 } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -301,8 +302,9 @@ export function RoasteryMapLayout({
   }, [router, buildUrl])
 
   const handleCardClick = useCallback(
-    (roasteryId: string) => {
+    (roasteryId: string, e: MouseEvent<HTMLAnchorElement>) => {
       if (isDesktop && !nearbyMode) {
+        e.preventDefault()
         zoomRef.current?.clearSelection()
         router.push(buildUrl(roasteryId), { scroll: false })
       }
@@ -311,13 +313,14 @@ export function RoasteryMapLayout({
   )
 
   const handleNearbyCardClick = useCallback(
-    (roasteryId: string, lat: number, lng: number) => {
+    (roasteryId: string, lat: number, lng: number, e: MouseEvent<HTMLAnchorElement>) => {
       const idx = nearbyLocations.findIndex(
         (item) =>
           item.roastery.id === roasteryId && item.location.lat === lat && item.location.lng === lng
       )
       if (idx === -1) return
       const item = nearbyLocations[idx]!
+      e.preventDefault()
       setNearbyIndex(idx)
       setNearbySelectedId(roasteryId)
       zoomRef.current?.panTo(item.location.lat!, item.location.lng!, 15)
@@ -395,11 +398,12 @@ export function RoasteryMapLayout({
                     variant="landscape"
                     nearbyAddress={item.location.address ?? undefined}
                     nearbyDistance={item.distance}
-                    onCardClick={() =>
+                    onCardClick={(_, e) =>
                       handleNearbyCardClick(
                         item.roastery.id,
                         item.location.lat!,
-                        item.location.lng!
+                        item.location.lng!,
+                        e
                       )
                     }
                   />
