@@ -19,24 +19,56 @@ import { FeedbackButton } from '@/components/feedback/FeedbackButton'
 import { FeedbackForm } from '@/components/feedback/FeedbackForm'
 import { cn } from '@/lib/utils'
 
+type NavLinkContext = {
+  pathname: string
+  isMapView: boolean
+  searchParams: URLSearchParams
+}
+
 type NavLink = {
   href: string
   label: string
-  isActive: (ctx: { pathname: string; isMapView: boolean }) => boolean
+  isActive: (ctx: NavLinkContext) => boolean
+  buildHref?: (ctx: NavLinkContext) => string
+}
+
+// /roasteries 안에서 list ↔ map을 오갈 때 검색·필터·정렬 쿼리는 유지하고, view/id만 갱신
+function buildRoasteryHref(searchParams: URLSearchParams, options: { mapView: boolean }) {
+  const next = new URLSearchParams(searchParams)
+  next.delete('id')
+  if (options.mapView) {
+    next.set('view', 'map')
+  } else {
+    next.delete('view')
+  }
+  const qs = next.toString()
+  return qs ? `/roasteries?${qs}` : '/roasteries'
+}
+
+const listLink: NavLink = {
+  href: '/roasteries',
+  label: '로스터리',
+  isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && !isMapView,
+  buildHref: ({ pathname, searchParams }) =>
+    pathname.startsWith('/roasteries')
+      ? buildRoasteryHref(searchParams, { mapView: false })
+      : '/roasteries',
+}
+
+const mapLink: NavLink = {
+  href: '/roasteries?view=map',
+  label: '지도',
+  isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && isMapView,
+  buildHref: ({ pathname, searchParams }) =>
+    pathname.startsWith('/roasteries')
+      ? buildRoasteryHref(searchParams, { mapView: true })
+      : '/roasteries?view=map',
 }
 
 const authNavLinks: NavLink[] = [
   { href: '/', label: '홈', isActive: ({ pathname }) => pathname === '/' },
-  {
-    href: '/roasteries',
-    label: '로스터리',
-    isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && !isMapView,
-  },
-  {
-    href: '/roasteries?view=map',
-    label: '지도',
-    isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && isMapView,
-  },
+  listLink,
+  mapLink,
   {
     href: '/activity',
     label: '내 활동',
@@ -46,16 +78,8 @@ const authNavLinks: NavLink[] = [
 
 const guestNavLinks: NavLink[] = [
   { href: '/', label: '홈', isActive: ({ pathname }) => pathname === '/' },
-  {
-    href: '/roasteries',
-    label: '로스터리',
-    isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && !isMapView,
-  },
-  {
-    href: '/roasteries?view=map',
-    label: '지도',
-    isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && isMapView,
-  },
+  listLink,
+  mapLink,
 ]
 
 export function Header({ className }: { className?: string }) {
@@ -93,18 +117,22 @@ export function Header({ className }: { className?: string }) {
 
           {/* 네비게이션 링크 */}
           <nav className="flex items-center gap-6">
-            {navLinks.map(({ href, label, isActive }) => (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  'text-sm font-medium transition-colors hover:text-text-primary',
-                  isActive({ pathname, isMapView }) ? 'text-text-primary' : 'text-text-secondary'
-                )}
-              >
-                {label}
-              </Link>
-            ))}
+            {navLinks.map(({ href, label, isActive, buildHref }) => {
+              const ctx = { pathname, isMapView, searchParams }
+              const resolvedHref = buildHref ? buildHref(ctx) : href
+              return (
+                <Link
+                  key={href}
+                  href={resolvedHref}
+                  className={cn(
+                    'text-sm font-medium transition-colors hover:text-text-primary',
+                    isActive(ctx) ? 'text-text-primary' : 'text-text-secondary'
+                  )}
+                >
+                  {label}
+                </Link>
+              )
+            })}
           </nav>
 
           {/* 우측 영역 */}
