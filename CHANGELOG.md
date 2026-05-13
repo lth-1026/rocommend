@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.2.0](https://github.com/lth-1026/rocommend/compare/roco-2.1.1...roco-2.2.0) (2026-05-13)
+
+
+### Features
+
+* 모바일 스크롤 구조를 YouTube 패턴으로 채택 ([#218](https://github.com/lth-1026/rocommend/issues/218)) ([4305ccc](https://github.com/lth-1026/rocommend/commit/4305ccc11271e67d8f48d64f94f098ad3854cfdd))
+
+
+### Bug Fixes
+
+* framer-motion 전체 제거 (iOS 터치 디버깅) ([#217](https://github.com/lth-1026/rocommend/issues/217)) ([83fc7aa](https://github.com/lth-1026/rocommend/commit/83fc7aa9133e07b182425d80ea6cf43323cfc1b1))
+
 ## [2.1.1](https://github.com/lth-1026/rocommend/compare/roco-2.1.0...roco-2.1.1) (2026-05-12)
 
 
