@@ -202,6 +202,7 @@ html {
 }
 
 body {
+  background-color: var(--color-bg); /* iOS 26+ Safari가 body bg를 safe-area 색으로 사용 (theme-color 메타는 deprecated) */
   overflow-x: clip; /* clip은 scroll context를 만들지 않아 iOS window scroll 정상 동작 */
   overscroll-behavior: none;
 }
