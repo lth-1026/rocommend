@@ -17,6 +17,6 @@ export default async function middleware(request: NextRequest, event: NextFetchE
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|brand/|icons/|_axiom/).*)',
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|brand/|icons/|_axiom/|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|avif)$).*)',
   ],
 }

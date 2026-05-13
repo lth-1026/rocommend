@@ -145,7 +145,7 @@ function markerIcon(selected: boolean, hovered: boolean, primarySelected = false
   const iconSize = Math.round(size * 0.7)
   const nv = window.naver!
   return {
-    content: `<div style="width:${size}px;height:${size}px;background:${selected ? '#fff' : '#1A1917'};border:${selected ? '1px solid #1A1917' : 'none'};border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box;"><img src="/marker.png" alt="" style="width:${iconSize}px;height:${iconSize}px;display:block;pointer-events:none;" /></div>`,
+    content: `<div style="width:${size}px;height:${size}px;background:${selected ? '#fff' : '#1A1917'};border:${selected ? '1px solid #1A1917' : 'none'};border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box;"><img src="/icons/marker.png" alt="" style="width:${iconSize}px;height:${iconSize}px;display:block;pointer-events:none;" /></div>`,
     size: new nv.maps.Size(size, size),
     anchor: new nv.maps.Point(size / 2, size / 2),
   }
