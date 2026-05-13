@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/lth-1026/rocommend/compare/roco-2.2.0...roco-2.2.1) (2026-05-13)
+
+
+### Performance Improvements
+
+* 로스터리 상세 진입 속도 개선 (Suspense streaming + unstable_cache) ([#221](https://github.com/lth-1026/rocommend/issues/221)) ([34bfd16](https://github.com/lth-1026/rocommend/commit/34bfd16ca506e3318473423377bb7711cc14931e))
+
 ## [2.2.0](https://github.com/lth-1026/rocommend/compare/roco-2.1.1...roco-2.2.0) (2026-05-13)
 
 
