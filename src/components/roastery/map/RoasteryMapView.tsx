@@ -141,9 +141,10 @@ function computeFitView(
 
 function markerIcon(selected: boolean, hovered: boolean, primarySelected = false) {
   const size = primarySelected ? 32 : selected ? 24 : hovered ? 26 : 20
+  const iconSize = Math.round(size * 0.55)
   const nv = window.naver!
   return {
-    content: `<div style="width:${size}px;height:${size}px;background:${selected ? '#fff' : '#1A1917'};border:${selected ? '2px solid #1A1917' : 'none'};border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;font-size:${Math.round(size * 0.55)}px;display:flex;align-items:center;justify-content:center;overflow:hidden;">☕️</div>`,
+    content: `<div style="width:${size}px;height:${size}px;background:${selected ? '#fff' : '#1A1917'};border:${selected ? '2px solid #1A1917' : 'none'};border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="/marker.svg" alt="" style="width:${iconSize}px;height:${iconSize}px;display:block;pointer-events:none;" /></div>`,
     size: new nv.maps.Size(size, size),
     anchor: new nv.maps.Point(size / 2, size / 2),
   }
