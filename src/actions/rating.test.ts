@@ -12,7 +12,11 @@ const mockComputeAndSaveCF = vi.hoisted(() => vi.fn().mockResolvedValue(undefine
 
 vi.mock('@/lib/auth', () => ({ auth: mockAuth }))
 vi.mock('@/lib/prisma', () => ({ prisma: mockPrisma }))
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn(), revalidateTag: vi.fn() }))
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
+  updateTag: vi.fn(),
+}))
 vi.mock('next/server', () => ({ after: vi.fn((fn: () => unknown) => fn()) }))
 vi.mock('@/lib/recommender', () => ({ computeAndSaveCF: mockComputeAndSaveCF }))
 

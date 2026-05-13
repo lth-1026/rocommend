@@ -16,7 +16,6 @@ import { X, List, MapPin, ChevronLeft, ChevronRight, Plus, Minus, LocateFixed } 
 import { toast } from 'sonner'
 import { RoasteryGrid } from '@/components/roastery/RoasteryGrid'
 import { RoasteryCard } from '@/components/roastery/RoasteryCard'
-import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 import { FilterPanel } from '@/components/roastery/FilterPanel'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { getNearbyLocations, formatDistance } from '@/lib/geo'
@@ -28,7 +27,6 @@ import type {
   FilterParams,
   SortOption,
 } from '@/types/roastery'
-import type { RatingListItem, RatingSortOption } from '@/types/rating'
 import type { MapMarkerData, ZoomHandle } from './RoasteryMapView'
 
 // Naver Map을 SSR 없이 로드
@@ -43,14 +41,14 @@ export interface SelectedRoasteryData {
   roastery: RoasteryDetailType
   isBookmarked: boolean
   userRating?: { score: number; comment?: string }
-  initialRatings: RatingListItem[]
-  initialNextCursor: string | null
-  initialSort: RatingSortOption
+  userId: string | undefined
+  ratingCount: number
 }
 
 interface Props {
   roasteries: RoasteryWithStats[]
   selectedDetail: SelectedRoasteryData | null
+  selectedDetailNode: ReactNode
   isLoggedIn: boolean
   activeRegions: string[]
   isFiltered: boolean
@@ -76,6 +74,7 @@ let savedUserLocation: { lat: number; lng: number } | null = null
 export function RoasteryMapLayout({
   roasteries,
   selectedDetail,
+  selectedDetailNode,
   isLoggedIn,
   activeRegions,
   isFiltered,
@@ -505,18 +504,7 @@ export function RoasteryMapLayout({
                   <X className="size-4" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-4">
-                <RoasteryDetail
-                  roastery={selectedDetail.roastery}
-                  isLoggedIn={isLoggedIn}
-                  userRating={selectedDetail.userRating}
-                  isBookmarked={selectedDetail.isBookmarked}
-                  initialRatings={selectedDetail.initialRatings}
-                  initialNextCursor={selectedDetail.initialNextCursor}
-                  initialSort={selectedDetail.initialSort}
-                  hideBackButton
-                />
-              </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-4">{selectedDetailNode}</div>
             </div>
           )}
         </div>

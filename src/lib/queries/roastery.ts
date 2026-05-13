@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import type { Prisma } from '@prisma/client'
 import type {
@@ -159,7 +160,7 @@ export async function getRegionOptions(): Promise<string[]> {
   return regions.sort()
 }
 
-export async function getRoasteryById(id: string): Promise<RoasteryDetail | null> {
+async function getRoasteryByIdRaw(id: string): Promise<RoasteryDetail | null> {
   const [roastery, avgRating] = await Promise.all([
     prisma.roastery.findUnique({
       where: { id, deletedAt: null, hidden: false },
@@ -265,4 +266,12 @@ export async function getRoasteryById(id: string): Promise<RoasteryDetail | null
     channels: baseChannels,
     beans,
   }
+}
+
+export function getRoasteryById(id: string): Promise<RoasteryDetail | null> {
+  return unstable_cache(() => getRoasteryByIdRaw(id), ['roastery-by-id', id], {
+    tags: ['roastery', `roastery:${id}`],
+    // 무효화 호출 누락 대비 1시간 안전망 (관리자 액션은 on-demand로 즉시 무효화됨)
+    revalidate: 3600,
+  })()
 }
