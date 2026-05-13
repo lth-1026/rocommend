@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.2](https://github.com/lth-1026/rocommend/compare/roco-2.2.1...roco-2.2.2) (2026-05-13)
+
+
+### Bug Fixes
+
+* 데스크탑 지도뷰 카드 클릭 시 사이드 패널 + 마커 클릭 동작 안정화 ([#224](https://github.com/lth-1026/rocommend/issues/224)) ([ce6a643](https://github.com/lth-1026/rocommend/commit/ce6a643730728320c41b2b59d24c8a5801d85d2c))
+* 지도 마커 SVG → PNG 교체 (Windows 호환성) ([#225](https://github.com/lth-1026/rocommend/issues/225)) ([d8842fc](https://github.com/lth-1026/rocommend/commit/d8842fcf22a52f1847ab4934ec82f18da7df0ee7))
+
 ## [2.2.1](https://github.com/lth-1026/rocommend/compare/roco-2.2.0...roco-2.2.1) (2026-05-13)
 
 
