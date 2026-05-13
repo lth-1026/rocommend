@@ -110,7 +110,7 @@ export function RoasteryMapLayout({
   const [clickedAddress, setClickedAddress] = useState<string | null>(null)
   const touchStartX = useRef(0)
   const zoomRef = useRef<ZoomHandle | null>(null)
-  const wasCardClickRef = useRef(false)
+  const pendingCardFitIdRef = useRef<string | null>(null)
   const handleMapReady = useCallback((handle: ZoomHandle) => {
     zoomRef.current = handle
   }, [])
@@ -269,7 +269,7 @@ export function RoasteryMapLayout({
   const selectRoastery = useCallback(
     (roasteryId: string, lat: number, lng: number) => {
       // 마커 클릭은 카드 클릭 의도(전체 fit)를 무효화
-      wasCardClickRef.current = false
+      pendingCardFitIdRef.current = null
       // 클릭한 마커의 주소 추적 (스냅 카드용)
       const clicked = markers.find(
         (m) => m.roasteryId === roasteryId && m.lat === lat && m.lng === lng
@@ -299,6 +299,7 @@ export function RoasteryMapLayout({
   )
 
   const clearSelection = useCallback(() => {
+    pendingCardFitIdRef.current = null
     router.push(buildUrl(null), { scroll: false })
     setSnapId(undefined)
     setNearbySelectedId(undefined)
@@ -313,7 +314,7 @@ export function RoasteryMapLayout({
       if (!isDesktop || nearbyMode) return
       if (!isPlainPrimaryClick(e)) return
       e.preventDefault()
-      wasCardClickRef.current = true
+      pendingCardFitIdRef.current = roasteryId
       zoomRef.current?.clearSelection()
       router.push(buildUrl(roasteryId), { scroll: false })
       // 즉시 fit (overlayWidth는 직전 값으로 적용). selectedDetail 도착 시 아래 useEffect가 보정 호출.
@@ -340,11 +341,11 @@ export function RoasteryMapLayout({
     [nearbyLocations, router, buildUrl]
   )
 
-  // selectedDetail이 도착(또는 변경)되면 카드 클릭이었던 경우 overlayWidth 반영해 다시 fit
+  // 카드 클릭으로 요청된 fit 의도가 selectedDetail 도착과 일치하는 경우에만 보정 fit 실행
   useEffect(() => {
     if (!selectedDetail) return
-    if (!wasCardClickRef.current) return
-    wasCardClickRef.current = false
+    if (pendingCardFitIdRef.current !== selectedDetail.roastery.id) return
+    pendingCardFitIdRef.current = null
     zoomRef.current?.fitToRoastery(selectedDetail.roastery.id)
   }, [selectedDetail])
 
