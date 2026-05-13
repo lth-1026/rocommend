@@ -202,7 +202,8 @@ html {
 }
 
 body {
-  overflow-x: hidden; /* 가로 스크롤만 차단 — body가 세로 스크롤 컨테이너 (iOS 상단 탭 → 맨 위 동작) */
+  overflow-x: clip; /* clip은 scroll context를 만들지 않아 iOS window scroll 정상 동작 */
+  overscroll-behavior: none;
 }
 
 /* ── 스크롤바 스타일링 ── */
