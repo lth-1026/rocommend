@@ -302,8 +302,10 @@ body {
 }
 
 @keyframes page-enter {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
+  /* transform은 사용 금지 — animation fill-mode 후에도 identity matrix가 남아
+     자손 position:fixed의 containing block이 viewport가 아닌 이 요소가 됨 (FAB 깨짐) */
 }
 
 @layer utilities {
