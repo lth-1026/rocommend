@@ -70,6 +70,7 @@ export interface ZoomHandle {
   panTo: (lat: number, lng: number, zoom?: number) => void
   skipNextFlyTo: () => void
   clearSelection: () => void
+  fitToRoastery: (roasteryId: string) => void
 }
 
 interface Props {
@@ -180,6 +181,14 @@ export function RoasteryMapView({
   const justFitBoundsRef = useRef(false)
   const prevSelectedIdRef = useRef<string | undefined>(undefined)
   const restoredFromSavedRef = useRef(!!savedMapView)
+  const markersRef = useRef(markers)
+  const overlayWidthRef = useRef(overlayWidth)
+  useEffect(() => {
+    markersRef.current = markers
+  }, [markers])
+  useEffect(() => {
+    overlayWidthRef.current = overlayWidth
+  }, [overlayWidth])
   const [selection, setSelection] = useState<{
     roasteryId: string
     lat: number
@@ -226,6 +235,18 @@ export function RoasteryMapView({
         justFitBoundsRef.current = true
       },
       clearSelection: () => clearSelectionRef.current(),
+      fitToRoastery: (roasteryId: string) => {
+        if (!containerRef.current) return
+        const roasteryMarkers = markersRef.current.filter((m) => m.roasteryId === roasteryId)
+        if (roasteryMarkers.length === 0) return
+        const { lat, lng, zoom } = computeFitView(
+          roasteryMarkers,
+          containerRef.current,
+          overlayWidthRef.current
+        )
+        map.morph(new nv.LatLng(lat, lng), zoom)
+        justFitBoundsRef.current = true
+      },
     })
     setMapReady(true)
   }, [])
@@ -323,6 +344,12 @@ export function RoasteryMapView({
 
   // Fly to selected marker
   useEffect(() => {
+    // selection이 비어 있는데 clickedPosRef가 남아있다면 비-마커 경로(카드/URL)로 선택이
+    // 갱신된 상태 — 마커 클릭 의도는 더 이상 유효하지 않으므로 즉시 폐기 (stale pos 제거)
+    if (clickedPosRef.current && !selection) {
+      clickedPosRef.current = null
+    }
+
     // fitBounds가 막 실행됐으면 fly 건너뜀 — selectedId 유무와 무관하게 먼저 소비
     if (justFitBoundsRef.current) {
       justFitBoundsRef.current = false
@@ -338,7 +365,12 @@ export function RoasteryMapView({
     const nv = window.naver.maps
 
     const pos = clickedPosRef.current
-    clickedPosRef.current = null
+
+    // 마커 클릭으로 pos가 설정됐지만 selectedId 갱신이 다른 commit으로 분리된 경우,
+    // selectedId가 새 selection을 따라잡을 때까지 pos를 보존하고 대기 (fit bounds 회귀 방지)
+    if (pos && selection?.roasteryId !== selectedId) {
+      return
+    }
 
     const selectedIdChanged = prevSelectedIdRef.current !== selectedId
 
@@ -348,6 +380,7 @@ export function RoasteryMapView({
     prevSelectedIdRef.current = selectedId
 
     if (pos) {
+      clickedPosRef.current = null
       // 지도 마커 클릭: 클릭한 마커 위치로 fly (오버레이 오프셋 적용)
       const currentZoom = mapRef.current.getZoom()
       const targetZoom = currentZoom < 16 ? 16 : currentZoom
