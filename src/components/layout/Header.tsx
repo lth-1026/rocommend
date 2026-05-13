@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import Image from 'next/image'
 import { MoreVertical } from 'lucide-react'
@@ -19,19 +19,49 @@ import { FeedbackButton } from '@/components/feedback/FeedbackButton'
 import { FeedbackForm } from '@/components/feedback/FeedbackForm'
 import { cn } from '@/lib/utils'
 
-const authNavLinks = [
-  { href: '/', label: '홈' },
-  { href: '/roasteries', label: '로스터리' },
-  { href: '/activity', label: '내 활동' },
+type NavLink = {
+  href: string
+  label: string
+  isActive: (ctx: { pathname: string; isMapView: boolean }) => boolean
+}
+
+const authNavLinks: NavLink[] = [
+  { href: '/', label: '홈', isActive: ({ pathname }) => pathname === '/' },
+  {
+    href: '/roasteries',
+    label: '로스터리',
+    isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && !isMapView,
+  },
+  {
+    href: '/roasteries?view=map',
+    label: '지도',
+    isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && isMapView,
+  },
+  {
+    href: '/activity',
+    label: '내 활동',
+    isActive: ({ pathname }) => pathname.startsWith('/activity'),
+  },
 ]
 
-const guestNavLinks = [
-  { href: '/', label: '홈' },
-  { href: '/roasteries', label: '로스터리' },
+const guestNavLinks: NavLink[] = [
+  { href: '/', label: '홈', isActive: ({ pathname }) => pathname === '/' },
+  {
+    href: '/roasteries',
+    label: '로스터리',
+    isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && !isMapView,
+  },
+  {
+    href: '/roasteries?view=map',
+    label: '지도',
+    isActive: ({ pathname, isMapView }) => pathname.startsWith('/roasteries') && isMapView,
+  },
 ]
 
 export function Header({ className }: { className?: string }) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const isMapView = searchParams.get('view') === 'map'
   const { data: session } = useSession()
   const navLinks = session?.user ? authNavLinks : guestNavLinks
   const [feedbackOpen, setFeedbackOpen] = useState(false)
@@ -63,15 +93,13 @@ export function Header({ className }: { className?: string }) {
 
           {/* 네비게이션 링크 */}
           <nav className="flex items-center gap-6">
-            {navLinks.map(({ href, label }) => (
+            {navLinks.map(({ href, label, isActive }) => (
               <Link
                 key={href}
                 href={href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-text-primary',
-                  (href === '/' ? pathname === '/' : pathname.startsWith(href))
-                    ? 'text-text-primary'
-                    : 'text-text-secondary'
+                  isActive({ pathname, isMapView }) ? 'text-text-primary' : 'text-text-secondary'
                 )}
               >
                 {label}
