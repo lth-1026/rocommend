@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { MapPin, List } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { auth } from '@/lib/auth'
 import { getRoasteries, getRoasteryById, getRegionOptions } from '@/lib/queries/roastery'
 import { getUserRating, getRatingCount } from '@/lib/queries/rating'
@@ -146,18 +146,6 @@ export async function RoasteriesContent({ params }: Props) {
         <>
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">{roasteries.length}개 로스터리</span>
-            <div className="hidden lg:flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
-              <span className="flex items-center justify-center w-7 h-6 rounded-md bg-background shadow-sm text-foreground">
-                <List className="size-3.5" />
-              </span>
-              <Link
-                href={mapUrl}
-                className="flex items-center justify-center w-7 h-6 rounded-md text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="지도로 보기"
-              >
-                <MapPin className="size-3.5" />
-              </Link>
-            </div>
           </div>
           <RoasteryGrid roasteries={roasteries} activeRegions={filter.regions} />
           <div className="flex justify-center pt-4 pb-2">
