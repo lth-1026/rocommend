@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getRoasteryById } from '@/lib/queries/roastery'
-import { getUserRating, getRoasteryRatings, getRatingCount } from '@/lib/queries/rating'
+import { getUserRating, getRatingCount } from '@/lib/queries/rating'
 import { getBookmarkStatus } from '@/lib/queries/bookmark'
 import { RoasteryDetail } from '@/components/roastery/RoasteryDetail'
 import { ROASTING_LEVEL_LABELS } from '@/types/roastery'
@@ -49,15 +49,6 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
         getRatingCount(userId),
       ])
     : [null, false, 0]
-
-  // 평가 3개 미만이면 유사도 계산 불가 → HIGH fallback
-  const initialSort = userId && ratingCount >= 3 ? 'SIMILAR' : 'HIGH'
-
-  const initialRatings = await getRoasteryRatings({
-    roasteryId: id,
-    sort: initialSort,
-    currentUserId: userId,
-  })
 
   // 원두별 최저가 채널 → Offer 스키마
   const beanOffers = roastery.beans.map((bean) => {
@@ -123,15 +114,14 @@ export default async function RoasteryDetailPage({ params }: RoasteryDetailPageP
         <RoasteryDetail
           roastery={roastery}
           isLoggedIn={!!userId}
+          userId={userId}
           userRating={
             userRating
               ? { score: userRating.score, comment: userRating.comment ?? undefined }
               : undefined
           }
           isBookmarked={isBookmarked}
-          initialRatings={initialRatings.items}
-          initialNextCursor={initialRatings.nextCursor}
-          initialSort={initialSort}
+          ratingCount={ratingCount}
         />
       </div>
     </>
