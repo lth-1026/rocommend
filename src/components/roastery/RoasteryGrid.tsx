@@ -1,5 +1,6 @@
 'use client'
 
+import type { MouseEvent } from 'react'
 import { RoasteryCard } from './RoasteryCard'
 import type { RoasteryWithStats } from '@/types/roastery'
 
@@ -7,7 +8,7 @@ interface RoasteryGridProps {
   roasteries: RoasteryWithStats[]
   activeRegions?: string[]
   variant?: 'portrait' | 'landscape'
-  onCardClick?: (id: string) => void
+  onCardClick?: (id: string, e: MouseEvent<HTMLAnchorElement>) => void
   singleCol?: boolean
 }
 

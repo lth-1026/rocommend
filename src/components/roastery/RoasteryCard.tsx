@@ -1,5 +1,6 @@
 'use client'
 
+import type { MouseEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +15,7 @@ interface RoasteryCardProps {
   priority?: boolean
   activeRegions?: string[]
   variant?: 'portrait' | 'landscape'
-  onCardClick?: (id: string) => void
+  onCardClick?: (id: string, e: MouseEvent<HTMLAnchorElement>) => void
   nearbyAddress?: string
   nearbyDistance?: number
 }
@@ -60,7 +61,7 @@ export function RoasteryCard({
       <Link
         href={`/roasteries/${roastery.id}`}
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl active:scale-[0.97] transition-transform duration-100"
-        onClick={onCardClick ? () => onCardClick(roastery.id) : undefined}
+        onClick={onCardClick ? (e) => onCardClick(roastery.id, e) : undefined}
       >
         <div className="group flex flex-row items-start gap-3 rounded-xl p-2 hover:bg-muted/50 transition-colors">
           <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
@@ -121,7 +122,7 @@ export function RoasteryCard({
     <Link
       href={`/roasteries/${roastery.id}`}
       className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl active:scale-[0.97] transition-transform duration-100"
-      onClick={onCardClick ? () => onCardClick(roastery.id) : undefined}
+      onClick={onCardClick ? (e) => onCardClick(roastery.id, e) : undefined}
     >
       <div className="group flex flex-col gap-2">
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-muted">
