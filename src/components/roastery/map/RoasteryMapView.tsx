@@ -344,6 +344,12 @@ export function RoasteryMapView({
 
   // Fly to selected marker
   useEffect(() => {
+    // selection이 비어 있는데 clickedPosRef가 남아있다면 비-마커 경로(카드/URL)로 선택이
+    // 갱신된 상태 — 마커 클릭 의도는 더 이상 유효하지 않으므로 즉시 폐기 (stale pos 제거)
+    if (clickedPosRef.current && !selection) {
+      clickedPosRef.current = null
+    }
+
     // fitBounds가 막 실행됐으면 fly 건너뜀 — selectedId 유무와 무관하게 먼저 소비
     if (justFitBoundsRef.current) {
       justFitBoundsRef.current = false
